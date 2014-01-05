@@ -1,4 +1,4 @@
-crown
+swcv
 =====
 
-Semantics-Preserving Word Cloud Representation
+Semantic Word Cloud Visualization
