@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta name="title" content="Semantic Word Cloud Visualization">
+		<meta name="keywords" content="word cloud, semantic, visualization, graph drawing, tag cloud, generator">
+		<meta name="description" content="Online tool for semantics-preserving word cloud visualization">
+
+		<title>Semantic Word Cloud Visualization</title>
+
+		<link type="image/ico" rel="shortcut icon" href="favicon.ico" />
+		<link type="text/css" rel="stylesheet" href="static/css/swc.css">
+		<link type="text/css" rel="stylesheet" href="static/css/bootstrap.css">
+
+		<script type="text/javascript" src="swcwebapp/swcwebapp.nocache.js"></script>
+		<script type="text/javascript" src="static/js/ga.js"></script>
+	</head>
+
+<body>
+	<noscript>
+		<div
+			style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+			Your web browser must have JavaScript enabled in order for this
+			application to display correctly.</div>
+	</noscript>
+
+	<div id="header" class="navbar navbar-static-top">
+		<div class="navbar-inner">
+			<ul class="nav">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="gallery.html">Gallery</a></li>
+				<li><a href="description.html">Description</a></li>
+				<li><a href="faq.html">FAQ</a></li>
+			</ul>
+			<ul class="nav pull-right">
+				<li><a href="about.html">About Us</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div id="baseContainer">
+		<div id="logoPic" class="webTitle">
+			<img src="static/imgs/logo.png"/>
+		</div>
+
+		<div id="textAreaContainer" class="wide center">
+			<textarea name="input_text" id="input_text" class="textAreaStyle wide inconsolataNormal" spellcheck="false" autofocus="autofocus" 
+				maxlength="500000" placeholder="Enter a URL, YouTube video, pdf link, paste some text..."></textarea>
+			<div style="text-align: left;">
+				<font style="color:#999">...or try a <a id="btn_rnd_wiki">random Wikipedia page</a></font> 	
+			</div>
+		</div>
+
+		<div style="margin:10px">
+		<table class="wide center"><tbody>
+			<tr>
+				<td style="width: 20%" />
+				<td style="width: 60%">
+					<div style="text-align: center">
+				    <button id='btn_create_wc' class="btn btn-primary buttonWidth actionmanNormal"/>Create Word Cloud</button>
+				    </div>
+				</td>
+				<td style="width: 20%">
+					<a class="small" id="adv_link">Show Advanced Options</a>
+				</td>
+			</tr>
+		</tbody></table>
+		</div>
+
+		<div id="settingContainer" class="wide center hide"></div>
+		<!--div id="ShareUs" class="wide center>" style="margin-top: 10px;">
+			<a
+				href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwordcloud.cs.arizona.edu%2F"
+				target="_blank"><img src="static/imgs/facebook.ico" height="24px"
+				width="24px" Title="Share on Facebook" />
+			<a
+				href="https://twitter.com/share?url=http%3A%2F%2Fwordcloud.cs.arizona.edu%2F"
+				target="_blank"> <img src="static/imgs/twitter.ico" height="24px"
+				width="24px" Title="Tweet on Twitter" />
+		</div-->
+		<div id="shadow" class="blackTransparent hide"></div>
+	</div>
+</body>
+
+</html>

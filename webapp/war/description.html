@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta name="title" content="Semantic Word Cloud Visualization - Description">
+		<title>Semantic Word Cloud Visualization - Description</title>
+
+		<link type="image/ico" rel="shortcut icon" href="favicon.ico" />
+		<link type="text/css" rel="stylesheet" href="static/css/swc.css">
+		<link type="text/css" rel="stylesheet" href="static/css/bootstrap.css">
+
+		<script type="text/javascript" src="static/js/ga.js"></script>
+	</head>
+
+<body>
+	<div id="header" class="navbar navbar-static-top">
+		<div class="navbar-inner">
+			<ul class="nav">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="gallery.html">Gallery</a></li>
+				<li><a href="description.html">Description</a></li>
+				<li><a href="faq.html">FAQ</a></li>
+			</ul>
+			<ul class="nav pull-right">
+				<li><a href="about.html">About Us</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="description">
+		<h2 style="text-align:center">System Overview</h2>
+		<p>In the last few years, word clouds have become a standard tool for abstracting, visualizing, and comparing
+		text documents. For example, Word clouds were used in 2008 to contrast the speeches of then US
+		presidential candidates Obama and McCain. A word
+		cloud of a given document consists of the most important (or most frequent) words in that document.
+		Each word is printed in a given font and scaled by a factor roughly proportional to its importance (the
+		same is done with the names of towns and cities on geographic maps, for example). The printed words
+		are arranged without overlap and tightly packed into some shape (usually a rectangle).
+		<br>
+		<br>
+		
+		Many practical tools, like Wordle, with its high quality design, graphics, style and functionality popularized
+		word cloud visualizations as an appealing way to summarize the content of a webpage, a research paper,
+		or a political speech. While similar tools are popular, most of them have a potential
+		shortcoming: They do not visualize the relationships between the words in any way, as the placement of
+		the words is completely independent of their context. But humans, as natural pattern-seekers, cannot help
+		but perceive two words that are placed next to each other in a word cloud as being related in some way.
+		In linguistics and in natural language processing if a pair of words often appears together in a sentence,
+		then this is seen as evidence that this pair of words is linked semantically. When visualizing the given
+		text with a word cloud, it makes sense to place such related pair of words close to each other.
+		</p>
+
+		<div style="text-align:center">
+			<img src="static/imgs/wc_focs.png"  style="max-height: 250px"/>
+			<p>	Word clouds generated from titles of papers from FOCS, 1993-2013. <i>left:</i> The result produced by
+			the Wordle tool: word placement, orientation, and colors are chosen arbitrarily; <i>right:</i> Semantics-preserving
+			word cloud: semantically related words are drawn together and colored according to the automatically
+			extracted clusters.</p>
+		</div>
+		<br>
+
+		<p><i>TODO:</i> info on system: input, output, pdf, youtube etc; describe pipeline: stemming, stopwords etc</p>
+
+		<p>The system relies on a geometric model behind drawing word clouds in which sementically related words are placed
+		close to each other. The formal model is described in a series of research papers:
+			<ul>
+				<li>
+					<a href="http://arxiv.org/abs/1311.4778">Semantic Word Cloud Representations: Hardness and Approximation Algorithms</a>
+				</li>
+
+				<li>
+					<a href="ftp://ftp.cs.arizona.edu/reports/2013/TR13-02.pdf">An Experimental Study of Algorithms for Semantics-Preserving Word Cloud Layout</a>
+				</li>
+
+				<li>
+					<a href="#">Improved Approximation Algorithms for Semantic Word Clouds</a>
+				</li>
+			</ul>
+
+			Source code for the entire system is available on <a href="#">Github</a>
+		</p>
+
+	</div>
+
+</body>
+
+</html>

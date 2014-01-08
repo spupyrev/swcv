@@ -1,0 +1,152 @@
+body {
+	margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+
+	background-image: url('../imgs/Sky.png');
+	background-repeat: no-repeat;
+	background-size: 100%;
+}
+
+#baseContainer {
+	width: 80%;
+	margin: 1% 0% 10px 10%;
+	text-align: center;
+}
+
+#header {
+	font-family: InconsolataMedium;
+	font-size: 14px;
+}
+
+.actionmanNormal {
+	font-family: ActionManRegular;
+	font-size: 15px;
+}
+
+.inconsolataNormal {
+	font-family: InconsolataMedium;
+	font-size: 15px;
+}
+
+.webTitle {
+	margin: -10px 0px 10px 0px;
+	text-align: center;
+}
+
+.textAreaStyle {
+	resize: none;
+	height: 300px;
+	position: relative;
+}
+
+.urlAreaStyle {
+	resize: none;
+	width: 648px;
+	height: 30px;
+	position: relative;
+}
+
+.wide {
+	width: 700px;
+}
+
+#closeButton {
+	margin: 15px 6px 6px;
+}
+
+.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.blackTransparent {
+	background-color: rgba(0, 0, 0, .8);
+}
+
+.fullScreen {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+}
+
+#URLAreaContainer {
+	margin-top: 20px;
+}
+
+#ShareUs{
+	text-align:right;
+	margin-left:auto;
+	margin-right:auto;'
+}
+
+.errorBox {
+	border: 2px groove gray;
+	background-color: rgba(255, 255, 255, .9);
+	width: 600px;
+}
+
+.buttonWidth{
+	width:240px;
+}
+
+.small {
+  font-size: 85%;
+}
+             
+.gallery-img {
+	border: 2px gray solid; 
+	border-radius: 10px; 
+	max-height: 300px;
+	max-width: 500px;
+}
+
+.gallery-imgholder {
+/*	width: 50%; 
+	max-height: 350px;*/
+}
+
+/*.gallery-imgholder:hover {
+	width: 125%; 
+	margin: 15px auto 15px;
+}*/
+
+.row {
+    width:80%;
+    background: white;
+    border: 2px black solid;
+    margin-left: 10%;
+    margin-top: 10px;
+}
+
+.img-about {
+    max-height: 160px;
+}
+
+.photo {
+    max-height: 180px;
+    float: left;
+    margin-right:20px;
+}
+
+.about-info {
+    margin: 20px 20px 20px 20px;
+    
+    text-align: left;
+    vertical-align: middle;
+}
+
+.faq-question {
+    text-align: left;
+}
+
+.faq-info {
+    margin-top:-10px;
+}
+
+.description {
+	width: 80%;
+	margin: 1% 0% 10px 10%;
+}

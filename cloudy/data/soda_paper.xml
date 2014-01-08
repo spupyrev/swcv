@@ -1,0 +1,1239 @@
+<xml>
+<doc title='013.txt'>
+
+Data Streams: algorithm and Applications 
+1 Introduction
+I will discuss the emerging area of algorithm for processing data streams and associated applications, as an
+applied algorithm research agenda. That has its benefits: we can be inspired by any application to study
+novel problems, and yet be not discouraged by the confines of a particular one. The discussion will be
+idiosyncratic. My personal agenda is to be a scientist, mathematician and engineer, all in one. That will
+be reflected, some times one more than the others. Art, Nature, Homeland Security and other elements will
+make a cameo. The tagline is IMAGINE, THINK and DO: one imagines possibilities and asks question,
+one seeks provable solutions and finally, one builds solutions. This writeup will present a little of each
+in data streaming. (See Barry Mazur’s book for the imaginary and Math [65].) The area has many open
+problems.
+Let me begin w two puzzles.
+Puzzle 1: Finding Missing Numbers
+Let be a permutation of {1, . . . , n}. Further, let be w one element missing. Paul shows Carole
+elements from set 1[i] in increasing order i, one after other. Carole task is to determine the missing
+integer. This is trivial to do if Carole can memorize all the numbers she has seen thus far (formally, she has
+an n-bit vector), but if n is large, this is impractical. Let us assume she has only a few—say O( log  n)—bits
+of memory. Nevertheless, Carole must determine the missing integer. This starter has a simple solution:
+Carole stores
+which is the missing integer in the end. Each input integer entails one subtraction. The total number of bits
+stored is no more than 2 log  n. On the other hand, Carole needs at least log  n bits in the worst case. (In fact,
+Carole has an optimal algorithm. Say n is a power of 2 for convenience. For each i, store the parity sum
+of the  bits of all numbers seen thus far. The final parity sum bits are the bits of the missing number.)
+Similar solution will work even if n is unknown, for example by letting n = maxj
+Paul and Carole have a history. It started w the “twenty question” problem solved in [25]. Paul,
+which stood for Paul Erdos, was the one who asked question. Carole is an anagram for Oracle. Aptly, she
+was the one who answered question. Joel Spencer and Peter Winkler used Paul and Carole to coincide w
+Pusher and Chooser respectively in studying certain chip games in which Carole chose which groups the
+chips falls into and Paul determined which group of chips to push. Joel introduced them to me during my
+thesis work. I used them in a game in which Paul put coins on weighing pans (panned them!) [6]. In the
+puzzle above, Paul permutes and Carole cumulates. In a little while, they will play other P/C roles.
+Generalizing the puzzle a little further, let ??2 be ? w two elements missing. Most of the students
+in my graduate algorithm class suggested Carole now store s = n(n+1)
+In general, what is the smallest number of bits needed to identify the k missing numbers in ??k? Following
+the approach above, the problem may be thought of as having power sums
+for p = 1, . . . , k and solving for xi’s. A different but provably equivalent method uses elementary symmetric
+polynomials. The  such polynomial ?i(x1, . . . , xk) is the sum of all possible i term products of the
+parameters, i.e.,
+Carole continuously maintain ?i’s for the missing k items in field Fq for prime q ? n (and ? 2n suffices),
+as Paul presents the numbers one after the other (the details are omitted). Since
+Carole needs to factor this polynomial in Fq to determine the missing numbers. No deterministic algorithm
+are known for this problem, but randomized algorithm take roughly O (k2 log  n) bits and time [23]. The
+power sum method is what colleagues typically propose over dinner. The elementary symmetric polynomial
+approach comes from [24] where the authors solve the set reconciliation problem in the communication
+complexity model. The subset reconciliation problem is related to our puzzle.
+Readers may have guessed that they may be a different efficient solution for this puzzle using insights
+from error correcting codes or combinatorial group testing. Indeed true. We will later reference
+an O (k log  k log  n) bits and time solution; in contrast, no algorithm can use O (k log (n/k)) bits in the worst
+case.
+It is no coincidence that this puzzle contains elements of data stream algorithm. Generalize it: Paul
+presents a multiset of elements 1, · · · , n w a single missing integer, i.e., he is allowed to re-present integers
+he showed before; Paul presents update showing which integers to insert and which to delete, and Carole
+task is to find the integers that are no longer present; etc. All of these problems are no longer (mere) puzzles;
+they are derived from motivating data stream applications.
+1.2 Puzzle 2: Fishing
+Doubtless it will be a more inspiring introduction to data streams if the puzzle was derived from nature. So,
+say Paul goes fishing. There are many different fish species U = {1, · · · , u}. Paul catches one fish at a time,
+3
+at ? U being the fish species he catches at time t. ct[j] = |{ai|ai = j, i ? t}| is the number of times he
+catches the species j up to time t. Species j is rare at time t if it appears precisely once in his catch up to
+time t. The rarity ?[t] of his catch at time t is the ratio of the number of rare j’s to u:
+Paul can calculate ?[t] precisely w a 2U-bit vector and a counter for the current number of rare species,
+updating the data structure in O(1) operations per fish caught. However, Paul wants to store only as many
+bits as will fit his tiny suitcase, i.e., o(U), preferably O(1) bits.
+Suppose Paul has a deterministic algorithm to compute ?[t] precisely. Feed Paul any set S ? U of fish
+species, and say Paul algorithm stores only o(|S|) bits in his suitcase. Now we can check if any i ? S
+by simply feeding Paul i and checking ?[t + 1]: the number of rare items decreases by one if and only if
+i ? S. This way we can recover entire S from his suitcase by feeding different i’s one at a time, which is
+impossible in general if Paul had only stored o(|S|) bits. Therefore, if Paul wishes to work out of his one
+suitcase, he can not compute ?[t] exactly. This argument has elements of lower bound proofs found in the
+area of data streams.
+However, proceeding to the task at hand, Paul can approximate ?[t]. Paul picks k random fish species
+each independently, randomly w probability 1/u at the beginning and maintains the number of times each
+of these fish types appear in his bounty, as he catches fish one after another. Say X1[t], . . . ,Xk[t] are these
+counts after time t. Paul outputs ??[t] = |{ Xi[t] | Xi[t]=1 }
+k as an estimator for ?. Since
+probability.
+As an exercise in doing mathematics while fishing, this misses an ingredient: ? is unlikely to be large
+because presumably u is much larger than the species found at any spot Paul fishes. Choosing a random
+species from 1..u and waiting for it to be caught seems an exercise in, well, fishing. We can make it more
+realistic by redefining rarity wrt the species Paul in fact sees in his catch. Let
+As before, Paul would have to approximate ?[t] because he can not compute it exactly using small number
+of bits. Following [88], define a family of hash function H ? [n] [n] (where [n] = {1, . . . , n}) to be
+min-wise independent if for any X ? [n] and x ? X, we have
+Paul chooses k min-wise independent hash function h1, h2, . . . , hk for some parameter k to be determined
+later and maintains h?
+i (t) = minaj, j?t hi(aj) at each time t, that is, min hash value of the multi-set
+{. . . , at?2, at?1, at}. He also maintain k counters C1(t),C2(t), . . . ,Ck(t); Ci(t) counts the number of
+times the item w hash value h?
+Notice that Pr(Ci(t) = 1) is the probability that hi(t) is the hash value of one of the items that appeared
+It is ironic that Paul has adapted the cumulating task in the solution above, which is traditionally Carole
+shtick. But we are not done. Paul needs to pick hi’s. If Paul resorts to his tendency to permute, i.e., picks
+a randomly chosen permutation ? over [u] = {1, . . . , u}, then hi’s will be min-wise hash function. And
+he will be done. However, it requires ?(u log  u) bits to represent a random permutation from the set of all
+permutations over [u]. Thus the number of bits needed to store the hash function will not fit his suitcase!
+To overcome this problem, Paul has to do some math. He picks a family of approximate min-hash
+that is, at least 1/k. It will turn out that in applications of streaming interest, we need to only determine if
+?[t] is large, so this solution will do.
+(As an aside, the problem of estimating the rarity is related to a different problem. Consider fishing
+again and think of it as a random sampling process. There is an unknown probability distribution P on the
+countable set of fish types w pt being the probability associated w fish type t. A catch is a sample S
+of f fishes drawn independently from fish types according to the distribution P. Let c[t] be the number of
+times t appears in S and s[k] be the number of fish types that appear k times in S. Consider estimating the
+probability of fish type t being the next catch. Elementary reasoning would indicate that this probability
+is c[t]s[c[t]]/f. However, it is unlikely that all (of the large number of) fish types in the ocean are seen in
+Paul catch, or even impossible if fish types is infinite. Hence, there are fish types t that do not appear
+in the sample (i.e., c[t] = 0) and they would have probability 0 of being caught next, a conundrum in the
+elementary reasoning if t is present in the ocean. Let m =
+the missing mass problem. In a classical work by Good (attributed to Turing too) [35], it is shown that m
+is estimated by s[1]/f, provably w small bias; recall that our rarity ? is closely related to s[1]/f. Hence,
+our result here on estimating rarity in data streams is of independent interest in the context of estimating the
+missing mass. Those interested in convergence properties of the Good-Turing estimator should see David
+McAllester’s work.)
+Once you generalize the fishing—letting the numerator be more generally |{ j | ct[j] ? ? }| for some
+?, letting Carole go fishing too, or letting Paul and Carole throw fish back into the sea as needed—there are
+some real data streaming applications [19].
+Honestly, the fishing motif is silly: the total number of fish species in the sea is estimated to be roughly
+22000 and anyone can afford an array of as many bits. In the reality of data streams which I will describe
+next, one is confronted w fishing in a far more numerous domain.
+1.3 Lessons
+I have noticed that once something is called a puzzle, people look upon the discussion less than seriously.
+The puzzle in Section 1.1 shows the case of a data stream problem that can be deterministically solved precisely
+w O( log  n) bits (when k = 1, 2 etc.). Such algoritms—deterministic and exact—are uncommon
+in data stream processing. In contrast, the puzzle in Section 1.2 is solved only up to an approximation using
+5
+a randomized algorithm in polylog bits. This—randomized and approximate solutions—is more representative
+of currently known data stream algorithm. Further, the estimation of ? in Section 1.2 is accurate
+only when it is large; for small ?, the estimate ?? is arbitrarily bad. This points to a feature that generally
+underlies data stream algorithmics. Such features which applied algorithm need to keep in mind while
+formulating problems to address data stream issues will be discussed in more detail later.
+2 Map
+Section 3 will describe the data stream phenomenon. I have deliberately avoided specific models here
+because the phenomenon is real, models are the means and may change over time. Section 4 will present
+currently popular data stream models, motivating scenarios and other applications for algorithm in these
+models beyond dealing w data streams.
+Section 5 abstracts mathematical ideas, algorithm techniques as well as lower bound approaches for
+data stream models; together they comprise the foundation of the theory of data streams that is emerging.
+This section is right now skimpy, and I will add to it over time. Section 6 discusses applied work on data
+streams. It is drawn from different systems areas, and I have grouped them into three categories which may
+be useful for a perspective.
+Section 7 contains new directions and open problems that arise in several research areas when the data
+streaming perspective is applied. Some traditional areas get enriched, new ones emerge. Finally, in my
+concluding remarks in Section 8, I will invoke Proust, show you streaming Art, history, and some notes on
+the future of streaming. The most important part of this writeup is Section 9.
+3 Data Stream Phenomenon
+The web site http://www.its.bldrdoc.gov/projects/devglossary/ data stream.html defines a data stream to be
+a “sequence of digitally encoded signals used to represent information in transmission”. We will be a little
+more specific. Data stream to me represents input data that comes at a very high rate. High rate means it
+stresses communication and computing infrastructure, so it may be hard to
+• transmit (T) the entire input to the program,
+• compute (C) sophisticated function on large pieces of the input at the rate it is , and
+• store (S), capture temporarily or archive all of it long term.
+Most people typically do not think of this level of stress in  capacity. They view data as being stored in
+files. When transmitted, if links are slow or communication is erroneous, we may have delays but correct
+data eventually gets to where it should go. If computing power is limited or the program has high complexity,
+it takes long (long longs!) time to get the desired response, but in principle, we would get it. Also, we save
+almost all the data we need. This simplified picture of  requirements is reasonable because need has
+balanced resources: we have produced the amount of data that technology could ship, process, store, or we
+have the patience to manipulate.
+There are two recent developments that have confluenced to produce new challenges to the  infrastructure.
+• Ability to generate automatic, highly detailed data feeds comprising continuous update.
+This ability has been built up over the past few decades beginning w networks that spanned banking
+and credit transactions. Other dedicated network systems now provide massive data streams:
+6
+satellite based, high resolution measurement of earth geodetics [118, 113], radar derived meteorological
+data [119]1, continuous large scale astronomical surveys in optical, infrared and radio wavelengths
+[117], atmospheric radiation measurements [108] etc. The Internet is a general purpose network
+system that has distributed both the data sources as well as the data consumers over millions
+of users. It has scaled up the rate of transactions tremendously generating multiple streams: browser
+clicks, user queries, IP traffic log s, email data and traffic log s, web server and peer-to-peer downloads
+etc. Internet also makes it to easier to deploy special purpose, continuous observation points that
+get aggregated into vast data streams: for example, financial data comprising individual stock, bond,
+securities and currency trades can now get accumulated from multiple sources over the internet into
+massive streams. Wireless access networks are now in the threshold of scaling this phenomenon even
+more. In particular, the emerging vision of sensor networks combines orders of more observation
+points (sensors) than are now available w wireless and networking technology and is posited to
+challenge  needs even more. Oceanographic, bio, seismic and security sensors are such emerging
+examples.
+• Need to do sophisticated analyses of update streams in near-real time manner.
+W traditional datafeeds, one modifies the underlying data to reflect the update, and real time
+queries are fairly simple such as looking up a value. This is true for the banking and credit transactions.
+More complex analyses such as trend analysis, forecasting, etc. are typically performed offline
+in warehouses. However, the automatic data feeds that generate modern data streams arise out of
+monitoring applications, be they atmospheric, astronomical, networking, financial or sensor-related.
+They need to detect outliers, extreme events, fraud, intrusion, unusual or anomalous activity, etc.,
+monitor complex correlations, track trends, support exploratory analyses and perform complex tasks
+such as classification, harmonic analysis etc. These are time critical tasks in each of these applications,
+more so in emerging applications for homeland security, and they need to be done in near-real
+time to accurately keep pace w the rate of stream update and accurately reflect rapidly changing
+trends in the data.
+These two factors uniquely challenge the  needs. We in Computer Science community have traditionally
+focused on scaling wrt to size: how to efficiently manipulate large disk-bound data via suitable data
+structures [15], how to scale to databases of petabytes [106], synthesize massive datasets [7], etc. However,
+far less attention has been given to benchmarking, studying performance of systems under rapid update
+w near-real time analyses. Even benchmarks of database transactions [115] are inadequate.
+There are ways to build workable systems around these  challenges.  systems are sophisticated
+and have developed high-level principles that still apply. Make things parallel. A lot of data stream processing
+is highly parallelizable in computing (C) and storage (S) capacity; it is somewhat harder to parallelize
+transmission (T) capacity on demand. Control data rate by sampling or shedding update. High energy particle
+physics experiments at Fermilab and CERN [120] will soon produce 40TBytes/s which will be reduced
+by real time hardware into 800Gb/s data stream: is it careful sampling or carefree shedding? Statisticians
+have the sampling theory: it is now getting applied to IP network streams [12, 3, 13]. Round data structures
+to certain block boundaries. For example, the “Community of Interest” approach to finding fraud in
+telephone calls uses a graph data structure up to and including the previous day to perform the current day’s
+analysis, thereby rounding the freshness of the analysis to period of a day [14]. This is an effective way to
+control the rate of real-time data processing and use pipelining. Use hierarchically detailed analysis. Use
+fast but simple filtering or aggregation at the lowest level and slower but more sophisticated computation at
+1John Bates, the Chief of Remote Sensing Applications Division of USNOAANDCC, gives a nice exposition at
+http://www7.nationalacademies.org/bms/BatesPowerPoint.ppt and http://www7.nationalacademies.org/bms/AbstractBATES.html.
+7
+higher levels w smaller data. This hierarchical thinking stacks up against memory hierarchy nicely. Finally,
+often asking imaginative question can lead to effective solutions win any given resource constraint,
+as applied algorithm researchers well know.
+Nevertheless, these natural approaches are ultimately limiting. They may meet ones’ myopic expectations.
+But we need to understand the full potential of data streams for the future. Given a certain amount of
+resources, a data stream rate and a particular analysis task, what can (not) we do? Most natural approaches
+to dealing w data streams discussed above involves approximations: what are algorithm principles for
+data stream approximation? One needs a systematic theory of data streams. To get novel algorithm. To
+build data stream applications w ease, and proven performance.
+What follows is an introduction to the emerging theory of data streams.
+Before that, here is a note. The previous few paragraphs  a case for data stream research. I
+could have done it
+• Using anecdotics.
+Paul, now a network service Provider, has to convince Carole, his Customer, that IP hosts connecting
+to her website get high quality real time media service. He needs to monitor IP traffic to her web site
+and understand per-packet performance for each host. Plotting such statistics in real time is a good
+way to convince Carole.
+• Or using numerics.
+A single OC48 link may transmit few hundred GBytes per hour of packet header information, which
+is more than 200Mbps. It takes an OC3 link to transfer this streaming log  and it is a challenge to write
+it into tapes or process it by the new 3GHz P4 Intel processor at that rate.
+Or I could have used a limerick, haiku or a Socratic dialog. But I chose to describe data stream as a
+phenomenon in words. Sometimes I think words have become less meaningful to us than greek symbols or
+numerals. Nevertheless, I hope you would use your imagination and intuit the implications of data streaming.
+Imagine we can (and intend to) collect so much data that we may be forced to drop a large portion of it, or
+even if we could store it all, we may not have the time to scan it before making judgements. That is a new
+kind of uncertainty in computing beyond randomization and approximation: it should jar us, one way or the
+other.
+4 Data Streaming: Formal Aspects
+This section will be more formal: define various models for dealing w data streams and present a motivating
+application to internalize.
+4.1 Data Stream Models
+Input stream a1, a2, . . . arrives sequentially, item by item, and describes an underlying signal A, a onedimensional
+function A : [1. . .N] R.2 Models differ on how ai’s describe A.
+• Time Series Model. Each ai equals  and they appear in increasing order of i. This is a suitable
+model for time series data where, for example, you are observing the traffic at an IP link each 5
+minutes, or NASDAQ volume of trades each minute, etc.
+2Input may comprise of multiple streams or multidimensional signals, but we do not consider those variations here.
+8
+• Cash Register Model. Here ai’s are increments to ]’s. Think of ai = (j, Ii), Ii ? 0, to mean
+j] = Ai?1[j] + Ii where Ai is the state of the signal after seeing the  item in the stream.
+Much as in a cash register, multiple ai’s could increment a given ] over time. This is perhaps the
+most popular data stream model. It fits applications such as monitoring IP addresses that access a
+web server, source IP addresses that send packets over a link etc. because the same IP addresses may
+access the web server multiple times or send multiple packets on the link over time. This model has
+appeared in literature before, but was formally christened in [27] w this name.
+• Turnstile Model.3 Here ai’s are update to ]’s. Think of ai = (j,Ui), to mean j] = Ai?1[j] +
+Ui where Ai is the signal after seeing the  item in the stream, and Ui may be positive or negative.
+This is the most general model. It is mildly inspired by a busy NY subway train station where the
+turnstile keeps track of people arriving and departing continuously. At any time, a large number of
+people are in the subway. This is the appropriate model to study fully dynamic situations where there
+are inserts as well deletes, but it is often hard to get interesting bounds in this model. This model too
+has appeared before under different guises, but it gets christened here w its name.
+There is a small detail: in some cases, j] ? 0 for all i. We refer to this as the strict Turnstile model.
+Intuitively this corresponds to letting people only exit via the turnstile they entered the system in: it
+is a unrealistic intuition, but it fits many applications. For example, in a database, you can only delete
+a record you inserted. On the other hand, there are instances when streams may be non-strict, that
+is, for some i. For example, when one considers a signal over the difference between two
+cash register streams, one obtains a non-strict Turnstile model. We will avoid making a distinction
+between the two Turnstile models unless necessary.
+The models in decreasing order of generality are as follows: Turnstile, Cash Register, Time Series. (A
+more conventional description of models appears in [27].) From a theoretical point of view, of course one
+wishes to design algorithm in the Turnstile model, but from a practical point of view, one of the other
+models, though weaker, may be more suitable for an application. Furthermore, it may be (provably) hard to
+design algorithm in a general model, and one may have to settle for algorithm in a weaker model.
+We wish to compute various function on the signal A at different times during the stream. There are
+different performance measures.
+• Processing time per item ai in the stream. (Proc. Time)
+• Space used to store the data structure on At at time t. (Storage)
+• Time needed to compute function on A. (Compute time)4
+Here is a rephrasing of our solutions to the two puzzles at the start in terms of data stream models and
+performance measures.
+Puzzle Model Function Proc. Time Storage Compute Time
+Section 1.1 cash register k = 1, {j|] = 0} O( log  n) O( log  n) O(1)
+We can now state the ultimate desiderata that is generally accepted:
+3I remember the exhilaration we felt when Martin Farach-Colton and I coined the name Disk Access Machine model or the
+DAM model during a drive from New York city to Bell labs. The DAM model is catching on.
+4There is also the work space needed to compute the function. We do not explicitly discuss this because typically this is of the
+same order as the storage.
+9
+At any time t in the data stream, we would like the per-item processing time, storage as well as the
+computing time to be simultaneously o(N, t), preferably, polylog (N, t).
+Readers can get a sense for the technical challenge this desiderata sets forth by contrasting it w a
+traditional dynamic data structure like say a balanced search tree which processes each update in O( log N)
+time and supports query in O( log N) time, but uses linear space to store the input data. Data stream algorithm
+can be similarly thought of as maintaining a dynamic data structure, but restricted to use sublinear
+storage space and the implications that come w it. Sometimes, the desiderata is weakened so that:
+At any time t in the data stream, per-item processing time and storage need to be simultaneously
+o(N, t) (preferably, polylog (N, t)), but the computing time may be larger.
+This was proposed in [10], used in few papers, and applies in cases where computing is done less
+frequently than the update rate. Still, the domain N and input t being so large that they warrant using only
+polylog (N, t) storage may in fact mean that computing time even linear in the domain or input may be
+prohibitive in applications for a particular query.
+A comment or two about the desiderata.
+First, why do we restrict ourselves to only a small (sublinear) amount of space? Typically, one says
+this is because the data stream is so massive that we may not be able to store all of what we see. That
+argument is facetious. Even if the data stream is massive, if it describes a compact signal (i.e., N is small),
+we can afford space linear in N, and solve problems win our conventional computing framework. For
+example, if we see a massive stream of peoples’ IDs and their age in years, and all we wish to calculate
+were function on peoples’ age distribution, the signal is over N less than 150, which is trivial to manage.
+What makes data streams unique is that there are applications where data streams describe signals over a
+very large universe. For example, N may be the number of source, destination IP address pairs (which is
+potentially 264 now), or may be the number of time intervals where certain observations were made (which
+increases rapidly over time), or may be the http addresses on the web (which is potentially infinite since web
+queries get sometimes written into http headers). More generally, and this is significantly more convincing,
+data streams are observations over multiple attributes and any subset of attributes may comprise the domain
+of the signal in an application and that leads to potentially large domain spaces even if individual attribute
+domains are small.
+Second, why do we use the polylog function? Well, log  in the input size is the lower bound on the
+number of bits needed to index and represent the signal, and poly gives us a familiar room to play.
+Finally, there is a cognitive analogy that explains the desiderata qualitatively, and may appeal to some
+of the readers (it did, to Mikkel Thorup). As human beings, we perceive each instant of our life through an
+array of sensory observations (visual, aural, nervous, etc). However, over the course of our life, we manage
+to abstract and store only part of the observations, and function adequately even if we can not recall every
+detail of each instant of our lives. We are data stream processing machines.
+4.2 A Motivating Scenario
+Let me present a popular scenario for data streaming. The Internet comprises routers connected to each other
+that forward IP packets. Managing such networks needs real time understanding of faults, usage patterns,
+and unusual activities in progress. This needs analysis of traffic and fault data in real time. Consider traffic
+data. Traffic at the routers may be seen at many levels.
+1. At the finest level, we have the packet log : each IP packet has a header that contains source and
+destination IP addresses, ports, etc.
+10
+2. At a higher level of aggregation, we have the flow log : each flow is a collection of packets w same
+values for certain key attributes such as the source and destination IP addresses and the log  contains
+cumulative information about number of bytes and packets sent, start time, end time, protocol type,
+etc. per flow.
+3. At the highest level, we have the  log , which is the aggregate data of the number of bytes sent
+over each link every few minutes.
+Many other log s can be generated from IP networks (fault alarms, CPU usage at routers, etc), but the
+examples above suffice for our discussion. You can collect and store  data. (I store 6 months worth of
+this data of a large ISP in my laptop for the CTO tool I will reference later. I could store data up to a
+year or two  stressing my laptop.) The arguments we  for data streaming apply to flow and
+packet log s which are far more voluminous than the  log . A more detailed description and defense of
+streaming data analysis in IP network traffic data is  in [26], in particular, in Section 2.
+Here are some queries one may want to ask on IP traffic log s.
+1. How much HTTP traffic went on a link today from a given range of IP addresses? This is an example
+of a slice and dice query on the multidimensional time series of the flow traffic log .
+2. How many distinct IP addresses used a given link to send their traffic from the beginning of the day,
+or how many distinct IP addresses are currently using a given link on ongoing flow?
+3. What are the top k heaviest flows during the day, or currently in progress? Solution to this problem in
+flow log s indirectly provides a solution to the puzzle in Section 1.1.
+4. How many flows comprised one packet only (i.e., rare flows)? Closely related to this is the question:
+Find TCP/IP SYN packets  matching SYNACK packets. This query is motivated by the
+need to detect denial-of-service attacks on networks as early as possible. This problem is one of the
+motivations for the fishing exercise in Section 1.2.
+5. How much of the traffic yesterday in two routers was common or similar? This is a distributed query
+that helps track the routing and usage in the network. A number of notions of “common” or “similar”
+apply. The  system supports such similarity queries on the  log s for an operational
+network provider [57].
+6. What are the top k correlated link pairs in a day, for a given correlation measure. In general a number
+of correlation measures may be suitable. Those that rely on signal analysis—wavelet, fourier etc.—of
+the traffic pattern prove effective. We will later describe algorithm for computing wavelet or fourier
+representation for data streams.
+7. For each source IP address and each five minute interval, count the number of bytes and number of
+packets related to HTTP transfers. This is an interesting query: how do we represent the output which
+is also a stream and what is a suitable approximation in this case?
+The question above are simple slice-and-dice or aggregate or group by queries. This is but a sparse
+sample of interesting question. Imagine the setup, and you will discover many more relevant question.
+Some of the more complex queries will involve joins between multiple data stream sources. For example,
+how to correlate
+Let me formalize one of the examples above in more detail, say example two.
+First, how many distinct IP addresses used a given link to send their traffic since the beginning of the
+day? Say we monitor the packet log . Then the input stream a1, a2, . . . is a sequence of IP packets on the
+11
+given link, w packet ai having the source IP address si. Let  . . .N ?1] be the number of packets sent
+by source IP address i, for 0 ? i ? N ? 1, initialized to all zero at the beginning of the day. (This signal is
+more general for reasons that will be clear in the next paragraph.) Each packet ai adds one to A[si]; hence,
+the model is Cash Register. Counting the number of distinct IP addresses that used the link during the day
+thus far can be solved by determining the number of nonzero ’s at any time.
+Second, now, consider how many distinct IP addresses are currently using a given link? More formally,
+at any time t, we are focused on IP addresses si such that some flow fj began at time before t and will end
+after t, and it originates at si. In the packet log , there is information to identify the first as well as the last
+packets of a flow. (This is an idealism; in reality, it is sometimes to hard to tell when a flow has ended.) Now,
+let  . . .N?1] be the number of flows that source IP address i is currently involved in, for 0 ? i ? N?1,
+initialized to all zero at the beginning of the day. If packet ai is the beginning of a flow, add one to A[sj ]
+if sj is the source of packet ai; if it is the end of the flow, subtract one from A[sj ] if sj is the source of
+packet ai; else, do nothing. Thus the model is Turnstile. Counting the number of distinct IP addresses that
+are currently using a link can be solved by determining the number of nonzero ’s at any time.
+Similarly other examples above can be formalized in terms of the data stream models and suitable
+function to be computed.
+A note: There has been some frenzy lately about collecting and analyzing IP traffic data in the data
+stream context. Analyzing traffic data is not new. In telephone and cellular networks, call detail records
+() are routinely collected for billing purposes, and they are analyzed for sizing, forecasting, troubleshooting,
+and network operations. My own experience is w cellular  and there is a lot you can
+do to discover engineering problems in a network in near-real time w the live feed of  from the
+cellular network. The angst w IP traffic is that the data is far more voluminous, and billing is not usage
+based. The reason to invest in measurement and analysis infrastructure is mainly for network maintenance
+and value-added services. So, the case for making this investment has to be strong, and it is now being made
+topic. That presents the possibility of getting suitable data stream sources in the future, at least win these
+companies.
+At this point, I am going to continue the theme of being imaginative, and suggest a mental exercise.
+Consider a data streaming scenario from Section 3 that is different from the IP traffic log  case. For example,
+Exercise 1 Consider multiple satellites continuously gathering multiple terrestial, atmospheric and oceansurface
+observations of the entire earth. What data analysis question arise w these spatial data streams?
+This is a good homework exercise if you are teaching a course. The queries that arise are likely to be
+substantially different from the ones listed above for the IP traffic log s case. In particular, problems naturally
+arise in the area of Computational Geometry. Wealth of (useful, fundamental) research remains to be done.
+Those who want a mental exercise more related to the Computer Science concepts can consider the
+streaming text scenario [110].
+Exercise 2 We have distributed servers each of which processes a stream of text files (instant messages,
+emails, faxes, say) sent between users. What are interesting data analysis queries on such text data streams?
+For example, one may now look for currently popular topics of conversation in a subpopulation. This
+involves text processing on data streams which is quite different from the IP traffic log s or the satellite-based
+terrestial or stellar observation scenarios.
+We need to develop the two examples above in great detail, much as we have done w the IP traffic
+analysis scenario earlier. We are far from converging on the basic characteristics of data streams or a building
+block of queries that span different application scenarios. As Martin Strauss quips, hope this is not a case of
+“insurmountable opportunities”.
+12
+4.3 Other Applications for Data Stream Models
+The data stream models are suitable for other applications besides managing rapid, automatic data feeds.
+In particular, they find applications in the following two scenarios (one each for cash register and Turnstile
+models).
+One pass, Sequential I/O. Besides the explicit data stream feeds we have discussed thus far, there are
+implicit streams that arise as an artifact of dealing w massive data. It is expensive to organize and access
+sophisticated data structures on massive data. Programs prefer to process them in one (or few) scans. This
+naturally maps to the (Time Series or Cash Register) data stream model of seeing data incrementally as a
+sequence of update. Disk, bus and tape transfer rates are fast, so one sees rapid update (inserts) when
+making a pass over the data. Thus the data stream model applies.
+Focus on one (or few) pass computing is not new. Automata theory  the power of one versus
+two way heads. Sorting tape-bound data relied on making few passes. Now we are seeking to do more
+sophisticated computations, w far faster update.5
+This application differs from the data streaming phenomenon we saw earlier in a number of ways. First,
+in data streaming, the analysis is driven by monitoring applications and that determines what function you
+want to compute on the stream. Here, you may have in mind to compute any common function (transitive
+closure, eigenvalues, etc) and want to do it on massive data in one or more passes. Second, programming
+systems that support scans often have other supporting infrastructure such as a significant amount of fast
+memory etc. which may not exist in IP routers or satellites that generate data streams. Hence the one pass
+algorithm may have more flexibility. Finally, the rate at which data is consumed can be controlled and
+smoothed, data can be processed in chunks etc. In contrast, some of the data streams are more phenomenadriven,
+and can potentially have higher and more variable update rates. So, the data stream model applies to
+one pass algorithm, but some of the specific concerns are different.
+Monitoring database contents. Consider a large database undergoing transactions: inserts/deletes and
+queries. In many cases, we would like to monitor the database contents. As an example, consider selectivity
+estimation. Databases need fast estimates of result sizes for simple queries in order to determine an efficient
+query plan for complex queries. The estimates for simple queries have to be generated fast,  running
+the queries on the entire database which will be expensive. This is the selectivity estimation problem. Here
+is how it maps into the data stream scenario. The inserts or deletes in the database are the update in the
+(Turnstile model of a data) stream, and the signal is the database. The selectivity estimation query is the
+function to be computed on the signal. Data sream algorithm therefore have the desirable property that
+they represent the signal (i.e., the database) in small space and the result are obtained  looking at
+the database, in time and space significantly smaller than the database size and scanning time. Thus, data
+stream algorithm in the Turnstile model naturally find use as algorithm for selectivity estimation.
+Other reasons to monitor database contents are approximate query answering and data quality monitoring,
+two rich areas in their own right w extensive literature and work. They will not be discussed further,
+mea culpa. Again data stream algorithm find direct applications in these areas.
+Readers should not dismiss the application of monitoring database content as thinly disguised data
+streaming. This application is motivated even if update proceed at a slow rate; it relies only on small
+5Anecdotics. John Bates of US National Oceanographic and Atmospheric Administration (http://www.etl.noaa.gov/ jbates/)
+faces the task of copying two decades worth of data from legacy tapes into current tapes, which will take a couple of years of
+continuous work on multiple tape readers. His question: during this intensive copying process, blocks of data reside on disk for
+a period of time. In the interim, can we perform much-needed statistical analyses of historic data? This is apt for data stream
+algorithm.
+13
+space and fast compute time aspect of data stream algorithm to avoid rescanning the database for quick
+monitoring.
+5 Foundations
+The main mathematical and algorithm techniques used in data stream models are collected here, so the
+discussion below is technique-driven rather than problem-driven. It is sketchy at this point w pointer to
+papers.
+5.1 Basic Mathematical Ideas
+5.1.1 Sampling
+Many different sampling methods have been proposed: domain sampling, universe sampling, reservoir sampling,
+distinct sampling etc. Sampling algorithm are known for:
+• Find the number of distinct items in a Cash Register data stream. See [85].
+• Finding the quantiles on a Cash Register data stream. See [83] for most recent result.
+• Finding frequent items in a Cash Register data stream. See [84].
+Each of these problems has nice applications (and many other result besides the ones we have cited
+above). Further, it is quite practical to implement sampling even on high speed streams. (In fact, some of the
+systems that monitor data streams—specially IP packet sniffers—end up sampling the stream just to slow
+the rate down to a reasonable level, but this should be done in a principled manner, else, valuable signals
+may be lost.) Also, keeping a sample helps one estimate many different statistics, and additionally, actually
+helps one return certain sample answers to non-aggregate queries. Consider:
+Problem 3 Say we have data streams over two observed variables (xt, yt). An example correlated aggregate
+is {g(yt) | xt ? f(x1 · · · xt)}, that is, computing some aggregate function g—SUM, MAX, MIN—on those
+yt’s when the corresponding xt’s satisfy certain relationship f. For what f’s and g’s (by sampling or
+otherwise) can such queries be approximated on data streams? See [87] for the motivation.
+There are two main difficulties w sampling for data stream problems. First, sampling is not a powerful
+primitive for many problems. One needs far too many samples for performing sophisticated analyses.
+See [86] for some lower bounds. Second, sampling method typically does not work in the Turnstile data
+stream model: as stream unfolds, if the samples maintained by the algorithm get deleted, one may be forced
+to resample from the past, which is in general, expensive or impossible in practice and in any case, not
+allowed in data stream models.
+5.1.2 Random Projections
+This approach relies on dimensionality reduction, using projection along random vector. The random
+vector are generated by space-efficient computation of random variables. These projections are called the
+sketches. This approach typically works in the Turnstile model and is therefore quite general.
+Building on the influential work [1],  [89] proposed using stable distributions to generate the
+random variables. Sketches w different stable distributions are useful for estimating various Lp norms on
+the data stream. In particular, sketches using Gaussian random variables get a good estimate of the L2 norm
+of data streams, using Cauchy distributions one gets a good estimate for the L1 norm etc. I have not found a
+14
+lot of motivation for computing the L1 or L2 norm of a data stream by itself, although these methods prove
+useful for computing other function. For example,
+• Using Lp sketches for p 0, we can estimate the number of distinct elements at any time in the
+Turnstile data stream model [90].
+• Using variants of L1 sketches, we can estimate the quantiles at any time in the Turnstile data stream
+model [91].
+• Using variants of L1 sketches and other algorithm techniques, we can dynamically track most frequent
+items [92], wavelets and histograms [93], etc. in the Turnstile data stream model.
+• Using L2 sketches, one can estimate the self-join size of database relations [97]. This is related to
+estimating inner product of vector, which is provably hard to do in general, but can be estimated to
+high precision if the inner product is large.
+There are many variations of random projections which are of simpler ilk. For example, Random subset
+sums [27], counting sketches [28] and also Bloom filters [29]. A detailed discussion of the connection
+between them is needed.
+Problem 4 Design random projections using complex random variables or other generalizations, and find
+suitable streaming applications.
+There are instances where considering random projections w complex numbers or their generalization
+have been useful. For example, let A be a 0, 1 matrix and B be obtained from A by replacing each 1
+uniformly randomly w ±1. Then E[(B))2] = A) where A) is the determinant of matrix A
+and A) is the permanent of matrix A. While A) can be calculated in polynomial time, A) is
+difficult to compute or estimate. The observation above presents a method to estimate A) in polynomial
+time using A), but this procedure has high variance. However, if C is obtained from A by replacing
+each 1 uniformly randomly by ±1,±i, then E[(C))2] = A) still, and additionally, the variance
+falls significantly. By extending this approach using quaternion and clifford algebras, a lot of progress
+has been made on decreasing the variance further, and deriving an effective estimation procedure for the
+permanent [58].
+A powerful concept in generating a sequence of random variables each drawn from a stable distribution is
+doing so w the property that any given range of them can be summed fast, on demand. Such constructions
+exist, and in fact, they can be generated fast and using small space. Number of constructions are now known:
+preliminary ones in [94], Reed-Muller construction in [27], general construction in [93] w L1 and L2
+sketches, and approach in [95] for stable distributions w p 0. They work in the Turnstile model and
+find many applications including histogram computation and graph algorithm on data streams.
+5.2 Basic algorithm Techniques
+There are a number of basic algorithm techniques: binary search, greedy technique, dynamic programming,
+divide and conquer etc. that directly apply in the data stream context, mostly in conjunction w
+samples or random projections. Here are a few other algorithm techniques that have proved powerful.
+5.2.1 Group Testing
+This goes back to an earlier Paul and Carole game. Paul has an integer I between 1 and n in mind. Carole
+has to determine the number by asking “Is I ? x?”. Carole determines various x’s, and Paul answers them
+15
+truthfully. How many question does Carole need, in the worst case? There is an entire area of Combinatorial
+Group Testing that produces solutions for such problems. In the data stream case, each question is a group
+of items and the algorithm plays the role of Carole. This set up applies to a number of problems in data
+streams. (It may also be thought of as coding and decoding in small space.) Examples are found in:
+• Finding B most frequent items in Turnstile data streams [92].
+• Determining the highest B Haar wavelet coefficients in Turnstile data streams [93].
+• Estimating top B fourier coefficients by sampling [96].
+Problem 5 Paul sees data stream representing AP and Carole sees data stream representing AC, both
+on domain 1, . . . ,N. Design a streaming algorithm to determine certain number of i’s w the largest
+AP [i]
+max 1,AC[i] .
+Monika  and Jennifer Rexford posed this problem to me at various times. It has a strong
+intuitive appeal: compare today’s data w yesterday’s and find the ones that changed the most. Certain
+relative norms similar to this problem are provably hard [95].
+5.2.2 Tree Method
+This method applies nicely to the Time Series model. Here, we have a (typically balanced) tree atop the data
+stream. As the update come in, the leaves of the tree are revealed in the left to right order. In particular,
+the path from the root to the most currently seen item is the right boundary of the tree we have seen. We
+maintain small space data structure on the portion of the tree seen thus far, typically, some storage per level;
+this can be updated as the leaves get revealed by updating along the right boundary. This overall algorithm
+scheme finds many applications:
+• Computing the B largest Haar wavelet coefficients of a Time Series data stream [97].
+• Building a histogram on the Time Series data stream [98]. This also has applications to finding certain
+outliers called the deviants [105].
+• Building a parse tree atop the Time Series data stream seen as a string [81]. This has applications
+to estimating string edit distances as well as estimating size of the smallest grammar to encode the
+string.
+Here is a problem of similar ilk, but it needs new ideas.
+Problem 6 Given a signal of size N as a Time Series data stream and parameters B and k, the goal is
+to find k points (deviants) to remove so that finding the B largest coefficients for the remaining signal has
+smallest sum squared error. This is the wavelet version of the problem  in [99].
+There are other applications, where the tree hierarchy is imposed as an artifact of the problem solving
+approach. The k-means algorithm on the data stream [100] can be seen as a tree method: building clusters
+on points, building higher level clusters on their representatives, and so on up the tree.
+Finally, I will speculate that Yair Bartal’s fundamental result of embedding arbitrary metrics into tree
+metrics will find applications in data streams context, by reducing difficult problems to ones where the tree
+method can be applied effectively.
+16
+5.2.3 Robust Approximation
+This concept is a variation on the local minima/maxima, but suited for approximations. Consider constructing
+a near-optimal B bucket histogram for the signal. An approximation H to the optimal histogram H?
+is called robust if it has the property that when refined further w a few buckets, the resulting histogram
+is only a little better than H itself as an approximation to H?. This is a powerful concept for constructing
+histograms: to get a B bucket optimal histogram, we first pull out a poly(B, log N) bucket histogram that is
+robust and then cull a B bucket histogram from it appropriately which is provably approximate. The
+details are in [93]. We suspect that robust approximations will find many applications.
+In a recent result [101] on an improved algorithm for the k-median problem on data streams, in the first
+phase, a O (k polylog (n)) facility solution is obtain from which the algorithm culls the k facilities which is
+provably accurate. This is reminiscent of robust approximation, but there is a technical distinction: the
+O (k polylog (n)) facility solution does not seem to have the robustness property.
+5.2.4 Exponential Histograms
+To algorithm designers, it is natural to think of exponential histograms—dividing a line into regions w
+boundaries at distance 2i from one end or keep dividers after points of rank 2i—when one is restricted to use
+a polylog space data structure. This technique has been used in one dimensional nearest neighbor problems
+and facility location [46], maintaining statistics win a window [36], and from a certain perspective, for
+estimating the number of distinct items [34]. It is a simple and natural strategy which is likely to get used
+seamlessly in data stream algorithm.
+5.3 Lower Bounds
+A powerful theory of lower bounds is emerging for data stream models.
+• Compressibility argument.
+In Section 1.2 there is an example. One argues that if we have already seen a portion S of the data
+stream and have stored a data structure D on S for solving a problem P, then we can design the
+subsequent portion of the stream such that solving P on the whole stream will help us recover S
+precisely from D. Since not every S can be compressed into small space D, the lower bound on size
+of D will follow.
+• Communication Complexity.
+Communication complexity models have been used to establish lower bounds for data stream problems.
+In particular, see [1]. Estimating set disjointness is a classical, hard problem in Communication
+Complexity that underlies the difficulty in estimating some of the basic statistics on data streams.
+See [102] for a few different communication models in distributed stream settings.
+• Reduction.
+One reduces problems to known hard ones. Several such result are known. See [95] for some
+examples.
+An information-based approach to data stream lower bounds is in [103].
+5.4 Summary and Data Stream Principles
+The algorithm ideas above have proved powerful for solving a variety of problems in data streams. On
+the other hand, using the lower bound technology, it follows that many of these problems—finding most
+"wavelets-src"
+"wavelets-dest"
+Figure 1: Decay of SSE of top wavelet coefficients on IP data.
+frequent items, finding small error histograms, clustering, etc.—have versions that are provably hard to
+solve exactly or even to approximate on data streams. However, what makes us successful in solving these
+problems is that in real life, there are two main principles that seem to hold in data stream applications.
+• Signals in real life have “few good terms” property.
+Real life signals  · · ·N ?1] have a small number B of coefficients that capture most of the trends
+in A even if N is large. For example, Figure 1 shows the sum squared error in reconstructing a
+distribution w B highest coefficients for various values of B, and two different distributions: the
+number of bytes of traffic involving an IP address as the source and as the destination. So, here
+N = 232, total number of IP addresses possible. Still, w B = 800 or so, we get the error to drop by
+more than 50%. For capturing major trends in the IP traffic, few hundred coefficients prove adequate.
+In IP traffic, few flows send large fraction of the traffic [3]. That is, of the 264 possible (src, dest) IP
+flows, if one is interested in heavy hitters, one is usually focused on a small number (few hundreds?)
+of flows. This means that one is typically interested in tracking k most frequent items, for small k,
+even if N is large in A.
+This phenomenon arises in other problems as well: one is typically interested in small number k of
+facilities or clusters, etc.
+• During unusual events in data streams, exceptions are significantly large.
+The number of rare flows—flows involving a small number of packets—and the number of distinct
+flows is significantly large during network attacks.
+When there are data quality problems in data streams—say an interface is polled more often than
+expected—the problem is abundant, eg., the number of polls may be far more than expected.
+These two principles are used implicitly in designing many of the useful data stream algorithm. Applied
+algorithm need to keep these principles in mind while abstracting the appropriate problems to study.
+18
+6 Streaming Systems
+There are systems that (will) process data streams. I think of them in three categories.
+First, is the hands-on systems approach to data streams. One uses operating system support to capture
+streams, and perhaps use special hooks in standard programming languages like C to get additional facility
+in manipulating streams. The work at  Research on Call Detail Records analysis falls in this category;
+Hancock [67] is a special-purpose language. Researchers like Andrew Moore [124] work in this framework,
+and quite successfully process large data sets. Ultimately however, I do not know of such work that processes
+data at the stream rate generated by IP network routers.
+Second, there are systems that let a high performance database process update using standard technology
+like bulk loading, or fast transaction support. Then one builds applications atop the database. 
+[57] is such a system that lets Daytona database handle  log  update and provides application
+level support for visualizing and correlating traffic patterns on links between IP routers. This works well
+for  log s and is used on production quality datafeed, but will be highly stressed for packet or flow
+logs.  [66] which monitors data quality problems in databases takes this approach as well, capturing
+transactions from a generic database and performing statistical analysis on relationships between attributes
+in various database tables. It needs further work to scale to large transaction rates.
+Finally, there are database systems where the internals are directly modified to deal w data streams.
+This is an active research area that involves new stream operators, SQL extensions, novel optimization techniques,
+scheduling methods, the continuous query paradigm, etc., the entire suite of developments needed
+for a data stream management system (). Projects at various universities of this type include NiagaraCQ
+[70], Aurora [72], Telegraph [73], Stanford Stream [71] etc. They seem to be under development,
+and demos are being made at conferences (see SIGMOD 2003). Another system I know of in this category
+is Gigascope [74] which is operationally deployed in an IP network. It does deal w stream rates generated
+in IP networks, but at this point, it provides only features geared towards IP network data analysis. It is not
+yet suitable for general purpose data stream management for a variety of data streams.
+One of the outstanding question w designing and building s is whether there is a need. One
+needs multiple applications, a well-defined notion of stream common to these applications, and powerful
+operators useful across applications in order to justify the effort needed to actualize s. At this fledgling
+point, the IP network traffic monitoring is a somewhat well developed application. But more work needs to
+be done—in applications like text and spatial data stream scenarios—to bolster the need for s.
+To what extent have the algorithm ideas been incorporated into the emerging streaming systems?
+Both  and  use some of the approximation algorithm including sampling and random
+projections. Most of the systems in the third category have hooks for sampling. There is discussion of
+testing random projection based estimations using Gigascope, and reason to believe that simple, random
+projections technique will be useful in other systems too.
+7 New Directions
+This section presents some result and areas that did not get included above. The discussion will reveal
+open directions and problems: these are not polished gems, they are uncut ideas. Sampath Kannan has an
+interesting talk on open problems in streaming [17].
+7.1 Related Areas
+In spirit and techniques, data streaming area seems related to the following areas.
+19
+•  learning: In [47] authors  sampling algorithm for clustering in the context of  learning.
+More detailed comparison needs to be done for other problems such as learning fourier or wavelet
+spectrum of distributions between streaming solutions and  learning methods.
+• Online algorithm: Data stream algorithm have an online component where input is revealed in steps,
+but they have resource constraints that are not typically incorporated in competitive analysis of online
+algorithm.
+• Property testing: This area focuses typically on sublinear time algorithm for testing objects and
+separating them based on whether they are far from having a desired property, or not. Check out
+Ronitt Rubinfeld’s talk on what can be done in sublinear time [123]. Typically these result focus on
+sampling and processing only sublinear amount of data. As mentioned earlier, sampling algorithm
+can be simulated by streaming algorithm, and one can do more in streaming models.
+• Markov methods. Some data streams may be thought of as intermixed states of multiple markov
+chains. Thus we have to reason about maximum likelihood separation of the markov chains [49],
+reasoning about individual chains [48], etc. under resource constraints of data streams. This outlook
+needs to be developed a lot further.
+7.2 Functional Approximation Theory
+One of the central problems of modern mathematical approximation theory is to approximate function
+concisely, w elements from a large candidate set D called a dictionary; D = {?i}i?I of unit vector that
+span  Our input is a signal A ?  A representation R of B terms for input A ? RN is a linear
+combination of dictionary elements, R =
+
+i?? ?i?i, for ?i ? Dand some ?, |?| ? B. Typically, B N,
+so that R is a concise approximation to signal A. The error of the representation indicates by how well it
+approximates A, and is given by 	A ? R	
+2 =
+
+t
+|A[t] ? R[t]|2. The problem is to find the best B-term
+representation, i.e., find a R that minimizes 	A ? R	
+2. I will only focus on the L2 error here. A signal has
+a R w error zero if B = N since D spans 
+Many of us are familiar w a special case of this problem if the dictionary is a Fourier basis, i.e., ?i’s
+are appropriate trigonometric function. Haar wavelets comprise another special case. Both these special
+cases are examples of orthonormal dictionaries: ||?i|| = 1 and ?i ? ?j . In this case, |D| = N. For
+orthonormal dictionaries when B = N, Parseval’s theorem holds:
+For B  N, Parseval’s theorem implies that the best B term representation comprises the B largest inner
+In functional approximation theory, we are interested in larger—redundant—dictionaries, so called because
+when D N, input signals have two or more distinct zero-error representation using D. Different
+applications have different natural dictionaries that best represent the class of input signals they generate.
+There is a tradeoff between the dictionary size and the quality of representation when dictionary is properly
+chosen. Choosing appropriate dictionary for an application is an art. So, the problem of determining an
+approximate representation for signals needs to be  w different redundant dictionaries.
+There are two directions: studying specific dictionaries derived from applications or studying the problem
+for an arbitrary dictionary so as to be completely general.
+Studying specific dictionaries. One specific dictionary of interest is Wavelet Packets. Let W0(x) = 1 for
+They are richer than the well known Haar wavelets, and hence potentially give better compression. As
+before, the problem is to represent any given function A as a linear combination of B vector from the
+wavelet packets. Two such vector w and w are not necessarily orthogonal, hence merely choosing the B
+A gem of a result on this problem is in [80]: the author proves that the best representation of A using B
+terms can be obtained using O(B2 log  n) orthogonal terms. (Representing signals using orthogonal wavelet
+packet vector is doable.) Presumably this result can be improved by allowing some approximation to the
+best B term representation.
+Problem 7 There are a number of other special dictionaries of interest—beamlets, curvelets, ridgelets,
+segmentlets, etc.—each suitable for classes of applications. Design efficient algorithm to approximate the
+best representation of a given function using these dictionaries.
+Studying general dictionaries. A paper that seems to have escaped the attention of approximation theory
+researchers is [63] which proves the general problem to be NP-Hard. This was reproved in [60]. In addition,
+[63] contained the following very nice result. Say to obtain a representation w error  one needs
+B() terms. Let D be the N ?|D| matrix obtained by having ?i as the  column for each i. Let D+ be the
+pseudoinverse of D. (The pseudoinverse is a generalization of the inverse and exists for any (m, n) matrix.
+If m n and A has full rank n, then A+ = (ATA)?1AT .) The author in [63] presents a greedy algorithm
+that finds a representation w error no more than  but using
+O(B(/2)||D+||22
+log(||A||2))
+terms. [63] deserves to be revived: many open problems remain.
+Problem 8 Improve [63] to use fewer terms, perhaps by relaxing the error achieved. Is there a nontrivial
+non-greedy algorithm for this problem?
+Problem 9 A technical problem is as follows: The algorithm in [63] takes |D| time for each step of the
+greedy algorithm. Using dictionary preprocessing, design a faster algorithm for finding an approximate
+representation for a given signal using the greedy algorithm. This is likely to be not difficult: instead of
+finding the “best”, find the “near-best” in each greedy step and prove that the overall approximation does
+not degrade significantly.
+Both these question have been addressed for a fairly general (but not fully general) dictionaries. Dictionary
+D has coherence ? if 	?i	 = 1 for all i and for all distinct i and j, | ?i, ?j | ? ?. (For orthogonal
+dictionaries, ? = 0. Thus coherence is a generalization.) Nearly exponentially sized dictionaries can be
+generated w small coherence. For dictionaries w small coherence, good approximation algorithm
+have been shown:
+Theorem 10 [64] Fix a dictionary D w coherence ?. Let A be a signal and suppose it has a B-term
+representation over D w error 	A ? Ropt	 = ?, whereB 1/(32?). Then, in iterations polynomial in
+B, we can find a representation w error at most
+
+(1 + 2064?B2)?.
+This line of research is just being developed; see [68] for new developments.
+Further in [64], authors used approximate nearest neighbor algorithm to implement the iterations in
+Theorem 10 efficiently, and proved that approximate implementation of the iterations does not degrade the
+21
+error estimates significantly. I think this is a powerful framework, and efficient algorithm for other problems
+in Functional Approximation Theory will use this framework in the future. Recently, Ingrid Daubechies
+spoke some of these result at the AMS-MAA joint meetings [69].
+Functional approximation theory has in general focused on characterizing the class of function for
+which error has a certain decay as N ?. See [62] and [61] for many such problems. But from an
+algorithm point of view, the nature of problems I discussed above are more clearly more appealing.
+This is a wonderful area for new algorithm research; a starting recipe is to study [62] and [61], formulate
+algorithm problems, and to solve them.
+Let me propose two further, out-there directions: Can we design new wavelets based on general two
+dimensional tiling (current wavelet definitions rely on rather restricted set of two dimensional tiling)? Can
+we design new wavelets based on the 2 ? 3 tree decomposition a la ESP in [81]? In both cases, this gives
+vector in the dictionary defined over intervals that are not just dyadic as in Haar wavelets. Exploring
+the directions means finding if there are classes of function that are re compactly using these
+dictionaries, and how to efficiently find such representations.
+7.3 Data Structures
+Many of us have heard of the puzzle that leaves Paul at some position in a singly linked list, and he needs
+to determine if the list has a loop. He can only remember O( log  n) bits, where n is the number of items
+in the list. The puzzle is a small space exploration of a list, and has been generalized to arbitrary graphs
+even [22]. One of the solutions relies on leaving a “finger” behind, doing 2i step exploration from the finger
+each i, i = 1, . . .; the finger is advanced after each iteration. This puzzle has the flavor of finger search trees
+where the goal is to leave certain auxiliary pointer in the data structure so that a search for an item helps
+the subsequent search. Finger search trees is a rich area of research. Richard Cole’s work on dynamic finger
+conjecture for splay trees is an example of deep problems to be found [21].
+Recently, a nice result has appeared [20]. The authors construct O( log  n) space finger structure for an
+n node balanced search tree which can be maintained under insertions and deletions; searching for item of
+rank j after an item of rank i only takes O( log  |j ? i|) time. (Modulo some exceptions, most finger search
+data structures prior to this work needed ?(n)) bits.) I think of this as a streaming result. I believe and hope
+this result will generate more insights into streaming data structures. In particular, two immediate directions
+are to extend these result to external memory or to geometric data structures such as segment trees, w
+appropriate formalization, of course.
+Let me present a specific data structural traversal problem.
+Problem 11 We have a graph G = (V,E) and a memory M, initially empty. Vertices have to be explicitly
+loaded into memory M; at most k vertices may reside in M at any time. We say an edge (vi, vj) ? E is
+evaluated when both vi and vj are in the memoryM at the same time. What is the minimum number of loads
+needed to evaluate all the edges of the graph G?
+For k = 2, a caterpillar graph can be loaded optimally easily. For k = 3, Fan Chung pointed out that
+the dual of the graph obtained by looking at triangles of G may have certain structure for it to be loaded
+optimally. I think this problem arises in query optimization for tertiary databases from Sunita Sarawagi’s
+thesis work.
+7.4 Computational Geometry
+Computational Geometry is a rich area. Problems in computational geometry arise because there are
+applications—earth observations for example—that naturally generate spatial data streams and spatial queries.
+Also, they arise implicitly in modeling other real life scenarios. For example, flows in IP networks may be
+22
+thought of intervals [state time, end time], text documents get mapped to high dimensional vector spaces,
+etc.
+Consider the problem of estimating the diameter of points  on a data stream. Two result are
+interesting.
+ considers this problem in the cash register model where points in d dimensions arrive over time.
+His algorithm uses O(dn1/(c2?1)) space and compute time per item and produces c-approximation to the
+diameter, forc v
+2. The algorithm is natural. Choose l random vector v1, . . . , vl and for each vi, maintain
+the two points w largest and smallest vip over all point p’s. For sufficiently large l, computing diameter
+amongst these points will give a c-approximation.
+For d = 2, a better algorithm is known. Take any point in the stream as the center and draw sectors
+centered on that point of appropriate angular width. Win each sector, we can keep the farthest point from
+the center. Then diameter can be estimated from the arcs given by these points. One gets an -approximation
+to the diameter w O(1/) space and O( log (1/)) compute time per inserted point [45].
+I know of other result in progress, so more computational geometry problems will get solved in the data
+stream model in the near future.
+Let me add a couple of notes. First, in small dimensional applications like d = 2 or 3, keeping certain
+radial histograms, i.e., histograms that emanate in sectors from centers and use bucketing win sectors,
+will find many applications. This needs to be explored. Second, I do not know of many nontrivial result for
+the computational geometry problems in the Turnstile model. To understand the challenge, consider points
+on a line being inserted and deleted, all insertions and deletions coming only at the right end (the minimum
+point is fixed). Maintaining the diameter reduces to maintaining the maximum value of the points which
+is impossible w o(n) space when points may be arbitrarily scattered. Instead, let me say the points are
+in the range 1 · · ·R: then, using O( log R) space, we can approximate the maximum to 1 +  factor. This
+may be an approach we want to adopt in general, i.e., have a bounding box around the objects and using
+resources polylog in the area of the bounding box (or in terms of the ratio of min to the max projections of
+points along suitable set of lines). Finally:
+Problem 12 (Facility location) Say Paul tracks n potential sites on the plane. Carole continuously eer
+adds new client points or removes an existing client point from the plane. Paul can use space n polylog (n),
+but only o(m), preferably polylog (m), where m is the total number of points at any time. Solve the k-means
+or k-medians facility location problem on the set of n sites.
+This problem arises in a study of sensors on highways [46].
+7.5 Graph Theory
+The graph connectivity problem plays an important role in log  space complexity. See [41] for some details.
+However, hardly any graph problem has been  in the data stream model where (poly)log space
+requirement comes w other constraints.
+In [42], authors  the problem of counting the number of triangles in the cash register model.
+Graph G = (V,E) is  as a series of edges (u, v) ? E in no particular order. The problem is to
+estimate the number of triples (u, v,w) w an edge between each pair of vertices. Let Ti, = 0, 1, 2, 3,
+be the number of triples w i total edges between the pairs of vertices. Consider the signal A over the
+triples (u, v,w), u, v,w ? V , where A[(u, v,w)] is the number of edges in the triple (u, v,w). Let Fi =
+(u,v,w)(A[(u, v,w)])i . It is simple to observe that
+Solving, T3 = F0 ? 1.5F1 + 0.5F2. Now, F1 can be computed precisely. But F0 and F2 can only be
+approximated. This needs a trick of considering the domain of the signal in a specific order so that each
+item in the data stream, ie., an edge, entails updating a constant number of intervals in the signal. Using
+appropriate rangesum variables, this can be done efficiently, so we find a use for the rangesum variables
+from Section 5.1. As a result T3 can be approximated. In fact, this method works in the Turnstile model as
+well even though the authors in [42] did not explicitly study it.
+The general problem that is interesting is to count other subgraphs, say constant sized ones. Certain
+small subgraphs appear in web graphs intriguingly [43], and estimating their number may provide insights
+into the web graph structure. Web crawlers spew nodes of the web graph in data streams. So, it is a nicely
+motivated application.
+Many graph problems need to be explored in data stream models. But they appear to be difficult in
+general. One has to find novel motivations and nifty variations of the basic graph problems.
+Let me propose a direction.
+Problem 13 Consider the semi-streaming model, ie., one in which we have space to store vertices, say
+O(|V |polylog (|V |) bits, but not enough to store the edges. So we have o(|E|) bits. Solve interesting (in
+particular, dense) graph problems in this model.
+7.6 Databases
+Databases research has considered streaming extensively, far too much to be summarized here. I will highlight
+a few interesting directions.
+Consider approximate query processing.
+Problem 14 Consider a signal A where  is a subset of 1, · · · U. Each query is a range query [i..j] for
+which the response is |
+i?k?j A[k]|. Build a histogram of B buckets that is “optimal” for this task. First
+consider a static A and later streaming signals.
+A lot has to be formalized in the problem above (See [79] for some related details). Histograms have
+been  extensively in Statistics and find many applications in commercial databases. In general they
+study signals where  is the number of tuples in a database w value i. Instead, if we interpret  as
+the set of pages that contain tuples w value i, histogram described in the problem above is relevant. To
+those w the background, I can say, this is an attempt at modeling the page selectivity of queries.
+A somewhat related problem concerns multidimensional signals.
+Problem 15 Consider two dimensional signal At[i][j], i, j ? [1..n]. Design algorithm for building (near)
+optimal two dimensional histogram w B partitions.
+Readers should not think of this as a straightforward generalization of one dimensional problem to
+multiple dimensions. The problem is, but the details are quite different. There are many ways to partition two
+dimensional arrays. While one dimensional problem is polynomial time solvable, two dimensional problems
+are NP-hard for most partitions. Further, as I argued earlier, even if one-dimensional domains are small
+enough to fit in to given memory, streaming algorithm may well be appropriate for the multidimensional
+version.
+In [75], authors proposed efficient approximation algorithm for a variety of two dimensional histograms
+for a static signal. Some preliminary result were  in [76] for the streaming case: specifically, the
+authors proposed a polylog space, 1+ approximation algorithm using O(B log N) partitions, taking ?(N2)
+time. Using the ideas in [75] and robustness, I believe that a truly streaming algorithm can be obtained, i.e.,
+one that is a B partitions, 1 +  approximation using both polylog space as well as polylog time, but details
+will be published soon.
+24
+Both the question above are rather technical. From a database point of view, there are many conceptual
+question to be resolved: How to scale continuous queries, how to develop a notion of stream operator that
+is composable so complex stream queries can be expressed and managed, etc. Let me propose a direction
+that is likely to be interesting.
+Problem 16 What is an approximation for a Stream In, Stream Out (SISO) query? Can one develop a
+theory of rate of input stream and rate of output stream for various SISO queries? Both probabilistic and
+adversial rate theories are of relevance.
+7.7 Hardware
+An important question in data streaming is how to deal w the rate of update. Ultimately, the rate of
+update may be so high that it is not feasible to capture them on storage media, or to process them in
+software. Hardware solutions may be needed where update, as they are generated, are fed to hardware
+units for per-item processing. This has been explored in the networking context for a variety of per-packet
+processing tasks (see eg. [5]) previously, but more needs to be done. There is commercial potential in such
+hardware machines. Consider:
+Problem 17 Develop hardware implementation of the inner product based algorithm described in Section
+5 for various data stream analyses.
+Here is a related topic. The trend in graphics hardware is to provide a programmable pipeline. Thus,
+graphics hardware that will be found in computing systems may be thought of as implementing a stream
+processing programming model. Tasks will be accomplished in multiple passes through a highly parallel
+stream processing machine w certain limitations on what instructions can be performed on each item at
+each pixel in each pass. See [38] for an example, [39] for a suitable model, and [82] for stream-related
+result. Generic graphics hardware may not be suitable for processing data streams coming in at a high rate,
+but stream algorithm may find applications in using graphics hardware as a computing platform for solving
+problems. Lot remains to be explored here; see overview [40].
+7.8 Streaming Models
+Models make or mar an area of foundational study. We have a thriving set of streaming models already, but
+some more are likely, and are needed.
+7.8.1 Permutation Streaming
+This is a special case of the cash register model in which items do not repeat. That is, the input stream is a
+permutation of some set, and items may arrive in a unordered way. (This fits Paul avocation of permuting
+from Section 1.1.)
+A number of problems have already been  in this model. In [37], authors  how to estimate
+various permutation edit distances. The problem of estimating the number of inversions in a permutation
+was  in [33]. Here is an outline of a simple algorithm to estimate the number of inversions [31]. Let
+At is the indicator array of the seen items before seeing the  item, and It be the number of inversions so
+far. Say the  item is i. Then
+It+1 = It + |{j | j i At[j] = 1}|.
+The authors in [31] show how to estimate |{j | j i At[j] = 1}| for any i, up to 1 +  accuracy
+using exponentially separated quantiles. They use randomization, and an elegant idea of oversampling (and
+25
+retaining certain smallest number of them) for identifying the exponentially separated quantiles. An open
+problem here is what is the best we can do deterministically, or in the Turnstile model.
+A deeper question is whether there is a compelling motivation to study this model, or the specific problems.
+There is some theoretical justification: permutations are special cases of sequences and studying
+permutation edit distance may well shed light on the notoriously hard problem of estimating the edit distance
+between strings. However, I have not been able to find an overwhelming inspiration for these problems
+and this model. Yet, here is a related problem that does arise in practice.
+Problem 18 Each TCP flow comprises multiple consecutively numbered packets. We see the packets of the
+various flows in the Cash Register model. Packets get transmitted out of order because of retransmissions in
+presence of errors, ie., packets may repeat in the stream. Estimate the number of flows that have (significant
+number of) out of order packets at any time. Space used should be smaller than the number of distinct TCP
+flows.
+7.8.2 Windowed Streaming
+It is natural to imagine that the recent past in a data stream is more significant than distant past. How to
+modify the streaming models to reemphasize the data from recent past? There are currently two approaches.
+First is combinatorial. Here, one specifies a window size w, and explicitly focuses only on the most
+recent stream of size w, i.e., at time t, only consider update at?w+1, . . . , at. Items outside this window
+fall out of consideration for analysis, as the window slides over time. The difficulty of course is that we can
+not store the entire window, only o(w), or typically only o(polylog (w)) bits are allowed. This model was
+proposed in [36] and is natural, but it is somewhat synthetic to put a hard bound of w on the window size,
+for example, irrespective of the rate of arrival of the stream.
+The other model is telescopic. Here, one considers the signal as fixed size blocks of size w and ?-ages
+the signal. Let Ai represent the signal from block i. We (inductively) maintain ?i as the meta-signal after
+seeing i blocks. When the i + 1th block is seen, we obtain
+?i+1 = (1 ? ?i+1)?i + ?i+1?i+1.
+If we unravel the inductive definition, we can see that the signal from a block affects the meta-signal exponentially
+less as new blocks get seen. This model has certain linear algebraic appeal, and it also leverages
+the notion of blocks that is inherent in many real life data streams. The original suggestion is in [32] where
+the block amounted to a days worth of data, and ?i’s were kept mostly fixed. The drawback of this model
+is clearly that it is difficult to interpret the result in this model in an intuitive manner. For example, if we
+computed the rangesum of the metasignal ?i[a · · · b], what does the estimate mean for the data stream at any
+given time?
+Let me propose another natural model, a hierarchical block model, described by Divesh Srivastava.
+Informally, we would like to analyze the signal for the current day at the granularity of a few minutes,
+the past week at the granularity of hours, the past month at the granularity of days, the past year at the
+granularity of weeks, etc. That is, there is a natural hierarchy in many of the data streams, and we can
+study the signals at progressively higher level of aggregation as we look back in to the past. There are very
+interesting research issues here, in particular, how to allocate a fixed amount of space one has amongst the
+different signal granularities, etc. that is being investigated now.
+7.8.3 Synchronized Streaming
+A puzzle, due to Howard Bergerson, is as follows. Imagine the first one thousand vigintillion minus one
+natural numbers arranged in two lists, one in numerical order and the other in lexicographic order. How
+26
+many (if any) numbers have their positions same in both lists? There is nothing special about vigintillion,
+any n will do.
+This has a Paul-Carole North American version. Carole counts up 1, . . . , n. Paul counts too, but in
+permuted order given by the lexicographic position of numbers when written in English. For example, if
+n = 4, Carole goes 1, 2, 3, 4 but Paul goes Four,One,Three,Two. Both count in lock step. When, if
+ever, do they say “Jinx!”?
+Answer of course depends on n, and not by a formula. See [116] for some answers.
+This puzzle contains the elements of what I call the synchronized streaming model. Say we wish to
+compute a function on two signals A1 and A2 given by a data stream. All update to both the signals are
+simultaneous and identical except possibly for the update values. That is, if the  item in the data stream
+that specifies A1 is (i,C1(i)), then the  item in the data stream that specifies A1 is (i,C2(i)), too. Both
+these update are seen one after the other in the data stream. Our goal as before is to compute various
+function of interest on A1 and A2 satisfying the desiderata of streaming algorithm.
+In the synchronized streaming model, one can do whatever can be done in the generic streaming model
+in which one of the signals is  before the other, or the  update of the two signals are arbitrarily
+separated. The interest is if synchronized model can accomplish more. We believe that to be the case. For
+example, if the two signals are two strings read left to right in synchronized streaming, one can estimate if
+their edit distance if at most k, using O (k) space. In contrast, this is difficult to do in a generic streaming
+model. Synchronized streaming is quite natural; more research is needed on this model.
+7.9 Data Stream Quality Monitoring.
+Any engineer having field experience w data sets will confirm that one of the difficult problems in reality
+is dealing w poor quality data. Data sets have missing values, repeated values, default values in place
+of legitimate ones, etc. Researchers study ways to detect such problems (data quality detection) and fixing
+them (data cleaning). This is a large area of research, see the book [77].
+In traditional view of databases, one sets integrity constraints and any violation is considered a data
+quality problem and exceptions are raised. Bad quality data (eg., age of a person being more than 200) is
+never loaded into the database. This is a suitable paradigm for databases that are manually updated by an
+operator.
+In emerging data streams, data quality problems are likely to be manifold. For example, in network
+databases, data quality problems have to do w missing polls, double polls, irregular polls, disparate traffic
+at two ends of a link due to unsynchronized measurements, out of order values, etc. Now it is unrealistic
+to set integrity constraints and stop processing a high speed data feed for each such violation; furthermore,
+appearance of such problems in the feed might by itself indicate an abnormal network phenomena and
+cleaning it off in the database may hide valuable evidence for detecting such phenomena. Developing
+algorithm to detect one data quality problem after another is simply not a scalable or graceful approach,
+one needs a different principled approach.
+I am a believer in data quality monitoring tools. They operate as database applications, monitoring its
+state by measuring statistics: strong deviation from expected statistics may be projected as a ping for the
+database administrator or the user to react to. To be useful, the tool has to be configured to monitor most
+suitable statistics and thresholds need to be set to release suitable number of pings while suppressing false
+alarms. This is an engineering challenge. There are many ways the database and users may deal w these
+pings: writing their queries in an informed way is my choice. See [78] for related discussions.
+ [66] is such a tool for traditional database systems; it monitors the structure in the database
+tables using various statistics on the value distribution in the tables. PACMAN [78] is another tool; it uses
+probabilistic, approximate constraints (PACs) to monitor  data streams and works operationally for
+27
+a large ISP. PACs are also a principled way to determine what are data quality problems. More needs to be
+done.
+In general, our communities have approached data quality problems as “details” and dealt w individual
+problems as the need arises. (In Computational Biology for example, one deals w noisy data by
+redefining a particular problem.) I think there is a need to develop more principled methods—theory and
+systems—for dealing w poor quality data.
+Here is a specific technical problem not restricted to streams.
+Problem 19 Given a set S of strings s1, . . . , sn and set T of strings t1, . . . , tn, find a matching (ie., oneto-
+one mapping) f : S T such that
+
+i d(si, f(si)) is (approximately) minimized. Let d(x, y) be the
+edit distance between strings x and y. This problem can be done by computing d(si, tj) for all pairs i, j
+and finding min cost matching, but the goal is to get a substantially subquadratic (say near linear) time
+approximate algorithm. The underlying scenario is S and T are identical lists of names of people, but w
+some errors; f is our posited (likely) mapping of names of people in one list to the other.
+7.10 Fish-eye View
+Let me do a fish-eye view of other areas where streaming problems abound. The discussion will be elliptical:
+if you mull over these discussions, you can formulate interesting technical open problems.
+7.10.1 Linear Algebra
+Many matrix function need to be approximated in data stream model. Let me propose a specific problem.
+Problem 20 Given a matrix A[1 · · · n, 1 · · · n] in the Turnstile Model (i.e., via update to A), find an approximation
+to the best k-rank representation to At at any time t. More precisely, find D? such that
+using suitable norm ||.|| and function f.
+Similar result has been proved in [51] using appropriate sampling for a fixedA, and recent progress is in [50]
+for similar problem using a few passes, but there are no result in the Turnstile Model. A lot of interesting
+technical issues lurk behind this problem. One may have to be innovative in seeking appropriate ||.|| and
+f. Other linear algebraic function are similarly of interest: estimating eigenvalues, determinants, inverses,
+matrix multiplication, etc.
+7.10.2 Statistics
+We saw how to estimate simple statistical parameters on data streams. We need vastly more sophisticated
+statistical analyses in data stream models, for example, kernel methods, scan statistics, kurtosis parameters,
+data squashing, etc., the whole works. In statistics, researchers seem to refer to “recursive computing” which
+resonates w the cash register model of computation. There is an inspiring article by Donoho [52] which is
+a treasure-tove of statistical analyses of interest w massive data. Another resource is http://www.kernelmachines.
+org/. Any of the problems from these resources will be interesting in data stream models. Let me
+propose a general task:
+Problem 21 Assume a model for the signal Aand estimate its parameters using one of well known methods
+such as regression fitting or maximum likelihood estimation, etc. on the data stream.
+28
+7.10.3 Complexity Theory
+Complexity theory has already had a profound impact on streaming. Space-bounded pseudorandom generators—
+developed chiefly in the complexity theory community—play an important role in streaming algorithm. No
+doubt more of the tools developed for small space computations will find applications in data streaming.
+In a recent lunk talk w David Karger, the question arose whether quantum phenomenon can compress
+computations into much smaller space than conventional computations, i.e., quantum memory is more
+plentiful than conventional memory.
+Let me propose a question, which is likely to have been in researchers’ minds; Sivakumar has some
+notes.
+Problem 22 Characterize the complexity class given by a deterministic log space verifier w one-way
+access to the proof.
+7.10.4 Privacy Preserving Data Mining
+Peter Winkler gives an interesting talk on the result in [53] which is a delightful read. Paul and Carole each
+have a secret name in mind, and the problem is for them to determine if their secrets are the same. If not,
+neer should learn the other’s secret. The paper [53] presents many solutions, and attempts to formalize
+the setting. (In particular, there are solutions that involve both Paul and Carole permuting the domain, and
+those that involve small space pseudorandom generators.) Yao’s “two millionaires” problem [54] is related
+in which Paul and Carole each have a secret number and the problem is to determine whose secret is larger
+ revealing their secrets.
+These problems show the challenge in the emerging area of privacy preserving data mining. We have
+multiple databases (sets or multisets). Owners of these databases are willing to cooperate on a particular
+data mining task such as determining if they have a common secret, say for security purposes or because it
+is mandated. However, they are not willing to divulge their database contents in the process. This may be
+due to regulatory or proprietary reasons. They need privacy preserving methods for data mining.
+This is by now a well researched topic w positive result in very general settings [56]. However,
+these protocols have high complexity. But there is a demand for efficient solutions, perhaps w provable
+approximations, in practice. In [55] authors formalized the notion of approximate privacy preserving data
+mining and  some solutions, using techniques similar to ones we use in data stream algorithm.
+Lot remains to be done.
+The database community is researching general, efficient methods to make databases privacy-preserving.
+Let me propose a basic problem.
+Problem 23 Paul hasmsecrets, and Carole has n secrets. Find an approximate, provably privacy-preserving
+protocol to find the common secrets. As before, the unique secrets of Paul or Carole should not be revealed
+to each other.
+Other problems arise in the context of banking, medical databases or credit transactions. This gives new
+problems, for example, building decision trees, detecting outliers, etc. For example:
+Problem 24 Paul, Carole and others have a list of banking transactions (deposits, wdrawal, transfers,
+wires etc.), each of their customers. Say the customers have common IDs across the lists. Design an
+approximate, provably privacy-preserving protocol to find the “heavy hitters”, i.e., customers who executed
+the largest amount in transactions in the combined list of all transactions.
+29
+8 Concluding Remarks
+In How Proust can Change Your Life, Alain de Botton wrote about “the All-England Summarise Proust
+Competition hosted by Monty Python ... that required contestants to pr?ecis the seven volumes of Proust’s
+work in fifteen seconds or less, and to deliver the result first in a swimsuit and then in evening dress.” I
+have done something similar w data stream algorithm in what amounts to an academic 15 seconds sans
+a change of clothes.
+I think data streams are more than the topic de jour in Computer Science. Data sources that are massive,
+automatic (scientific and atmospheric observations, telecommunication log s, text) data feeds w rapid
+update are here to stay. We need the  infrastructure to manage and process them. That presents
+challenges to algorithm, databases, networking, systems and languages. Ultimately, that translates into new
+question and methods in Mathematics: approximation theory, statistics and probability. New mindset—say,
+seeking only the strong signals, working w distribution summaries—are needed, and that means a chance
+to reexamine some of the fundamentals.
+8.1 Data Stream Art
+Trend or not, data streams are now Art.
+• There are ambient orbs [121] dubbed “News that Glows” by the New York Times Magazine, Dec 15
+2002, pages 104–105, that indicate fluctuations in Dow Jones Industrial Average using continuously
+modulated glow. Clearly they are useful for more than vetting financial obsessions.
+• Dangling String created by (wonderful techno-)artist Natalie Jeremijenko, is a live wire connected to
+a Ethernet cable via a motor; traffic level in the cable is shown by the range of motions from the tiny
+twitch to a wild whirl, w associated sounds [111].
+• Mark Hansen and Ben Rubin have the Listening Post exhibit [114] at various locations including the
+Brooklyn Academy of Music and the Whitney Museum of Contemporary Art in New York where
+they convert the live text information in Internet chat rooms and message boards into light and sound,
+described by NY Times as a “computer-generated opera”.
+Besides being Art, ambient information displays like the ones above are typically seen as Calming Technology
+[2]; they are also an attempt to transcode streaming data into a processible multi-sensory flow.
+8.2 Short Data Stream History
+Data stream algorithm as an active research agenda has emerged only over the past few years. The concept
+of making few passes over the data for performing computations has been around since the early days of
+Automata Theory. Making one or few passes for selection [8] or sorting [9] got early attention, but the area
+seems to have evolved slowly. Computer architecture research has long considered data flow architectures
+which may be thought of as an approach to data streaming, but the area did not address complex operations
+on each data item.
+There was a gem of a paper by Munro and Paterson [8] in 1980 that specifically defined multi-pass algorithm
+and  one pass algorithm and multi-pass lower bounds on approximately finding quantiles
+of a signal.
+In early 90’s, I remember Raghu Ramakrishnan of U. Wisconsin, Madison, asking me what I can do if
+I was allowed to make only one pass over the data. Presumably others had this question in their mind too.
+“Not much”, I told Raghu then, but that has changed in the past 6 years.
+30
+Phil Gibbons and Yossi Matias at Bell Labs synthesized the idea of Synopsis Data Structures [59] that
+specifically embodied the idea of small space, approximate solution to massive data set problems. The influential
+paper [1] used limited independence for small space simulation of sophisticated, one-pass norm
+estimation algorithm. This is a great example of ideas that emerged from complexity-theoretic point of
+view—pseudo random generators for space-bounded computations—getting applied to algorithm problems
+that are motivated by emerging systems. The paper by , Raghavan and Rajagoplan [10] formulated
+one (and multiple) pass model of a data stream and  a complexity-theoretic perspective;
+this is also an insightful paper w several nuggets of observations some of which are yet to be developed.
+Joan Feigenbaum, working w researchers at Research, identified, developed and articulated the
+case for the network traffic data management as a data stream application. This was a great achievement
+and it is now widely accepted as one of the (chief?) inspiring applications for the area. Significant work was
+done at research labs—IBM Research and Bell Labs— and select universities about the same time.
+Since these early developments, a lot has been done in Theoretical Computer Science community and in
+others including programming languages, KDD, Databases, Networking, etc. Hancock, a special purpose C
+based programming language that supports stream handling, got the best paper award in KDD 2000. There
+is focus on decision trees on data streams in KDD community. gave a thoughtful plenary
+talk at PODS 2002 on data stream systems focusing on the fundamental challenges of building a generalpurpose
+data stream management system. The associated paper [11] is well worth reading, in particular,
+for a database perspective. There have been tutorial in both SIGMOD and VLDB in year 2002. [107]
+DIMACS gathered working groups on data streams. George Varghese addressed the problem of computing
+at link speed in router line card and focused on simple data stream problems at a SIGCOMM 2002 tutorial.
+Sprint Labs work on IP monitoring was  at the SIGMETRICS 2002 tutorial [4]. Jiawei Han has
+tutorial and talks on data mining problems in data streams [104].
+The wonderful website [122] has a lot of information.
+8.3 Perspectives
+Doubtless more tutorial, workshops and other academic adventures will happen over time; the main point
+is that data stream agenda now pervades many branches of Computer Science. Industry is in synch too:
+several companies are promising to build special hardware to deal w incoming data at high speed. I
+was at a National Academy of Sciences meeting recently [112], where data stream concerns emerged from
+physicists, atmospheric scientists and statisticians, so it is spreading beyond Computer Science.
+Unlike a lot of other topics we—algorithmicists—poured energy into, data streams is an already accepted
+paradigm in many areas of CS and beyond.6 I think if we keep the spirit of stream data phenomenon in
+mind, and be imaginative in seeking applications and models, potential for new problems, algorithm and
+mathematics is considerable. I hope the perspective I have  in this writeup helps you ideate.
+I have mixed exposition w reflections. Thanks to the SODA 2003 PC for giving me the opportunity.
+I have left out image, audio and video streams, XML streams, etc.
+9 Acknowledgements
+Greg Fredrickson said we—TCS researchers—are much too timid in our technical writing. I was inspired
+by an afternoon of discussion w him to be more alpha. Thanks to Mike Waterman for sharing his writings
+from his camps under the western sky. Joel Spencer enthused me for Paul and Carole, all through my thesis
+6As a unexpected topping, data streams may be the vehicle that induces people outside theoretical computer science to accept
+“approximation” as a necessary strategem and seek principled ways of approximating computations, an acceptance that is far from
+being universal now.
+31
+days. I am happy to find new roles for them. Sampath Kannan and I shared a new boyhood in Madison, NJ;
+he did crossword puzzles, I learned about streaming, by osmosis. Mike Paterson at U. Warwick, UK, is an
+inspiration, for puzzles, problem solving and classic papers.
+Rob Calderbank, my boss (many times removed), supported me tremendously as I conceived of one
+project after another at , and inspired me w Math and Management. As did my immediate boss
+David Johnson. Joan Feigenbaum recruited and mentored me. gave me the opportunity to build
+systems w  data, AWS cellular , and Intellectual property—patent data, and a national system
+for location-based services in wireless networks. That is a lot of toys!
+Ted Johnson at and I have built many systems together. We have shared Tall Boys and commutes.
+Half of what I know about systems, I learned attacking Ted’s work; the other half by building them w
+him.
+I have had many colleagues in databases area, I have tried to learn from them, despite my moody self.
+Thanks to Vishy Poosala, Divesh Srivastava, Flip Korn,  Rastogi, Nick Koudas, Swarup Acharya and
+Minos Garofalakis, for teaching me selflessly. At Rutgers, Tomasz Imielinski has been a guiding colleague,
+sharing passion for unusual music and theater as well as his invaluable insight into impactful database
+systems research.
+Graham Cormode and I have worked on several problems in data streaming that has shaped my insights.
+I make his English side sigh w my passion for coining new words. He retaliates w limericks:
+There was a researcher called Muthu
+Who one day thought it would be cute to
+Live out his dreams
+By fishing in streams
+And if you could, wouldn’t you too?
+Talking about fishing: that puzzle is from my work w Mayur Datar, who helped me w comments
+and suggestions on this writeup.
+Sometime in 1999, Anna Gilbert, Yannis Kotidis, Martin Strauss and I formed a (cross-functional!)
+team and  data streams. I am very thankful to them. My work on histograms is joint w them as
+well as Sudipto Guha and Piotr , who have independently made very significant contributions to data
+streaming.
+I am grateful to the many researchers who helped me w pointer: Yaron Minsky,  Motwani,
+Amin Shakrallohi, Sasha Barg, Sudipto Guha, Monika , Piotr , D. Sivakumar, George Varghese,
+Ken Clarkson, David Madigan, Ravi Kumar, Eric Bach, Joachim von zur Gathen and Moses Charikar.
+Finally, on professional and personal issues, Martin Farach-Colton has been my guide and inspiration,
+and I owe him lot more than can be acknowledged in this writeup.
+ </doc>
+</xml>
