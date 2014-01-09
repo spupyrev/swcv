@@ -2,7 +2,7 @@ package de.tinloaf.cloudy.text;
 
 import org.lemurproject.kstem.KrovetzStemmer;
 
-public class PreKrovetzStemmer extends Stemmer{
+public class PreKrovetzStemmer extends AbstractStemmer{
 	
 	
 	

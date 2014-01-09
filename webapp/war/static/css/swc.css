@@ -38,6 +38,7 @@ body {
 	resize: none;
 	height: 300px;
 	position: relative;
+  	font-size: 14px;
 }
 
 .urlAreaStyle {

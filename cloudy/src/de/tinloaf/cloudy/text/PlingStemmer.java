@@ -52,7 +52,7 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
   It requires the class FinalSet from the <A HREF=http://www.mpii.mpg.de/~suchanek/downloads/javatools>
   Java Tools</A>.
 */
-public class PlingStemmer extends Stemmer{
+public class PlingStemmer extends AbstractStemmer{
 
   /** Tells whether a word form is plural. This method just checks whether the
    * stem method alters the word */

@@ -48,7 +48,7 @@ public class WordCloudDialogBox
         {
             public void onClick(ClickEvent event)
             {
-                Window.open(GWT.getHostPageBaseURL() + "svgs/" + result.getFileName(), "save", "");
+                Window.open(GWT.getHostPageBaseURL() + "db/svgs/" + result.getName() + ".svg", "save", "");
             }
         });
 
@@ -57,7 +57,7 @@ public class WordCloudDialogBox
         {
             public void onClick(ClickEvent event)
             {
-                Window.open(GWT.getHostPageBaseURL() + "htmlforclouds/" + result.getFileName().split("\\.")[0] + ".html", "sharePage", "");
+                Window.open(GWT.getHostPageBaseURL() + "db/htmls/" + result.getName() + ".html", "share", "");
             }
         });
 

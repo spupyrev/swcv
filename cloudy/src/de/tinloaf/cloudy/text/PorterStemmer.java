@@ -16,7 +16,7 @@ package de.tinloaf.cloudy.text;
 
 
 
-public class PorterStemmer extends Stemmer {
+public class PorterStemmer extends AbstractStemmer {
 
     /**
 	 * 

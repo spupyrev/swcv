@@ -5,6 +5,7 @@ import de.tinloaf.cloudy.algos.packing.ClusterSpiralPlacer;
 import de.tinloaf.cloudy.algos.packing.ClusterWordPlacer;
 import de.tinloaf.cloudy.algos.packing.ExhaustiveClusterShapingForceDirectedPlacer;
 import de.tinloaf.cloudy.algos.packing.RecursiveSpiralCluster;
+import de.tinloaf.cloudy.algos.packing.WordPlacer;
 import de.tinloaf.cloudy.graph.Edge;
 import de.tinloaf.cloudy.graph.Vertex;
 import de.tinloaf.cloudy.graph.WordGraph;
@@ -31,7 +32,7 @@ public class StarForestAlgoNew2 implements ClusterLayoutAlgo
     private Map<WordPair, Double> similarity;
 
     private BoundingBoxGenerator bbGenerator;
-    private ClusterWordPlacer wordPlacer;
+    private WordPlacer wordPlacer;
     private PlacerType placer;
     private boolean animated;
 
@@ -195,8 +196,11 @@ public class StarForestAlgoNew2 implements ClusterLayoutAlgo
         return ((ClusterSpiralPlacer)this.wordPlacer).getClusters();
     }
 
+    @Override
     public ClusterWordPlacer getPlacer()
     {
-        return this.wordPlacer;
+        // TODO Auto-generated method stub
+        return null;
     }
+
 }

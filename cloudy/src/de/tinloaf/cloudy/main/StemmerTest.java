@@ -4,14 +4,14 @@ import de.tinloaf.cloudy.text.LovinsStemmer;
 import de.tinloaf.cloudy.text.PlingStemmer;
 import de.tinloaf.cloudy.text.PorterStemmer;
 import de.tinloaf.cloudy.text.PreKrovetzStemmer;
-import de.tinloaf.cloudy.text.Stemmer;
+import de.tinloaf.cloudy.text.AbstractStemmer;
 
 public class StemmerTest {
 	public static void main(String[] args){
-		Stemmer a = new LovinsStemmer();
-		Stemmer b = new PorterStemmer();
-		Stemmer c = new PreKrovetzStemmer();
-		Stemmer d = new PlingStemmer();
+		AbstractStemmer a = new LovinsStemmer();
+		AbstractStemmer b = new PorterStemmer();
+		AbstractStemmer c = new PreKrovetzStemmer();
+		AbstractStemmer d = new PlingStemmer();
 		String[] prestemmed={"dance","dances","dancing","dancer","danced","movie","movies","building","biulds","biult","matrix","matrices","visualization","visualizes","visualized"};
 		for(String bb:prestemmed){
 			System.out.println("Lovins:"+ bb+"==>"+a.stem(bb)+"==>"+a.stem(c.stem(bb)));

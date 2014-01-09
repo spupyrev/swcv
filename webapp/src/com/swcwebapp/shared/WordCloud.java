@@ -10,11 +10,11 @@ public class WordCloud implements Serializable
 {
     private static final long serialVersionUID = 8810113025963123088L;
 
+    private String name;
     private String svg;
     private int width;
     private int height;
 
-    private String fileName;
     private String settings;
     private int wordCount;
     private double adjacencies;
@@ -28,14 +28,14 @@ public class WordCloud implements Serializable
 
     }
 
-    public void setFileName(String name)
+    public void setName(String name)
     {
-        this.fileName = name;
+        this.name = name;
     }
 
-    public String getFileName()
+    public String getName()
     {
-        return this.fileName;
+        return this.name;
     }
 
     public int getWordCount()

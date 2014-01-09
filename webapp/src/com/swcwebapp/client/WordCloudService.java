@@ -12,6 +12,4 @@ import com.swcwebapp.shared.WordCloud;
 public interface WordCloudService extends RemoteService
 {
     WordCloud buildWordCloud(String input, WCSetting setting);
-
-    String saveGetSvgLog(WordCloud cloud);
 }

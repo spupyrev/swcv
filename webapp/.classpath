@@ -58,7 +58,7 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jempbox-1.8.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/preflight-1.8.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/xmpbox-1.8.2.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/cloudy.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/cloudy.jar" sourcepath="/cloudy"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/javaml-0.1.7.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -12,7 +12,7 @@ import java.io.*;
  * @author Eibe Frank (eibe@cs.waikato.ac.nz)
  * @version 1.0
  */
-public class LovinsStemmer extends Stemmer implements Serializable {
+public class LovinsStemmer extends AbstractStemmer implements Serializable {
 
   /**
 	 * 

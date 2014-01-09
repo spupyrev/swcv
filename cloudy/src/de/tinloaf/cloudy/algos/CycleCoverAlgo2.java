@@ -1,16 +1,9 @@
 package de.tinloaf.cloudy.algos;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import de.tinloaf.cloudy.algos.packing.ClusterForceDirectedPlacer;
 import de.tinloaf.cloudy.algos.packing.ClusterSpiralPlacer;
-import de.tinloaf.cloudy.algos.packing.ClusterWordPlacer;
 import de.tinloaf.cloudy.algos.packing.RecursiveSpiralCluster;
+import de.tinloaf.cloudy.algos.packing.WordPlacer;
 import de.tinloaf.cloudy.graph.CycleCoverExtractor;
 import de.tinloaf.cloudy.graph.Edge;
 import de.tinloaf.cloudy.graph.GreedyCycleCoverExtractor;
@@ -23,13 +16,20 @@ import de.tinloaf.cloudy.utils.Logger;
 import de.tinloaf.cloudy.utils.SWCRectangle;
 import de.tinloaf.cloudy.utils.WordPair;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class CycleCoverAlgo2 implements LayoutAlgo
 {
     private WordGraph graph;
     private List<Edge> edgesInMatching;
     private boolean useGreedy = false;
 
-    private ClusterWordPlacer wordPlacer;
+    private WordPlacer wordPlacer;
     private BoundingBoxGenerator bbGenerator;
     private CycleType type;
     private PlacerType placer;

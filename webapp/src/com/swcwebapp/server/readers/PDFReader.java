@@ -20,10 +20,6 @@ public class PDFReader implements IDocumentReader
         if (getFile(url))
             return true;
 
-        //maybe it's a local file?
-        if (getFile("file:///" + url))
-            return true;
-
         return false;
     }
 

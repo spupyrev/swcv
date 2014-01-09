@@ -57,10 +57,43 @@
 			word cloud: semantically related words are drawn together and colored according to the automatically
 			extracted clusters.</p>
 		</div>
+
+		<h4>Word Cloud Generation</h2>
+		<p>The system creates word clouds using several sources of textual data. The simpliest source is a text
+		document entered by a user. Users may also specify the URL of a webpage or the link to a PDF document. In this case, 
+		a word cloud is constructed based on the extracted text. Another option is to specify the link to a YouTube video.
+		For the scenario, the system parses all comments for the video and produces a "comment cloud". 
 		<br>
+		Before constructing a word cloud, the input text is preprocessed using the following steps:
+		<ul>
+			<li><b>Term Extraction:</b> The input text is first split into sentences, which are then tokenized into a collection of
+			words using <a href="http://opennlp.apache.org">Apache OpenNLP</a>. Common stop-words such as "a", "the", "is" are removed from the
+			collection. The remaining words are grouped by their stems using the Porter Stemming Algorithm, so that
+			related words like "dance", "dancer", and "dancing" are reduced to their root, "danc". The most common
+			variation of the word is used in the final word cloud.</li>
 
-		<p><i>TODO:</i> info on system: input, output, pdf, youtube etc; describe pipeline: stemming, stopwords etc</p>
+			<li><b>Ranking:</b> In the next step we rank the words in order of relative importance. We use three different
+			ranking functions, depending on word usage in the input text. Each ranking function orders words by their
+			assigned weight (rank). <a href="#">Term Frequency</a> is the most basic ranking function and one used in most traditional
+			word cloud visualizations. Even after removing common stop-words, term frequency tends to rank highly
+			many semantically meaningless words. <a href="#">Term Frequency-Inverse Document Frequency</a> addressed this
+			problem by normalizing the frequency of a word by its frequency in a larger text collection. The third ranking function 
+			is based on the <a href="#">LexRank</a> algorithm. The algorithm is a graphbased
+			method for computing relative importance of textual units using eigenvector centrality.</li>
 
+			<li><b>Similarity Computation:</b> Given the ranked list of words, we calculate a matrix of pairwise similarities
+			so that related words receive high similarity values. We use two similarity functions depending on
+			the input text: the <a href="#">Cosine Similarity</a> and the <a href="#">Jaccard Similarity</a> coefficients.
+			In both cases for all pairs of words, the similarity function produces a value between 0,
+			indicating that a pair of words is not related, and 1, indicating that words are very similar.</li>
+		</ul>
+		Once terms, rankings, and similarities are extracted, we create an edge-weghted graph in which vertices correspond to
+		the terms and weights correspond to the computed similarities. For each word, an axis-aligned rectangle is created with
+		height proportional to its rank. Then one of the algorithms for constructing <a href="#">contact representations</a> of the graph
+		is applied. The result is a set of non-overlapping positions for the rectangles with semantically related words laid out
+		close to each other.
+
+		<h4>Algorithms and Implementation</h2>
 		<p>The system relies on a geometric model behind drawing word clouds in which sementically related words are placed
 		close to each other. The formal model is described in a series of research papers:
 			<ul>
@@ -83,5 +116,4 @@
 	</div>
 
 </body>
-
 </html>

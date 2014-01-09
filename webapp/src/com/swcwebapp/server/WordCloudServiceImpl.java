@@ -43,10 +43,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -75,7 +71,7 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
         WCVDocument wcvDocument = new WCVDocument(text);
         wcvDocument.parse();
 
-        //ranking
+        // ranking
         wcvDocument.weightFilter(setting.getWordCount(), createRanking(setting.getRankingAlgorithm(), wcvDocument));
 
         // similarity
@@ -90,6 +86,9 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
         layoutAlgo.setConstraints(new BoundingBoxGenerator(25000.0));
         layoutAlgo.run();
 
+        // colors
+        IColorScheme wordColorScheme = new WebColorScheme(setting.getColorScheme().toString(), setting.getColorDistribute().toString(), wcvDocument.getWords().size());
+
         // get svg
         DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
 
@@ -97,118 +96,54 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
         SVGDocument document = (SVGDocument)domImpl.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
         SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
 
-        // Set colors
-        IColorScheme wordColorScheme = new WebColorScheme(setting.getColorScheme().toString(), setting.getColorDistribute().toString(), wcvDocument.getWords().size());
-
         // Ask to render into the SVG Graphics2D implementation.
         WordCloudPanel panel = new WordCloudPanel(wcvDocument.getWords(), layoutAlgo, null, wordColorScheme);
         panel.setSize(1024, 600);
         panel.setShowRectangles(setting.isShowRectangles());
         panel.paintComponent(svgGenerator);
 
-        Writer out;
+        Writer writer;
         try
         {
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            out = new StringWriter();
-            transformer.transform(new DOMSource(document), new StreamResult(out));
-            out.close();
+            writer = new StringWriter();
+            transformer.transform(new DOMSource(document), new StreamResult(writer));
+            writer.close();
 
-            out = new StringWriter();
+            writer = new StringWriter();
             // out = new OutputStreamWriter(System.out, "UTF-8");
-            svgGenerator.stream(out, true);
-            out.close();
+            svgGenerator.stream(writer, true);
+            writer.close();
         }
         catch (Exception e)
         {
             throw new RuntimeException(e);
         }
 
-        String timeStamp = saveSVG(setting, panel, out);
+        String timestamp = new SimpleDateFormat("yyyyMMddHHmmssS").format(Calendar.getInstance().getTime());
+        WordCloud cloud = createCloud(setting, text, timestamp, writer.toString(), (int)panel.getActualWidth() + 20, (int)panel.getActualHeight() + 20);
 
-        WordCloud wc = new WordCloud();
-        wc.setSettings(setting.toString() + "Text:\n" + text);
-        wc.setFileName(timeStamp + ".svg");
-        wc.setSvg(out.toString());
-        wc.setWidth((int)panel.getActualWidth() + 20);
-        wc.setHeight((int)panel.getActualHeight() + 20);
-        //computeMetrics(wc, wcvDocument.getWords(), similarity, layoutAlgo);
-        return wc;
+        //metrics
+        //computeMetrics(cloud, wcvDocument.getWords(), similarity, layoutAlgo);
+
+        //export
+        WCExporter.saveCloudAsSVG(timestamp + ".svg", cloud, setting);
+        //WCExporter.saveCloudAsHTML(timestamp + ".html", cloud, setting);
+
+        return cloud;
     }
 
-    private String saveSVG(WCSetting setting, WordCloudPanel panel, Writer out)
+    private WordCloud createCloud(WCSetting setting, String text, String name, String svg, int width, int height)
     {
-        /**
-         * Set path to .../wordcloud/svgs/
-         */
-        String path = getAbsoluteFileName("");
-        path = getParent(path);
-        path = getParent(path);
-        path = getParent(path);
-        path = path + File.separator + "svgs" + File.separator;
-        String svg = out.toString();
-
-        /**
-         * create a timestamp to name the svg file
-         */
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssS").format(Calendar.getInstance().getTime());
-
-        /**
-         * write svg file
-         */
-        FileWriter fw;
-        try
-        {
-            fw = new FileWriter(path + timeStamp + ".svg");
-            fw.write(svg);
-            fw.close();
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
-
-        /**
-        * write a html file for each graph generated
-        */
-        path = getParent(path);
-        path = getParent(path);
-        path = path + File.separator + "htmlforclouds" + File.separator;
-
-        FileWriter fWriter = null;
-        BufferedWriter writer = null;
-        try
-        {
-            fWriter = new FileWriter(path + timeStamp + ".html");
-            writer = new BufferedWriter(fWriter);
-            path = getParent(path);
-            path = getParent(path);
-            path = path + File.separator + "svgs" + File.separator;
-
-            writer.write("<div style=\"width: 1025px; margin: 10px auto\">");
-            writer.write("<object data=\"../svgs/" + timeStamp + ".svg\" type=\"image/svg+xml\" height=" + ((int)panel.getActualHeight() + 20)
-                    + "px; width=" + ((int)panel.getActualWidth() + 20) + "px></object>");
-            writer.write("<div style=\"width=100px\">" + setting.toString() + "</div>");
-            writer.write("<div style=\"float: right\">Share The Cloud!<a href=\"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwordcloud.cs.arizona.edu%2Fhtmlforclouds%2F"
-                    + timeStamp
-                    + ".html\" target=\"_blank\"><img src=\"../imgs/facebook.ico\" height=\"24px\" width=\"24px\" Title=\"Share on Facebook\" /></a>");
-            writer.write("<a href=\"https://twitter.com/share?url=http%3A%2F%2Fwordcloud.cs.arizona.edu%2Fhtmlforclouds\""
-                    + timeStamp
-                    + ".html\" target=\"_blank\"> <img src=\"../imgs/twitter.ico\" height=\"24px\" width=\"24px\" Title=\"Tweet on Twitter\" /></a></div>");
-            writer.write("<a href=\"http://wordcloud.cs.arizona.edu\">Generate a New Cloud Now!</a>");
-            writer.write("</div>");
-
-            writer.newLine(); //this is not actually needed for html files - can make your code more readable though 
-            writer.close(); //make sure you close the writer object 
-        }
-        catch (Exception e)
-        {
-            //catch any exceptions here
-            e.printStackTrace();
-        }
-        return timeStamp;
+        WordCloud cloud = new WordCloud();
+        cloud.setName(name);
+        cloud.setSettings(setting.toString() + "Text:\n" + text);
+        cloud.setSvg(svg);
+        cloud.setWidth(width);
+        cloud.setHeight(height);
+        return cloud;
     }
 
     private RankingAlgo createRanking(RANKING_ALGORITHM algo, WCVDocument document)
@@ -281,49 +216,5 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
             return new CycleCoverAlgo();
 
         throw new RuntimeException("something is wrong");
-    }
-
-    private String getAbsoluteFileName(String name)
-    {
-        return Thread.currentThread().getContextClassLoader().getResource(name).getPath();
-    }
-
-    private static String getParent(String path)
-    {
-        return path.substring(0, path.lastIndexOf('/'));
-    }
-
-    /**
-     * if User get the SVG.
-     * Save the cloud setting to log
-     */
-    public String saveGetSvgLog(WordCloud cloud)
-    {
-        /**
-         * Set path to .../wordcloud/saved/
-         */
-        String path = getAbsoluteFileName("");
-        path = getParent(path);
-        path = getParent(path);
-        path = getParent(path);
-        path = path + File.separator + "saved" + File.separator;
-
-        /**
-         * write svg file
-         */
-        FileWriter fw;
-        try
-        {
-            fw = new FileWriter(path + "saved.log", true);
-            fw.write("User saved " + cloud.getFileName() + "\n");
-            fw.write(cloud.getSettings());
-            fw.write("\n\n");
-            fw.close();
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
-        return cloud.getFileName();
     }
 }
