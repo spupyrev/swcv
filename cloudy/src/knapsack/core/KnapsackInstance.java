@@ -18,7 +18,7 @@ public final class KnapsackInstance implements Cloneable {
 	private int capacity;
 	
 	/**
-	 * Constructor.
+	 * Constructor
 	 * 
 	 * @param id id of the instance
 	 * @param capacity knapsack's maximal capacity
