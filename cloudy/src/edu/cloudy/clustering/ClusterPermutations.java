@@ -43,7 +43,7 @@ public class ClusterPermutations {
 		clusters = new HashSet<Cluster>();
 		
 		int num_clusters = words.size()/5;  // ideal if each cluster has 5 words, not even likely
-		KMeansAlgo kmeans = new KMeansAlgo(num_clusters);
+		KMeans kmeans = new KMeans(num_clusters);
 		kmeans.run(words, similarity);
 		
 		// since I have no fucking clue what the possible cluster numbers are, I have

@@ -1,7 +1,7 @@
 package edu.cloudy.main;
 
 import edu.cloudy.clustering.IClusterAlgo;
-import edu.cloudy.clustering.KMeansAlgo;
+import edu.cloudy.clustering.KMeansPlusPlus;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.StarForestAlgo;
 import edu.cloudy.nlp.WCVDocument;
@@ -45,8 +45,8 @@ public class WCVisualizer
     private void run()
     {
         // 1. read a document
-        //WCVDocument document = readDocument();
-        WCVDocument document = readURL();
+        WCVDocument document = readDocument();
+        //WCVDocument document = readURL();
 
         // 2. build similarities, words etc
         List<Word> words = new ArrayList<Word>();
@@ -211,11 +211,15 @@ public class WCVisualizer
 
     private IClusterAlgo runClustering(List<Word> words, Map<WordPair, Double> similarity)
     {
-        IClusterAlgo algo = new KMeansAlgo(4);
+        int K = (int)Math.sqrt((double)words.size() / 2);
+
+        //IClusterAlgo algo = new KMeans(K);
+        IClusterAlgo algo = new KMeansPlusPlus(K);
 
         long startTime = System.currentTimeMillis();
         algo.run(words, similarity);
         System.out.printf("clustering done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
+        System.out.println("#clusters: " + algo.getClusterNumber());
 
         return algo;
     }

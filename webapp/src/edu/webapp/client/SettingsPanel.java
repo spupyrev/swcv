@@ -4,11 +4,11 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WCSetting.COLOR_DISTRIBUTE;
@@ -75,10 +75,11 @@ public class SettingsPanel
     {
         final ListBox box = new ListBox();
         box.addStyleName("inconsolataNormal");
+        box.addItem("KMeans++", WCSetting.COLOR_DISTRIBUTE.KMEANS.toString());
         box.addItem("Random", WCSetting.COLOR_DISTRIBUTE.RANDOM.toString());
         box.addItem("Words Rank", WCSetting.COLOR_DISTRIBUTE.WORD_RANK.toString());
 
-        setting.setColorDistribute(WCSetting.COLOR_DISTRIBUTE.RANDOM);
+        setting.setColorDistribute(WCSetting.COLOR_DISTRIBUTE.KMEANS);
         box.setSelectedIndex(findIndex(box, setting.getColorDistribute().toString()));
 
         box.addChangeHandler(new ChangeHandler()
@@ -101,9 +102,9 @@ public class SettingsPanel
         box.addItem("Blue", WCSetting.COLOR_SCHEME.BLUE.toString());
         box.addItem("Orange", WCSetting.COLOR_SCHEME.ORANGE.toString());
         box.addItem("Green", WCSetting.COLOR_SCHEME.GREEN.toString());
-        box.addItem("Sequential Blue", WCSetting.COLOR_SCHEME.BLUE_SEQ.toString());
-        box.addItem("Sequential Orange", WCSetting.COLOR_SCHEME.ORANGE_SEQ.toString());
-        box.addItem("Sequential Green", WCSetting.COLOR_SCHEME.GREEN_SEQ.toString());
+        box.addItem("ColorBrewer 1", WCSetting.COLOR_SCHEME.BREWER_1.toString());
+        box.addItem("ColorBrewer 2", WCSetting.COLOR_SCHEME.BREWER_2.toString());
+        box.addItem("ColorBrewer 3", WCSetting.COLOR_SCHEME.BREWER_3.toString());
         box.addItem("Trinity Scheme 1", WCSetting.COLOR_SCHEME.TRISCHEME_1.toString());
         box.addItem("Trinity Scheme 2", WCSetting.COLOR_SCHEME.TRISCHEME_2.toString());
         box.addItem("Trinity Scheme 3", WCSetting.COLOR_SCHEME.TRISCHEME_3.toString());
@@ -111,7 +112,7 @@ public class SettingsPanel
         box.addItem("Similar Scheme 2", WCSetting.COLOR_SCHEME.SIMILAR_2.toString());
         box.addItem("Similar Scheme 3", WCSetting.COLOR_SCHEME.SIMILAR_3.toString());
 
-        setting.setColorScheme(WCSetting.COLOR_SCHEME.BEAR_DOWN);
+        setting.setColorScheme(WCSetting.COLOR_SCHEME.BREWER_2);
         box.setSelectedIndex(findIndex(box, setting.getColorScheme().toString()));
 
         box.addChangeHandler(new ChangeHandler()

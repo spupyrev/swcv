@@ -139,9 +139,7 @@ public class MDSAlgo implements LayoutAlgo
             if (i1 == i2)
                 continue;
 
-            desiredDistance[i1][i2] = desiredDistance[i2][i1] = (1 - similarity.get(wp)) * maxWordSize * SCALING;
-            //double s = 0.1;
-            //desiredDistance[i1][i2] = desiredDistance[i2][i1] = -Math.log((1 - s) * similarity.get(wp) + s) * maxWordSize;// * SCALING;
+            desiredDistance[i1][i2] = desiredDistance[i2][i1] = LayoutUtils.idealDistanceConverter(similarity.get(wp)) * maxWordSize * SCALING;
         }
 
         //aply MDS

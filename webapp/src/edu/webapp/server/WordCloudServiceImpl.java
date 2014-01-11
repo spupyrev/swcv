@@ -2,6 +2,9 @@ package edu.webapp.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+import edu.cloudy.clustering.IClusterAlgo;
+import edu.cloudy.clustering.KMeansPlusPlus;
+import edu.cloudy.colors.ClusterColorScheme;
 import edu.cloudy.colors.IColorScheme;
 import edu.cloudy.colors.WebColorScheme;
 import edu.cloudy.layout.ContextPreservingAlgo;
@@ -9,7 +12,7 @@ import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.InflateAndPushAlgo;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.SeamCarvingAlgo;
-import edu.cloudy.layout.StarForestAlgoNew;
+import edu.cloudy.layout.StarForestAlgo;
 import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.metrics.AdjacenciesMetric;
 import edu.cloudy.metrics.AspectRatioMetric;
@@ -37,6 +40,7 @@ import edu.webapp.client.WordCloudService;
 import edu.webapp.server.readers.DocumentExtractor;
 import edu.webapp.server.utils.RandomWikiUrlExtractor;
 import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSetting.COLOR_SCHEME;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
@@ -97,7 +101,20 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
         layoutAlgo.run();
 
         // colors
-        IColorScheme wordColorScheme = new WebColorScheme(setting.getColorScheme().toString(), setting.getColorDistribute().toString(), wcvDocument.getWords().size());
+        IColorScheme wordColorScheme = null;
+        if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.KMEANS))
+        {
+            int K = guessNumberOfClusters(wcvDocument.getWords().size(), setting);
+
+            IClusterAlgo clusterAlgo = new KMeansPlusPlus(K);
+            clusterAlgo.run(wcvDocument.getWords(), similarity);
+
+            wordColorScheme = new ClusterColorScheme(clusterAlgo, setting.getColorScheme().toString());
+        }
+        else
+        {
+            wordColorScheme = new WebColorScheme(setting.getColorScheme().toString(), setting.getColorDistribute().toString(), wcvDocument.getWords().size());
+        }
 
         // get svg
         DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
@@ -219,7 +236,7 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
             return new InflateAndPushAlgo();
 
         if (algo.equals(LAYOUT_ALGORITHM.STAR))
-            return new StarForestAlgoNew();
+            return new StarForestAlgo();
 
         if (algo.equals(LAYOUT_ALGORITHM.CYCLE))
             return new CycleCoverAlgo();
@@ -231,4 +248,31 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
     {
         return RandomWikiUrlExtractor.getRandomWikiPage();
     }
+
+    private int guessNumberOfClusters(int n, WCSetting setting)
+    {
+        if (setting.getColorScheme().equals(COLOR_SCHEME.BEAR_DOWN))
+            return 2;
+        else if (setting.getColorScheme().equals(COLOR_SCHEME.BLUE))
+            return 1;
+        else if (setting.getColorScheme().equals(COLOR_SCHEME.ORANGE))
+            return 1;
+        else if (setting.getColorScheme().equals(COLOR_SCHEME.GREEN))
+            return 1;
+        else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_1))
+            return 4;
+        else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_2))
+            return 4;
+        else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_3))
+            return 4;
+        else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_1))
+            return 4;
+        else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_2))
+            return 4;
+        else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_3))
+            return 4;
+
+        return (int)Math.sqrt((double)n / 2);
+    }
+
 }
