@@ -5,7 +5,7 @@ import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.InflateAndPushAlgo;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.MDSAlgo;
-import edu.cloudy.layout.StarForestAlgoNew;
+import edu.cloudy.layout.StarForestAlgo;
 import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.metrics.AdjacenciesMetric;
 import edu.cloudy.metrics.AspectRatioMetric;
@@ -110,7 +110,7 @@ public class ALENEXPaperEvalulator {
 					//	seamResult.add(computeMetrics(new SeamCarvingAlgo(), document.getWords(), similarity));
 					inflateResult.add(computeMetrics(new InflateAndPushAlgo(), document.getWords(), similarity));
 					//starsResult.add(computeMetrics(new StarForestAlgo(), document.getWords(), similarity));
-					starsNewResult.add(computeMetrics(new StarForestAlgoNew(), document.getWords(), similarity));
+					starsNewResult.add(computeMetrics(new StarForestAlgo(), document.getWords(), similarity));
 					cyclesResult.add(computeMetrics(new CycleCoverAlgo(), document.getWords(), similarity));
 					mdsResult.add(computeMetrics(new MDSAlgo(), document.getWords(), similarity));
 				}

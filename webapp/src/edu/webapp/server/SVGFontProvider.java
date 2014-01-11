@@ -1,8 +1,8 @@
 package edu.webapp.server;
 
-import de.tinloaf.cloudy.utils.CommonUtils;
-import de.tinloaf.cloudy.utils.FontUtils.AWTFontProvider;
-import de.tinloaf.cloudy.utils.SWCRectangle;
+import edu.cloudy.utils.CommonUtils;
+import edu.cloudy.utils.FontUtils.AWTFontProvider;
+import edu.cloudy.utils.SWCRectangle;
 
 import java.awt.Font;
 import java.awt.FontFormatException;

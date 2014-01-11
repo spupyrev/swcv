@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.Observable;
 
 import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.layout.StarForestAlgoNew;
+import edu.cloudy.layout.StarForestAlgo;
 import edu.cloudy.layout.packing.ClusterSpiralPlacer;
 import edu.cloudy.nlp.Word;
 

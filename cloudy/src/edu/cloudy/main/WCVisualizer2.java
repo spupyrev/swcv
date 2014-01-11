@@ -2,7 +2,7 @@ package edu.cloudy.main;
 
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.PlacerType;
-import edu.cloudy.layout.StarForestAlgoNew2;
+import edu.cloudy.layout.StarForestAlgo2;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -65,7 +65,7 @@ public class WCVisualizer2
             //						algorithms.add(new StarForestAlgoNew(PlacerType.RECURSIVE_SPIRAL, animated));
             //						algorithms.add(new StarForestAlgoNew(PlacerType.FORCE_DIRECTED, animated));
             //  WARNING: EXHAUSTED_FORCE_DIRECTED doesn't work for all numbers of words (due to a bug in SingleStarAlgo)
-            algorithms.add(new StarForestAlgoNew2(PlacerType.EXHAUSTIVE_FORCE_DIRECTED, animated));
+            algorithms.add(new StarForestAlgo2(PlacerType.EXHAUSTIVE_FORCE_DIRECTED, animated));
             //						algorithms.add(new RecursiveSpiralCluster());
             //						algorithms.add(new CycleCoverAlgo(PlacerType.SINGLE_SPIRAL, CycleType.REGULAR, animated));
             //						algorithms.add(new CycleCoverAlgo(PlacerType.SINGLE_SPIRAL, CycleType.WRAPPED, animated));

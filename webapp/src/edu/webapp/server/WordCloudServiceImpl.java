@@ -2,35 +2,45 @@ package edu.webapp.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import de.tinloaf.cloudy.algos.ContextPreservingAlgo;
-import de.tinloaf.cloudy.algos.CycleCoverAlgo;
-import de.tinloaf.cloudy.algos.InflateAndPushAlgo;
-import de.tinloaf.cloudy.algos.LayoutAlgo;
-import de.tinloaf.cloudy.algos.SeamCarvingAlgo;
-import de.tinloaf.cloudy.algos.StarForestAlgo;
-import de.tinloaf.cloudy.algos.WordleAlgo;
-import de.tinloaf.cloudy.metrics.AdjacenciesMetric;
-import de.tinloaf.cloudy.metrics.AspectRatioMetric;
-import de.tinloaf.cloudy.metrics.DistortionMetric;
-import de.tinloaf.cloudy.metrics.SpaceMetric;
-import de.tinloaf.cloudy.metrics.TotalWeightMetric;
-import de.tinloaf.cloudy.metrics.UniformAreaMetric;
-import de.tinloaf.cloudy.similarity.*;
-import de.tinloaf.cloudy.text.WCVDocument;
-import de.tinloaf.cloudy.text.Word;
-import de.tinloaf.cloudy.ui.WordCloudPanel;
-import de.tinloaf.cloudy.utils.BoundingBoxGenerator;
-import de.tinloaf.cloudy.utils.FontUtils;
-import de.tinloaf.cloudy.utils.WordPair;
-import de.tinloaf.cloudy.utils.colors.IColorScheme;
-import de.tinloaf.cloudy.utils.colors.WebColorScheme;
+import edu.cloudy.colors.IColorScheme;
+import edu.cloudy.colors.WebColorScheme;
+import edu.cloudy.layout.ContextPreservingAlgo;
+import edu.cloudy.layout.CycleCoverAlgo;
+import edu.cloudy.layout.InflateAndPushAlgo;
+import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.SeamCarvingAlgo;
+import edu.cloudy.layout.StarForestAlgoNew;
+import edu.cloudy.layout.WordleAlgo;
+import edu.cloudy.metrics.AdjacenciesMetric;
+import edu.cloudy.metrics.AspectRatioMetric;
+import edu.cloudy.metrics.DistortionMetric;
+import edu.cloudy.metrics.SpaceMetric;
+import edu.cloudy.metrics.TotalWeightMetric;
+import edu.cloudy.metrics.UniformAreaMetric;
+import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.Word;
+import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ranking.LexRankingAlgo;
+import edu.cloudy.nlp.ranking.RankingAlgo;
+import edu.cloudy.nlp.ranking.TFIDFRankingAlgo;
+import edu.cloudy.nlp.ranking.TFRankingAlgo;
+import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
+import edu.cloudy.nlp.similarity.DiceCoefficientAlgo;
+import edu.cloudy.nlp.similarity.EuclideanAlgo;
+import edu.cloudy.nlp.similarity.JaccardCoOccurenceAlgo;
+import edu.cloudy.nlp.similarity.LexicalSimilarityAlgo;
+import edu.cloudy.nlp.similarity.SimilarityAlgo;
+import edu.cloudy.ui.WordCloudPanel;
+import edu.cloudy.utils.BoundingBoxGenerator;
+import edu.cloudy.utils.FontUtils;
 import edu.webapp.client.WordCloudService;
 import edu.webapp.server.readers.DocumentExtractor;
+import edu.webapp.server.utils.RandomWikiUrlExtractor;
 import edu.webapp.shared.WCSetting;
-import edu.webapp.shared.WordCloud;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
+import edu.webapp.shared.WordCloud;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -182,7 +192,6 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
     {
         if (algo.equals(SIMILARITY_ALGORITHM.COSINE))
             return new CosineCoOccurenceAlgo();
-
         if (algo.equals(SIMILARITY_ALGORITHM.JACCARD))
             return new JaccardCoOccurenceAlgo();
         if (algo.equals(SIMILARITY_ALGORITHM.LEXICAL))
@@ -190,7 +199,7 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
         if (algo.equals(SIMILARITY_ALGORITHM.MATRIXDIS))
             return new EuclideanAlgo();
         if (algo.equals(SIMILARITY_ALGORITHM.DICECOEFFI))
-            return new DicecoefficientAlgo();
+            return new DiceCoefficientAlgo();
 
         throw new RuntimeException("something is wrong");
     }
@@ -210,11 +219,16 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
             return new InflateAndPushAlgo();
 
         if (algo.equals(LAYOUT_ALGORITHM.STAR))
-            return new StarForestAlgo();
+            return new StarForestAlgoNew();
 
         if (algo.equals(LAYOUT_ALGORITHM.CYCLE))
             return new CycleCoverAlgo();
 
         throw new RuntimeException("something is wrong");
+    }
+
+    public String getRandomWikiUrl()
+    {
+        return RandomWikiUrlExtractor.getRandomWikiPage();
     }
 }

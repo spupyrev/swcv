@@ -1,8 +1,8 @@
 package edu.webapp.server;
 
-import de.tinloaf.cloudy.algos.LayoutAlgo;
-import de.tinloaf.cloudy.text.Word;
-import de.tinloaf.cloudy.utils.SWCRectangle;
+import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.nlp.Word;
+import edu.cloudy.utils.SWCRectangle;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.w3c.dom.Document;

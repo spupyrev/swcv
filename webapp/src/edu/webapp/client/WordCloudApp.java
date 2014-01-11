@@ -73,7 +73,19 @@ public class WordCloudApp implements EntryPoint
         {
             public void onClick(ClickEvent event)
             {
-                textArea.setText("http://en.wikipedia.org/wiki/Special:random");
+                wcService.getRandomWikiUrl(new AsyncCallback<String>()
+                {
+                    public void onSuccess(String result)
+                    {
+                        textArea.setText(result);
+                    }
+
+                    public void onFailure(Throwable caught)
+                    {
+                        textArea.setText("http://en.wikipedia.org/wiki/Special:random");
+                    }
+                });
+
             }
         });
     }
@@ -138,7 +150,7 @@ public class WordCloudApp implements EntryPoint
         final DialogBox loadingBox = createLoadingBox();
         loadingBox.show();
         loadingBox.center();
-        
+
         wcService.buildWordCloud(text, setting, new AsyncCallback<WordCloud>()
         {
             public void onSuccess(WordCloud result)

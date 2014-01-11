@@ -8,12 +8,12 @@
   <!-- Servlets -->
   <servlet>
     <servlet-name>cloudServlet</servlet-name>
-    <servlet-class>com.swcwebapp.server.WordCloudServiceImpl</servlet-class>
+    <servlet-class>edu.webapp.server.WordCloudServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
     <servlet-name>cloudServlet</servlet-name>
-    <url-pattern>/swcwebapp/cloud</url-pattern>
+    <url-pattern>/webapp/cloud</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->

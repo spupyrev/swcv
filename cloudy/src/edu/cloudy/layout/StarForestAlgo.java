@@ -1,13 +1,9 @@
 package edu.cloudy.layout;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import edu.cloudy.graph.CycleDetector;
-import edu.cloudy.graph.StarForest;
-import edu.cloudy.graph.StarForestExtractor;
+import edu.cloudy.graph.Edge;
+import edu.cloudy.graph.Vertex;
 import edu.cloudy.graph.WordGraph;
+import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.layout.packing.ClusterForceDirectedPlacer;
 import edu.cloudy.layout.packing.WordPlacer;
 import edu.cloudy.nlp.Word;
@@ -15,31 +11,29 @@ import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.SWCRectangle;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * @author spupyrev 
+ * Aug 29, 2013 
+ */
 public class StarForestAlgo implements LayoutAlgo
 {
     private List<Word> words;
     private Map<WordPair, Double> similarity;
-    private SubSolution bestSolution;
-    private WordPlacer wordPlacer;
-
     private BoundingBoxGenerator bbGenerator;
+
+    private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
 
     @Override
     public void setConstraints(BoundingBoxGenerator bbGenerator)
     {
         this.bbGenerator = bbGenerator;
-    }
-
-    private class SubSolution
-    {
-        List<SingleStarAlgo> stars;
-        double value;
-
-        SubSolution()
-        {
-            stars = new ArrayList<SingleStarAlgo>();
-            value = 0;
-        }
     }
 
     @Override
@@ -55,63 +49,101 @@ public class StarForestAlgo implements LayoutAlgo
     {
         WordGraph g = new WordGraph(words, similarity);
 
-        List<StarForest> forests = new StarForestExtractor(g).run();
+        List<SingleStarAlgo> forest = greedyExtractStarForest(g);
 
-        SubSolution max = null;
-        for (StarForest sf : forests)
+        WordPlacer wordPlacer = new ClusterForceDirectedPlacer(words, similarity, forest, bbGenerator);
+
+        for (Word w : words)
         {
-            SubSolution cur = solveStarForest(sf);
-            if (max == null || cur.value > max.value)
-                max = cur;
+            wordPositions.put(w, wordPlacer.getRectangleForWord(w));
         }
 
-        bestSolution = max;
-
-        //System.out.println("#stars: " + bestSolution.stars.size());
-        //System.out.println("#value: " + bestSolution.value);
-        //wordPlacer = new BoundingBoxPackingPlacer(words, bestSolution.stars, weightToAreaFactor, bbGenerator);
-        wordPlacer = new ClusterForceDirectedPlacer(words, similarity, bestSolution.stars, bbGenerator);
+        new ForceDirectedUniformity<SWCRectangle>().run(words, wordPositions);
     }
 
-    private SubSolution solveStarForest(final StarForest starForest)
+    private List<SingleStarAlgo> greedyExtractStarForest(WordGraph g)
     {
-        SubSolution solution = new SubSolution();
+        List<SingleStarAlgo> result = new ArrayList<SingleStarAlgo>();
+        Set<Vertex> usedVertices = new HashSet<Vertex>();
 
-        for (WordGraph star : starForest.getStars())
+        while (true)
         {
-            assert (!new CycleDetector(star).hasCycle());
+            //find best star center
+            double bestSum = 0;
+            Vertex bestStarCenter = null;
 
+            for (Vertex v : g.vertexSet())
+                if (!usedVertices.contains(v))
+                {
+                    double sum = 0;
+                    for (Edge e : g.edgesOf(v))
+                    {
+                        Vertex u = g.getOtherSide(e, v);
+                        if (!usedVertices.contains(u))
+                        {
+                            sum += g.getEdgeWeight(e);
+                        }
+                    }
+
+                    if (bestStarCenter == null || sum > bestSum)
+                    {
+                        bestSum = sum;
+                        bestStarCenter = v;
+                    }
+                }
+
+            //every word is taken
+            if (bestStarCenter == null)
+                break;
+
+            assert (!usedVertices.contains(bestStarCenter));
+
+            //run FPTAS on the star
+            WordGraph star = createStar(bestStarCenter, usedVertices, g);
             SingleStarAlgo ssa = new SingleStarAlgo();
             ssa.setConstraints(bbGenerator);
             ssa.setData(words, similarity);
             ssa.setGraph(star);
             ssa.run();
 
-            solution.stars.add(ssa);
-            solution.value += ssa.getRealizedWeight();
+            //take the star
+            result.add(ssa);
+            //update used
+            usedVertices.addAll(ssa.getRealizedVertices());
         }
 
-        return solution;
+        return result;
     }
 
-    public double getRealizedWeight()
+    private WordGraph createStar(Vertex center, Set<Vertex> usedVertices, WordGraph g)
     {
-        return this.bestSolution.value;
+        List<Word> words = new ArrayList<Word>();
+        for (Vertex v : g.vertexSet())
+            if (!usedVertices.contains(v))
+                words.add(v);
+
+        Map<WordPair, Double> weights = new HashMap<WordPair, Double>();
+        for (Vertex v : g.vertexSet())
+        {
+            if (center.equals(v))
+                continue;
+            if (usedVertices.contains(v))
+                continue;
+            if (!g.containsEdge(center, v))
+                continue;
+
+            WordPair wp = new WordPair(center, v);
+            Edge edge = g.getEdge(center, v);
+            weights.put(wp, g.getEdgeWeight(edge));
+        }
+
+        return new WordGraph(words, weights);
     }
 
     @Override
     public SWCRectangle getWordRectangle(Word w)
     {
-        return wordPlacer.getRectangleForWord(w);
-    }
-
-    /**
-     * perform several iterations
-     * returns 'true' iff the last iteration moves rectangles 'alot'
-     */
-    public boolean doIteration(int iters)
-    {
-        return ((ClusterForceDirectedPlacer)wordPlacer).doIteration(iters);
+        return wordPositions.get(w);
     }
 
 }

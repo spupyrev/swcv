@@ -13,4 +13,6 @@ import edu.webapp.shared.WordCloud;
 public interface WordCloudService extends RemoteService
 {
     WordCloud buildWordCloud(String input, WCSetting setting);
+    
+    String getRandomWikiUrl();
 }

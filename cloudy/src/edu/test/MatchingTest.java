@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Random;
 
 import edu.cloudy.layout.CycleCoverAlgo;
-import edu.cloudy.layout.StarForestAlgo;
+import edu.cloudy.layout.StarForestAlgoOld;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.BoundingBoxGenerator;
@@ -102,7 +102,7 @@ public class MatchingTest {
 	}
 
 	private static double getStarsResult(List<Word> words, Map<WordPair, Double> similarity) {
-		StarForestAlgo starsAlgo = new StarForestAlgo();
+		StarForestAlgoOld starsAlgo = new StarForestAlgoOld();
 		// StarsAlgo starsAlgo = new StarsAlgo();
 		starsAlgo.setConstraints(new BoundingBoxGenerator(25000.0));
 		starsAlgo.setData(words, similarity);

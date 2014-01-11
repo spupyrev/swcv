@@ -1,7 +1,7 @@
 package edu.webapp.server;
 
 
-import de.tinloaf.cloudy.utils.CommonUtils;
+import edu.cloudy.utils.CommonUtils;
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WordCloud;
 

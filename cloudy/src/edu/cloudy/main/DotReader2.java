@@ -4,7 +4,7 @@ import edu.cloudy.layout.CycleCoverAlgo2;
 import edu.cloudy.layout.CycleType;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.PlacerType;
-import edu.cloudy.layout.StarForestAlgoNew2;
+import edu.cloudy.layout.StarForestAlgo2;
 import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.layout.packing.RecursiveSpiralCluster;
 import edu.cloudy.nlp.WCVDocument;
@@ -51,9 +51,9 @@ public class DotReader2
         List<LayoutAlgo> algorithms;
 
         algorithms = new ArrayList<LayoutAlgo>(13);
-        algorithms.add(new StarForestAlgoNew2(PlacerType.SINGLE_SPIRAL, animated));
-        algorithms.add(new StarForestAlgoNew2(PlacerType.RECURSIVE_SPIRAL, animated));
-        algorithms.add(new StarForestAlgoNew2(PlacerType.FORCE_DIRECTED, animated));
+        algorithms.add(new StarForestAlgo2(PlacerType.SINGLE_SPIRAL, animated));
+        algorithms.add(new StarForestAlgo2(PlacerType.RECURSIVE_SPIRAL, animated));
+        algorithms.add(new StarForestAlgo2(PlacerType.FORCE_DIRECTED, animated));
         algorithms.add(new RecursiveSpiralCluster());
         algorithms.add(new CycleCoverAlgo2(PlacerType.SINGLE_SPIRAL, CycleType.REGULAR, animated));
         algorithms.add(new CycleCoverAlgo2(PlacerType.SINGLE_SPIRAL, CycleType.WRAPPED, animated));

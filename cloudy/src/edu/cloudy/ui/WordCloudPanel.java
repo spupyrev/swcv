@@ -5,7 +5,7 @@ import edu.cloudy.colors.ClusterColorScheme;
 import edu.cloudy.colors.IColorScheme;
 import edu.cloudy.colors.RandomColorScheme;
 import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.layout.StarForestAlgo;
+import edu.cloudy.layout.StarForestAlgoOld;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.FontUtils;
@@ -105,7 +105,7 @@ public class WordCloudPanel extends JPanel implements ActionListener
         else
         {
             //ContextPreservingAlgo an = (ContextPreservingAlgo) algo;
-            StarForestAlgo an = (StarForestAlgo)algo;
+            StarForestAlgoOld an = (StarForestAlgoOld)algo;
             an.doIteration(1);
             drawRectangles(g2);
             //drawDelaunay(g2, an.getDelaunay());
