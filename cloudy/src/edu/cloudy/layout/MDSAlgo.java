@@ -48,7 +48,7 @@ public class MDSAlgo implements LayoutAlgo
         return wordPositions.get(w);
     }
 
-    private static double SCALING = 2.0;
+    private static double SCALING = 1.0;
 
     private Map<Word, SWCRectangle> wordPositions = null;
 

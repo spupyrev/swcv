@@ -262,10 +262,31 @@ public class WCVDocument
         Collections.sort(words);
         Collections.reverse(words);
 
-        if (maxWords > words.size())
+        if (words.size() > maxWords)
+            words = words.subList(0, maxWords);
+
+        rescaleWeights(5);
+    }
+
+    /**
+     * scaling weights from 1 to upper
+     */
+    private void rescaleWeights(double upper)
+    {
+        if (words.size() <= 1)
             return;
 
-        words = words.subList(0, maxWords);
+        double mn = words.get(words.size() - 1).weight;
+        for (Word w : words)
+            w.weight /= mn;
+
+        double mx = words.get(0).weight;
+        double diff = mx - 1.0;
+        for (Word w : words)
+        {
+            double d = w.weight - 1.0;
+            w.weight = 1.0 + (d / diff) * (upper - 1.0);
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package edu.cloudy.layout.packing;
 
 import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutUtils;
 import edu.cloudy.layout.mds.DistanceScaling;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.nlp.Word;
@@ -122,7 +123,7 @@ public class ClusterForceDirectedPlacer implements WordPlacer
                 maxWordSize = Math.max(maxWordSize, rect.getWidth());
         }
 
-        double SCALING = 5.0;
+        double SCALING = 1.0;
         for (int i = 0; i < clusters.size(); i++)
             for (int j = i + 1; j < clusters.size(); j++)
             {
@@ -139,7 +140,7 @@ public class ClusterForceDirectedPlacer implements WordPlacer
                     }
                 avgSim /= cnt;
 
-                desiredDistance[i][j] = desiredDistance[j][i] = (1 - avgSim) * maxWordSize * SCALING;
+                desiredDistance[i][j] = desiredDistance[j][i] = LayoutUtils.idealDistanceConverter(avgSim) * maxWordSize * SCALING;
             }
 
         //aply MDS

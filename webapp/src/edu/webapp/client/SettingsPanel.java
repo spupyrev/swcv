@@ -79,7 +79,6 @@ public class SettingsPanel
         box.addItem("Random", WCSetting.COLOR_DISTRIBUTE.RANDOM.toString());
         box.addItem("Words Rank", WCSetting.COLOR_DISTRIBUTE.WORD_RANK.toString());
 
-        setting.setColorDistribute(WCSetting.COLOR_DISTRIBUTE.KMEANS);
         box.setSelectedIndex(findIndex(box, setting.getColorDistribute().toString()));
 
         box.addChangeHandler(new ChangeHandler()
@@ -112,7 +111,6 @@ public class SettingsPanel
         box.addItem("Similar Scheme 2", WCSetting.COLOR_SCHEME.SIMILAR_2.toString());
         box.addItem("Similar Scheme 3", WCSetting.COLOR_SCHEME.SIMILAR_3.toString());
 
-        setting.setColorScheme(WCSetting.COLOR_SCHEME.BREWER_2);
         box.setSelectedIndex(findIndex(box, setting.getColorScheme().toString()));
 
         box.addChangeHandler(new ChangeHandler()
@@ -224,8 +222,22 @@ public class SettingsPanel
         final ListBox box = new ListBox();
         box.addStyleName("inconsolataNormal");
         box.addItem("Archer - UofA Official Font", WCSetting.FONT.Archer.toString());
+        box.addItem("Comic Sans MS", WCSetting.FONT.ComicSansMS.toString());
         box.addItem("Crimson - Serif", WCSetting.FONT.Crimson.toString());
         box.addItem("Dearest - Blackletter", WCSetting.FONT.Dearest.toString());
+        box.addItem("Eraser - Hand Drawn", WCSetting.FONT.Eraser.toString());
+        box.addItem("Harting - Serif", WCSetting.FONT.Harting.toString());
+        box.addItem("Inconsolata - Monospace", WCSetting.FONT.Inconsolata.toString());
+        box.addItem("Kingthings_Gothique - Blackletter", WCSetting.FONT.Kingthings_Gothique.toString());
+        box.addItem("Maiandra GD", WCSetting.FONT.MaiandraGD.toString());
+        box.addItem("Pacifico - Script", WCSetting.FONT.Pacifico.toString());
+        box.addItem("Porcelai - Script", WCSetting.FONT.Porcelai.toString());
+        box.addItem("Report1942 - typewriter", WCSetting.FONT.Report1942.toString());
+        box.addItem("Stentiga - Sans Serif", WCSetting.FONT.Stentiga.toString());
+        box.addItem("Teen - Sans Serif", WCSetting.FONT.Teen.toString());
+        box.addItem("Monofur - Monospace", WCSetting.FONT.Monofur.toString());
+        box.addItem("Waker - Funny font", WCSetting.FONT.Waker.toString());
+        box.addItem("Wetpet - Funny font", WCSetting.FONT.Wetpet.toString());
 
         box.setSelectedIndex(findIndex(box, setting.getFont().toString()));
 

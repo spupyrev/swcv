@@ -42,28 +42,11 @@ public class WCSetting implements Serializable
 
     public enum FONT
     {
-        Archer, Crimson, Dearest
+        Archer, ComicSansMS, Crimson, Dearest, Eraser, Harting, Inconsolata, Kingthings_Gothique, MaiandraGD, Pacifico, Porcelai, Report1942, Stentiga, Teen, Monofur, Waker, Wetpet
     }
 
-    //  private String[] fontsList = new String[] {
-    //  "Archer - UofA Official Font",
-    //  "Crimson - Serif",
-    //  "Dearest - Blackletter",
-    //  "Eraser - Hand Drawn",
-    //  "Harting - Serif",
-    //  "Inconsolata - Monospace",
-    //  "Kingthings_Gothique - Blackletter",
-    //  "Pacifico - Script",
-    //  "Porcelai - Script",
-    //  "Report1942 - typewriter",
-    //  "Stentiga - Sans Serif",
-    //  "Teen - Sans Serif",
-    //  "Monofur - Monospace",
-    //  "Waker - Funny font",
-    //  "Wetpet - Funny font" };
-
-    private COLOR_DISTRIBUTE colorDistribute = COLOR_DISTRIBUTE.RANDOM;
-    private COLOR_SCHEME colorScheme = COLOR_SCHEME.ORANGE;
+    private COLOR_DISTRIBUTE colorDistribute = COLOR_DISTRIBUTE.KMEANS;
+    private COLOR_SCHEME colorScheme = COLOR_SCHEME.BREWER_2;
     private LAYOUT_ALGORITHM layoutAlgorithm = LAYOUT_ALGORITHM.STAR;
     private SIMILARITY_ALGORITHM similarityAlgorithm = SIMILARITY_ALGORITHM.COSINE;
     private RANKING_ALGORITHM rankingAlgorithm = RANKING_ALGORITHM.TF;
