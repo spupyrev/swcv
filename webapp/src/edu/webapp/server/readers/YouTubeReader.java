@@ -1,15 +1,10 @@
 package edu.webapp.server.readers;
 
-import org.w3c.dom.Document;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.regex.Matcher;
@@ -45,22 +40,36 @@ public class YouTubeReader implements IDocumentReader
     {
         try
         {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new URL("https://gdata.youtube.com/feeds/api/videos/" + id + "/comments").openStream());
+            String url = "https://gdata.youtube.com/feeds/api/videos/" + id + "/comments?v=2&alt=json&max-results=50";
+            InputStream is = new URL(url).openStream();
+            try
+            {
+                StringWriter writer = new StringWriter();
+                IOUtils.copy(is, writer);
+                JSONObject json = new JSONObject(writer.toString());
+                json = json.getJSONObject("feed");
 
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            StringWriter writer = new StringWriter();
-            transformer.transform(new DOMSource(doc), new StreamResult(writer));
+                JSONArray arr = json.getJSONArray("entry");
+                StringBuffer sb = new StringBuffer();
+                for (int i = 0; i < arr.length(); i++)
+                {
+                    JSONObject tmp = arr.getJSONObject(i).getJSONObject("content");
+                    String en = tmp.getString("$t");
+                    if (en.length() > 0)
+                        sb.append(en + ".\n");
+                }
 
-            text = writer.getBuffer().toString().replaceAll("\n|\r", " ").replaceAll("\\<.*?\\>", "");
-            return true;
+                text = sb.toString();
+                return true;
+            }
+            finally
+            {
+                is.close();
+            }
         }
         catch (Exception e)
         {
-            //e.printStackTrace();
+            e.printStackTrace();
             return false;
         }
     }

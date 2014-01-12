@@ -36,6 +36,7 @@ package edu.webapp.server.readers;
  */
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 /**
  * HTML reader for wordcloud (http://wordcloud.cs.arizona.edu)
@@ -118,6 +119,14 @@ public class HtmlReader implements IDocumentReader
         try
         {
             doc = Jsoup.connect(url).get();
+
+            //adding this to separate sentences in the document
+            for (Element t : doc.select("div"))
+                t.append(".");
+
+            for (Element t : doc.select("span"))
+                t.append(".");
+
             return true;
         }
         catch (Exception e)
@@ -189,38 +198,4 @@ public class HtmlReader implements IDocumentReader
         }
         return str.regionMatches(ignoreCase, 0, prefix, 0, prefix.length());
     }
-
-    /*
-     * Everthing below is for TEST purpose ONLY!
-     */
-    /**
-     * test html not provided by URL
-     * 
-     * @param i
-     *            -just give a valid int value, this doesn't matter.
-     * @param html
-     *            - the pseudo HTML style string
-     */
-    public HtmlReader(int i, String html)
-    {
-        doc = Jsoup.parse(html);
-    }
-
-    /**
-     * @return entire HTML from the URL or pseudo HTML
-     */
-    public String getHTML()
-    {
-        return doc.html();
-    }
-
-    /**
-     * @return Jsoup Document object. find details on http://jsoup.org/apidocs/
-     *         under org.jsoup.nodes.Document
-     */
-    public Document getDocument()
-    {
-        return doc;
-    }
-
 }

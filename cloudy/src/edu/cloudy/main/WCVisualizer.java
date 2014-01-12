@@ -15,9 +15,11 @@ import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.SWCPoint;
 import edu.cloudy.utils.WikipediaXMLReader;
+import edu.test.YoutubeCommentsReaderTest;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,6 +49,7 @@ public class WCVisualizer
         // 1. read a document
         WCVDocument document = readDocument();
         //WCVDocument document = readURL();
+        //WCVDocument document = readYoutube();
 
         // 2. build similarities, words etc
         List<Word> words = new ArrayList<Word>();
@@ -103,7 +106,7 @@ public class WCVisualizer
 
     private WCVDocument readURL()
     {
-        String url = "http://en.wikipedia.org/wiki/Kuala_Lumpur_General_Post_Office";
+        String url = "http://en.wikipedia.org/wiki/62_Aurigae";
         Document document;
         try
         {
@@ -114,13 +117,34 @@ public class WCVisualizer
             throw new RuntimeException(e);
         }
 
-        WCVDocument doc = new WCVDocument(document.text());
+        List<Element> tn3 = document.select("div");
+        for (Element t:tn3)
+            t.append(".");
+        
+        List<Element> tn4 = document.select("span");
+        for (Element t:tn4)
+            t.append(".");
+            
+        String text = document.text();
+        WCVDocument doc = new WCVDocument(text);
+        System.out.println(text);
         doc.parse();
 
         System.out.println("#words: " + doc.getWords().size());
         doc.weightFilter(50, new TFRankingAlgo());
 
         return doc;
+    }
+
+    private WCVDocument readYoutube()
+    {
+        WCVDocument wdoc = new WCVDocument(YoutubeCommentsReaderTest.getComments("5guMumPFBag"));
+        wdoc.parse();
+
+        System.out.println("#words: " + wdoc.getWords().size());
+        wdoc.weightFilter(50, new TFRankingAlgo());
+
+        return wdoc;
     }
 
     private void extractSimilarities(WCVDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity)
@@ -193,7 +217,6 @@ public class WCVisualizer
     {
         //LayoutAlgo algo = new ContextPreservingAlgo();
         //LayoutAlgo algo = new InflateAndPushAlgo();
-        //LayoutAlgo algo = new PathLayerAlgo(300.0, 150.0);
         //LayoutAlgo algo = new MDSAlgo();
         LayoutAlgo algo = new StarForestAlgo();
         //LayoutAlgo algo = new CycleCoverAlgo();

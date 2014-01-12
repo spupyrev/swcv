@@ -65,7 +65,7 @@ public class WordCloudPanel extends JPanel implements ActionListener
         if (colorScheme != null)
             wordColors = colorScheme;
         else
-            wordColors = (clusterAlgo != null ? new ClusterColorScheme(clusterAlgo) : new RandomColorScheme());
+            wordColors = (clusterAlgo != null ? new ClusterColorScheme(clusterAlgo, words) : new RandomColorScheme());
 
         this.setBackground(Color.WHITE);
         timer = new Timer(100, this);

@@ -4,38 +4,69 @@ import edu.cloudy.clustering.IClusterAlgo;
 import edu.cloudy.nlp.Word;
 
 import java.awt.Color;
+import java.util.List;
 
 /**
  * @author spupyrev
  * Nov 28, 2013
- * 
- * TODO: use colorbrewer2!
  */
 public class ClusterColorScheme implements IColorScheme
 {
     private IClusterAlgo clusterAlgo;
+    private List<Word> words;
+    
     private Color[] seq;
+    private int[] clusterIndex;
 
-    public ClusterColorScheme(IClusterAlgo clusterAlgo, String colorScheme)
+    public ClusterColorScheme(IClusterAlgo clusterAlgo, List<Word> words, String colorScheme)
     {
         this.clusterAlgo = clusterAlgo;
+        this.words = words;
         setColorScheme(colorScheme);
+        sortClusters();
     }
 
-    public ClusterColorScheme(IClusterAlgo clusterAlgo)
+    public ClusterColorScheme(IClusterAlgo clusterAlgo, List<Word> words)
     {
         this.clusterAlgo = clusterAlgo;
+        this.words = words;
         seq = colorbrewer_2;
+        sortClusters();
     }
 
     @Override
     public Color getColor(Word word)
     {
-        int k = clusterAlgo.getClusterNumber();
-        int cl = clusterAlgo.getCluster(word);
-        //int res = (int)((double)cl * (double)seq.length / k);
-        int res = cl % seq.length;
+        int c = clusterAlgo.getCluster(word);
+        int res = clusterIndex[c] % seq.length;
         return seq[res];
+    }
+
+    private void sortClusters()
+    {
+        int K = clusterAlgo.getClusterNumber();
+        int[] cnt = new int[K];
+        for (Word w : words)
+            cnt[clusterAlgo.getCluster(w)]++;
+
+        clusterIndex = new int[K];
+        for (int i = 0; i < K; i++)
+            clusterIndex[i] = i;
+
+        for (int i = 0; i < K; i++)
+            for (int j = i + 1; j < K; j++)
+                if (cnt[clusterIndex[i]] < cnt[clusterIndex[j]])
+                {
+                    int tmp = clusterIndex[i];
+                    clusterIndex[i] = clusterIndex[j];
+                    clusterIndex[j] = tmp;
+                }
+        
+        int[] clusterIndexRev = new int[K];
+        for (int i = 0; i < K; i++)
+            clusterIndexRev[clusterIndex[i]] = i;
+        
+        clusterIndex = clusterIndexRev;
     }
 
     private void setColorScheme(String colorScheme)

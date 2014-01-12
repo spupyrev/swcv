@@ -109,7 +109,7 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
             IClusterAlgo clusterAlgo = new KMeansPlusPlus(K);
             clusterAlgo.run(wcvDocument.getWords(), similarity);
 
-            wordColorScheme = new ClusterColorScheme(clusterAlgo, setting.getColorScheme().toString());
+            wordColorScheme = new ClusterColorScheme(clusterAlgo, wcvDocument.getWords(), setting.getColorScheme().toString());
         }
         else
         {
