@@ -37,6 +37,9 @@ public class KMeansPlusPlus implements IClusterAlgo
     @Override
     public void run(List<Word> words, Map<WordPair, Double> similarity)
     {
+        if (words.isEmpty())
+            return;
+
         this.words = words;
         this.similarities = similarity;
         this.distances = extractDistances(similarity);
@@ -268,8 +271,8 @@ public class KMeansPlusPlus implements IClusterAlgo
 
                     //double wj = 1.0 / Math.sqrt(clusterSize[j]);
                     //double wb = 1.0 / Math.sqrt(clusterSize[bestNewCluster]);
-                    double wj = 1.0/clusterSize[j];
-                    double wb = 1.0/clusterSize[bestNewCluster];
+                    double wj = 1.0 / clusterSize[j];
+                    double wb = 1.0 / clusterSize[bestNewCluster];
 
                     if (wSum[j] * wj > wSum[bestNewCluster] * wb)
                         bestNewCluster = j;

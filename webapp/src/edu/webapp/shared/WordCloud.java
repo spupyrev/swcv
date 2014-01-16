@@ -1,6 +1,10 @@
 package edu.webapp.shared;
 
+import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.i18n.shared.DefaultDateTimeFormatInfo;
+
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author spupyrev
@@ -10,92 +14,73 @@ public class WordCloud implements Serializable
 {
     private static final long serialVersionUID = 8810113025963123088L;
 
-    private String name;
+    private int id;
+
+    private String inputText;
+    private WCSetting settings;
+
+    private String creationDate;
     private String svg;
     private int width;
     private int height;
 
-    private String settings;
-    private int wordCount;
-    private double adjacencies;
-    private double distortion;
-    private double space;
-    private double uniformity;
-    private double aspectRatio;
+    private WCMetrics metrics;
+    
+    private String creatorIP;
 
     public WordCloud()
     {
 
     }
 
-    public void setName(String name)
+    public String getCreatorIP()
     {
-        this.name = name;
+        return creatorIP;
     }
 
-    public String getName()
+    public void setCreatorIP(String creatorIP)
     {
-        return this.name;
+        this.creatorIP = creatorIP;
     }
 
-    public int getWordCount()
+    public int getId()
     {
-        return wordCount;
+        return id;
     }
 
-    public void setWordCount(int wordCount)
+    public void setId(int id)
     {
-        this.wordCount = wordCount;
+        this.id = id;
     }
 
-    public double getAdjacencies()
+    public String getInputText()
     {
-        return adjacencies;
+        return inputText;
     }
 
-    public void setAdjacencies(double adjacencies)
+    public void setInputText(String inputText)
     {
-        this.adjacencies = adjacencies;
+        this.inputText = inputText;
     }
 
-    public double getDistortion()
+    public WCSetting getSettings()
     {
-        return distortion;
+        return settings;
     }
 
-    public void setDistortion(double distortion)
+    public void setSettings(WCSetting settings)
     {
-        this.distortion = distortion;
+        this.settings = settings;
     }
 
-    public double getSpace()
+    public String getCreationDate()
     {
-        return space;
+        return creationDate;
     }
 
-    public void setSpace(double space)
+    public void setCreationDate(String creationDate)
     {
-        this.space = space;
-    }
-
-    public double getUniformity()
-    {
-        return uniformity;
-    }
-
-    public void setUniformity(double uniformity)
-    {
-        this.uniformity = uniformity;
-    }
-
-    public double getAspectRatio()
-    {
-        return aspectRatio;
-    }
-
-    public void setAspectRatio(double aspectRatio)
-    {
-        this.aspectRatio = aspectRatio;
+        this.creationDate = creationDate;
     }
 
     public String getSvg()
@@ -128,14 +113,28 @@ public class WordCloud implements Serializable
         this.height = height;
     }
 
-    public String getSettings()
+    public WCMetrics getMetrics()
     {
-        return settings;
+        return metrics;
     }
 
-    public void setSettings(String settings)
+    public void setMetrics(WCMetrics metrics)
     {
-        this.settings = settings;
+        this.metrics = metrics;
+    }
+
+    private static final String DATE_FORMAT = "yyyyMMddHHmmssS";
+    private static final DefaultDateTimeFormatInfo info = new DefaultDateTimeFormatInfo();
+    private static final DateTimeFormat dtf = new DateTimeFormat(WordCloud.DATE_FORMAT, info) {};
+    
+    public Date getCreationDateAsDate()
+    {
+        return dtf.parse(creationDate);
+    }
+
+    public void setCreationDateAsDate(Date creationDate)
+    {
+        this.creationDate = dtf.format(creationDate);
     }
 
 }

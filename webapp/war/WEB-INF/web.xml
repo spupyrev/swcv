@@ -5,20 +5,37 @@
          version="2.5"
          xmlns="http://java.sun.com/xml/ns/javaee">
 
-  <!-- Servlets -->
-  <servlet>
-    <servlet-name>cloudServlet</servlet-name>
-    <servlet-class>edu.webapp.server.WordCloudServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>cloudServlet</servlet-name>
-    <url-pattern>/webapp/cloud</url-pattern>
-  </servlet-mapping>
-  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
 
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>cloudServlet</servlet-name>
+    <servlet-class>edu.webapp.server.WordCloudServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cloudServlet</servlet-name>
+    <url-pattern>/webapp/input</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>cloudLatestServlet</servlet-name>
+    <servlet-class>edu.webapp.server.WordCloudLatestServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cloudLatestServlet</servlet-name>
+    <url-pattern>/latest/latest</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>cloudDetailServlet</servlet-name>
+    <servlet-class>edu.webapp.server.WordCloudDetailServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cloudDetailServlet</servlet-name>
+    <url-pattern>/cloud/cloud</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

@@ -49,18 +49,18 @@ public class WordCloudDialogBox
         {
             public void onClick(ClickEvent event)
             {
-                Window.open(GWT.getHostPageBaseURL() + "db/svgs/" + result.getName() + ".svg", "save", "");
+                Window.open(GWT.getHostPageBaseURL() + "db/svgs/" + result.getCreationDate() + ".svg", "save", "");
             }
         });
 
         // Add goto share page bottom
-        Button goSharePageButton = new Button("Share", new ClickHandler()
+/*        Button goSharePageButton = new Button("Share", new ClickHandler()
         {
             public void onClick(ClickEvent event)
             {
                 Window.open(GWT.getHostPageBaseURL() + "db/htmls/" + result.getName() + ".html", "share", "");
             }
-        });
+        });*/
 
         Button closeButton = new Button("Close", new ClickHandler()
         {
@@ -71,10 +71,10 @@ public class WordCloudDialogBox
             }
         });
         saveButton.addStyleName("inconsolataNormal");
-        goSharePageButton.addStyleName("inconsolataNormal");
+        //goSharePageButton.addStyleName("inconsolataNormal");
         closeButton.addStyleName("inconsolataNormal");
         hp.add(saveButton);
-        hp.add(goSharePageButton);
+        //hp.add(goSharePageButton);
         hp.add(closeButton);
         dialogContents.setCellHorizontalAlignment(hp, HasHorizontalAlignment.ALIGN_RIGHT);
 

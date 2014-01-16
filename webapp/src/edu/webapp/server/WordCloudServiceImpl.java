@@ -14,14 +14,7 @@ import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.SeamCarvingAlgo;
 import edu.cloudy.layout.StarForestAlgo;
 import edu.cloudy.layout.WordleAlgo;
-import edu.cloudy.metrics.AdjacenciesMetric;
-import edu.cloudy.metrics.AspectRatioMetric;
-import edu.cloudy.metrics.DistortionMetric;
-import edu.cloudy.metrics.SpaceMetric;
-import edu.cloudy.metrics.TotalWeightMetric;
-import edu.cloudy.metrics.UniformAreaMetric;
 import edu.cloudy.nlp.WCVDocument;
-import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.LexRankingAlgo;
 import edu.cloudy.nlp.ranking.RankingAlgo;
@@ -59,9 +52,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Date;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -127,6 +119,7 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
         WordCloudPanel panel = new WordCloudPanel(wcvDocument.getWords(), layoutAlgo, null, wordColorScheme);
         panel.setSize(1024, 600);
         panel.setShowRectangles(setting.isShowRectangles());
+        panel.setOpaque(false);
         panel.paintComponent(svgGenerator);
 
         Writer writer;
@@ -140,7 +133,6 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
             writer.close();
 
             writer = new StringWriter();
-            // out = new OutputStreamWriter(System.out, "UTF-8");
             svgGenerator.stream(writer, true);
             writer.close();
         }
@@ -149,27 +141,31 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
             throw new RuntimeException(e);
         }
 
-        String timestamp = new SimpleDateFormat("yyyyMMddHHmmssS").format(Calendar.getInstance().getTime());
-        WordCloud cloud = createCloud(setting, text, timestamp, writer.toString(), (int)panel.getActualWidth() + 20, (int)panel.getActualHeight() + 20);
+        Date timestamp = Calendar.getInstance().getTime();
+        WordCloud cloud = createCloud(setting, input, text, timestamp, writer.toString(), (int)panel.getActualWidth(), (int)panel.getActualHeight());
 
         //metrics
         //computeMetrics(cloud, wcvDocument.getWords(), similarity, layoutAlgo);
 
         //export
-        WCExporter.saveCloudAsSVG(timestamp + ".svg", cloud, setting);
+        WCExporter.saveCloud(cloud);
+        //WCExporter.saveCloudAsSVG(timestamp + ".svg", cloud, setting);
         //WCExporter.saveCloudAsHTML(timestamp + ".html", cloud, setting);
 
         return cloud;
     }
 
-    private WordCloud createCloud(WCSetting setting, String text, String name, String svg, int width, int height)
+    private WordCloud createCloud(WCSetting setting, String input, String text, Date timestamp, String svg, int width, int height)
     {
         WordCloud cloud = new WordCloud();
-        cloud.setName(name);
-        cloud.setSettings(setting.toString() + "Text:\n" + text);
+        cloud.setInputText(input);
+        cloud.setCreationDateAsDate(timestamp);
+        cloud.setSettings(setting);
         cloud.setSvg(svg);
         cloud.setWidth(width);
         cloud.setHeight(height);
+        
+        cloud.setCreatorIP(getThreadLocalRequest().getRemoteAddr());
         return cloud;
     }
 
@@ -191,18 +187,6 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
     {
         log.info("running algorithm " + setting.toString());
         log.info("text: " + text);
-    }
-
-    private void computeMetrics(WordCloud wc, List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
-    {
-        wc.setWordCount(words.size());
-        double totalWeight = new TotalWeightMetric().getValue(words, similarity, algo);
-        double adj = new AdjacenciesMetric().getValue(words, similarity, algo);
-        wc.setAdjacencies(adj / totalWeight);
-        wc.setDistortion(new DistortionMetric().getValue(words, similarity, algo));
-        wc.setSpace(new SpaceMetric(false).getValue(words, similarity, algo));
-        wc.setUniformity(new UniformAreaMetric().getValue(words, similarity, algo));
-        wc.setAspectRatio(new AspectRatioMetric().getValue(words, similarity, algo));
     }
 
     private SimilarityAlgo createSimilarity(SIMILARITY_ALGORITHM algo)
@@ -272,7 +256,7 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
         else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_3))
             return 4;
 
-        return (int)Math.sqrt((double)n / 2);
+        return Math.max((int)Math.sqrt((double)n / 2), 1);
     }
 
 }

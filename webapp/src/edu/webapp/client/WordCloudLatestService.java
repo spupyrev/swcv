@@ -3,16 +3,15 @@ package edu.webapp.client;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WordCloud;
+
+import java.util.List;
 
 /**
  * The client side stub for the RPC service.
  */
-@RemoteServiceRelativePath("input")
-public interface WordCloudService extends RemoteService
+@RemoteServiceRelativePath("latest")
+public interface WordCloudLatestService extends RemoteService
 {
-    WordCloud buildWordCloud(String input, WCSetting setting);
-    
-    String getRandomWikiUrl();
+    List<WordCloud> getLatestWordClouds(int limit);
 }

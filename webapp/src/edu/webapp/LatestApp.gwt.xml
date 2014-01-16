@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.5.1//EN"
   "http://google-web-toolkit.googlecode.com/svn/tags/2.5.1/distro-source/core/src/gwt-module.dtd">
-<module rename-to='webapp'>
+<module rename-to='latest'>
   <inherits name='com.google.gwt.user.User'/>
-  <!--inherits name="com.google.gwt.i18n.I18N"/-->
-
+  
     <!-- Specify the app entry point class.                         -->
-  <entry-point class='edu.webapp.client.WordCloudApp'/>
+  <entry-point class='edu.webapp.client.WordCloudLatestApp'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>

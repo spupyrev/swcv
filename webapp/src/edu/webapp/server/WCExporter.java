@@ -2,6 +2,7 @@ package edu.webapp.server;
 
 
 import edu.cloudy.utils.CommonUtils;
+import edu.webapp.server.db.DBUtils;
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WordCloud;
 
@@ -16,6 +17,15 @@ import java.io.IOException;
  */
 public class WCExporter
 {
+    /**
+     * Save the constructed cloud to database
+     */
+    public static void saveCloud(WordCloud cloud)
+    {
+        cloud.setId(DBUtils.getCloudCount());
+        DBUtils.addCloud(cloud);
+    }
+
     /**
      * Save the constructed cloud to svg file
      */

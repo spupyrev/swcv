@@ -143,7 +143,7 @@ public class WordCloudApp implements EntryPoint
 
     private void createWordCloud(String text)
     {
-        final DialogBox shadow = createShadow();
+        final DialogBox shadow = AppUtils.createShadow();
         shadow.center();
         shadow.show();
 
@@ -151,44 +151,29 @@ public class WordCloudApp implements EntryPoint
         loadingBox.show();
         loadingBox.center();
 
+        
+        
         wcService.buildWordCloud(text, setting, new AsyncCallback<WordCloud>()
         {
             public void onSuccess(WordCloud result)
             {
                 loadingBox.hide();
-                DialogBox dialogBox = new WordCloudDialogBox(shadow).create(result);
-                dialogBox.center();
-                dialogBox.show();
+                Window.Location.assign("/cloud.html?id=" + result.getId());
+                //TODO: redirect here
+
+                //DialogBox dialogBox = new WordCloudDialogBox(shadow).create(result);
+                //dialogBox.center();
+                //dialogBox.show();
             }
 
             public void onFailure(Throwable caught)
             {
                 loadingBox.hide();
-                DialogBox errorBox = createErrorBox(caught, shadow);
+                DialogBox errorBox = AppUtils.createErrorBox(caught, shadow);
                 errorBox.center();
                 errorBox.show();
             }
         });
-    }
-
-    private DialogBox createShadow()
-    {
-        final DialogBox box = new DialogBox();
-        VerticalPanel rows = new VerticalPanel();
-        rows.setSpacing(1);
-        HTML html = new HTML("<div></div>");
-        rows.add(html);
-        rows.addStyleName("blackTransparent");
-        rows.setCellHeight(html, "" + Window.getClientHeight());
-        rows.setCellWidth(html, "" + Window.getClientWidth());
-
-        rows.setCellHorizontalAlignment(html, HasHorizontalAlignment.ALIGN_CENTER);
-        rows.setCellVerticalAlignment(html, HasVerticalAlignment.ALIGN_MIDDLE);
-
-        HorizontalPanel hp = new HorizontalPanel();
-        hp.add(rows);
-        box.setWidget(hp);
-        return box;
     }
 
     private DialogBox createLoadingBox()
@@ -211,37 +196,5 @@ public class WordCloudApp implements EntryPoint
         box.setWidget(hp);
         box.hide();
         return box;
-    }
-
-    private DialogBox createErrorBox(Throwable caught, final DialogBox shadow)
-    {
-        // Create a dialog box and set the caption text
-        final DialogBox dialogBox = new DialogBox();
-
-        // Create a table to layout the content
-        VerticalPanel dialogContents = new VerticalPanel();
-        dialogContents.setSpacing(4);
-        dialogBox.setWidget(dialogContents);
-
-        // Add an image to the dialog
-        HTML html = new HTML("An error occurred while attempting to contact the server:\n" + caught.getMessage());
-        dialogContents.add(html);
-        dialogContents.setCellHorizontalAlignment(html, HasHorizontalAlignment.ALIGN_CENTER);
-
-        // Add a close button at the bottom of the dialog
-        Button closeButton = new Button("Close", new ClickHandler()
-        {
-            public void onClick(ClickEvent event)
-            {
-                shadow.hide();
-                dialogBox.hide();
-            }
-        });
-
-        dialogContents.add(closeButton);
-        dialogContents.setCellHorizontalAlignment(closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
-        dialogBox.addStyleName("errorBox inconsolataNormal");
-        // Return the dialog box
-        return dialogBox;
     }
 }
