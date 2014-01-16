@@ -12,18 +12,22 @@ import java.util.Map;
  * May 3, 2013
  * computes aspect ration
  */
-public class AspectRatioMetric implements QualityMetric {
+public class AspectRatioMetric implements QualityMetric
+{
+    private static final double GOLDEN_RATIO = (1.0 + Math.sqrt(5)) / 2.0;
 
-	@Override
-	public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo) {
-		if (words.isEmpty())
-			return 0;
+    @Override
+    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
+    {
+        if (words.isEmpty())
+            return 0;
 
-		SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
-		double ratio = bb.getWidth() / bb.getHeight();
-		double golden = (1.0 + Math.sqrt(5)) / 2.0;
+        SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
+        double mn = Math.min(bb.getWidth(), bb.getHeight());
+        double mx = Math.max(bb.getWidth(), bb.getHeight());
+        double ratio = mn / mx;
 
-		double diff = Math.abs(ratio - golden);
-		return ratio;
-	}
+        double diff = Math.abs(ratio - GOLDEN_RATIO);
+        return ratio;
+    }
 }

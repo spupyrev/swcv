@@ -66,17 +66,17 @@ public class AdjacenciesMetric implements QualityMetric, AdjacentMetric
         return true;
     }
 
-    public List<WordPair> getAdjacencies(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
+    public List<WordPair> getCloseWords(List<Word> words, LayoutAlgo algo)
     {
         List<WordPair> res = new ArrayList<WordPair>();
-        for (WordPair wp : similarity.keySet())
-        {
-            if (wp.getFirst().equals(wp.getSecond()))
-                continue;
+        for (int i = 0; i < words.size(); i++)
+            for (int j = i + 1; j < words.size(); j++)
+            {
+                WordPair wp = new WordPair(words.get(i), words.get(j));
 
-            if (close(algo, wp.getFirst(), wp.getSecond()))
-                res.add(wp);
-        }
+                if (close(algo, wp.getFirst(), wp.getSecond()))
+                    res.add(wp);
+            }
 
         return res;
     }

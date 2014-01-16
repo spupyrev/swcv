@@ -6,6 +6,8 @@ import edu.cloudy.colors.IColorScheme;
 import edu.cloudy.colors.RandomColorScheme;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.StarForestAlgoOld;
+import edu.cloudy.metrics.AdjacenciesMetric;
+import edu.cloudy.metrics.ProximityMetric;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.FontUtils;
@@ -40,9 +42,8 @@ public class WordCloudPanel extends JPanel implements ActionListener
     private boolean showRectangles = true;
     private boolean showConvexHull = false;
     private boolean showAdjacencies = false;
-    private boolean showProximity = false;
-
-    private boolean showWords = true;
+    private boolean showProximity = true;
+    private boolean showWords = false;
 
     private volatile List<Word> words;
     private LayoutAlgo algo;
@@ -235,8 +236,7 @@ public class WordCloudPanel extends JPanel implements ActionListener
 
     private void drawAdjacencies(Graphics2D g2)
     {
-        //List<WordPair> adjacent = new AdjacenciesMetric().getAdjacencies(words, similarity, algo);
-        List<WordPair> adjacent = null;
+        List<WordPair> adjacent = new AdjacenciesMetric().getCloseWords(words, algo);
 
         for (WordPair wp : adjacent)
         {
@@ -250,8 +250,7 @@ public class WordCloudPanel extends JPanel implements ActionListener
 
     private void drawProximity(Graphics2D g2)
     {
-        //List<WordPair> adjacent = new ProximityMetric().getAdjacencies(words, similarity, algo);
-        List<WordPair> adjacent = null;
+        List<WordPair> adjacent = new ProximityMetric().getCloseWords(words, algo);
 
         for (WordPair wp : adjacent)
         {
@@ -317,6 +316,31 @@ public class WordCloudPanel extends JPanel implements ActionListener
     public void setShowConvexHull(boolean showConvexHull)
     {
         this.showConvexHull = showConvexHull;
+    }
+
+    public boolean isShowRectangles()
+    {
+        return showRectangles;
+    }
+
+    public boolean isShowConvexHull()
+    {
+        return showConvexHull;
+    }
+
+    public boolean isShowAdjacencies()
+    {
+        return showAdjacencies;
+    }
+
+    public boolean isShowProximity()
+    {
+        return showProximity;
+    }
+
+    public boolean isShowWords()
+    {
+        return showWords;
     }
 
     @Override
