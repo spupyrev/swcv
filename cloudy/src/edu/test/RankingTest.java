@@ -2,9 +2,7 @@ package edu.test;
 
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.ranking.LexRankingAlgo;
 import edu.cloudy.nlp.ranking.TFIDFRankingAlgo;
-import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.WikipediaXMLReader;
 

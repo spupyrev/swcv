@@ -32,8 +32,8 @@ public class PorterStemmer extends AbstractStemmer {
 	      StringBuffer wordBuffer = new StringBuffer();
 	      while ((num = System.in.read()) != -1) {
 		char c = (char)num;
-		if (((num >= (int)'A') && (num <= (int)'Z')) ||
-		    ((num >= (int)'a') && (num <= (int)'z'))) {
+		if (((num >= 'A') && (num <= 'Z')) ||
+		    ((num >= 'a') && (num <= 'z'))) {
 		  wordBuffer.append(c);
 		} else {
 		  if (wordBuffer.length() > 0) {

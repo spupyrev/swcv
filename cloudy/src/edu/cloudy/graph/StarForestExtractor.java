@@ -12,108 +12,94 @@ import java.util.Set;
  *  run schnyder thing 
  *  partition each tree into odd-even stars
  */
-public class StarForestExtractor {
-	// todo: make setting
-	private static boolean useSchnyder = false;
+public class StarForestExtractor
+{
+    private WordGraph g;
 
-	private WordGraph g;
+    public StarForestExtractor(WordGraph g)
+    {
+        this.g = g;
+    }
 
-	public StarForestExtractor(WordGraph g) {
-		this.g = g;
-	}
+    public List<StarForest> run()
+    {
+        List<StarForest> result = new ArrayList<StarForest>();
 
-	public List<StarForest> run() {
-		List<StarForest> result = new ArrayList<StarForest>();
+        // partition into 3 trees
+        List<WordGraph> trees = extract3Trees();
 
-		// partition into 3 trees
-		List<WordGraph> trees = extract3Trees();
+        // odd-even stars
+        for (WordGraph tree : trees)
+            result.addAll(extractOddEvenForests(tree));
 
-		// odd-even stars
-		for (WordGraph tree : trees)
-			result.addAll(extractOddEvenForests(tree));
-		
-		return result;
-	}
+        return result;
+    }
 
-	private List<WordGraph> extract3Trees() {
-		if (useSchnyder) {
-			WordGraph planar = extractPlanarSubgraph(g);
-			return extract3TreesSchnyder(planar);
-		} else
-			return extract3TreesGreedy((WordGraph) g.clone());
-	}
+    private List<WordGraph> extract3Trees()
+    {
+        WordGraph graph = (WordGraph)g.clone();
+        List<WordGraph> trees = new ArrayList<WordGraph>();
 
-	private WordGraph extractPlanarSubgraph(WordGraph wordGraph) {
-		Set<Edge> mstEdges = new HashSet<Edge>();
-		return new MaxSpanningTreeBuilder(wordGraph).getTree(mstEdges);
-	}
+        //TODO: this can be anything
+        int maxTrees = 3;
+        for (int i = 0; i < maxTrees; i++)
+        {
+            if (!new CycleDetector(graph).hasCycle())
+            {
+                trees.add(graph);
+                break;
+            }
 
-	private List<WordGraph> extract3TreesSchnyder(WordGraph planar) {
-		SchnyderTreeBuilder stb = new SchnyderTreeBuilder(planar, g);
-		stb.run();
-		List<WordGraph> trees = new ArrayList<WordGraph>();
-		trees.add(stb.tree1);
-		trees.add(stb.tree2);
-		trees.add(stb.tree3);
-		return trees;
-	}
+            Set<Edge> mstEdges = new HashSet<Edge>();
+            WordGraph mst = new MaxSpanningTreeBuilder(graph).getTree(mstEdges);
+            trees.add(mst);
+            graph.removeAllEdges(mstEdges);
+        }
 
-	private List<WordGraph> extract3TreesGreedy(WordGraph graph) {
-		List<WordGraph> trees = new ArrayList<WordGraph>();
+        return trees;
+    }
 
-		//TODO: this can be anything
-		int maxTrees = 3;
-		for (int i = 0; i < maxTrees; i++) {
-			if (!new CycleDetector(graph).hasCycle()) {
-				trees.add(graph);
-				break;
-			}
+    private List<StarForest> extractOddEvenForests(final WordGraph tree)
+    {
+        final Set<Edge> oddEdges = new HashSet<Edge>();
+        final Set<Edge> evenEdges = new HashSet<Edge>();
+        final Set<Vertex> taggedVertices = new HashSet<Vertex>();
 
-			Set<Edge> mstEdges = new HashSet<Edge>();
-			WordGraph mst = new MaxSpanningTreeBuilder(graph).getTree(mstEdges);
-			trees.add(mst);
-			graph.removeAllEdges(mstEdges);
-		}
+        class TreeTagger
+        {
+            void tagVertex(Vertex v, boolean odd)
+            {
+                taggedVertices.add(v);
 
-		return trees;
-	}
+                for (Edge e : tree.edgesOf(v))
+                {
+                    if (!oddEdges.contains(e) && (!evenEdges.contains(e)))
+                    {
+                        if (odd)
+                            oddEdges.add(e);
+                        else
+                            evenEdges.add(e);
 
-	private List<StarForest> extractOddEvenForests(final WordGraph tree) {
-		final Set<Edge> oddEdges = new HashSet<Edge>();
-		final Set<Edge> evenEdges = new HashSet<Edge>();
-		final Set<Vertex> taggedVertices = new HashSet<Vertex>();
+                        tagVertex(tree.getOtherSide(e, v), !odd);
+                    }
+                }
+            }
+        }
 
-		class TreeTagger {
-			void tagVertex(Vertex v, boolean odd) {
-				taggedVertices.add(v);
+        for (Vertex v : tree.vertexSet())
+            if (!taggedVertices.contains(v))
+                new TreeTagger().tagVertex(v, false);
 
-				for (Edge e : tree.edgesOf(v)) {
-					if (!oddEdges.contains(e) && (!evenEdges.contains(e))) {
-						if (odd)
-							oddEdges.add(e);
-						else
-							evenEdges.add(e);
+        WordGraph oddTree = (WordGraph)tree.clone();
+        oddTree.removeAllEdges(evenEdges);
+        WordGraph evenTree = (WordGraph)tree.clone();
+        evenTree.removeAllEdges(oddEdges);
 
-						tagVertex(tree.getOtherSide(e, v), !odd);
-					}
-				}
-			}
-		}
+        List<StarForest> result = new ArrayList<StarForest>();
+        result.add(new StarForest(oddTree.getComponents()));
+        result.add(new StarForest(evenTree.getComponents()));
 
-		for (Vertex v : tree.vertexSet())
-			if (!taggedVertices.contains(v))
-				new TreeTagger().tagVertex(v, false);
-
-		WordGraph oddTree = (WordGraph) tree.clone();
-		oddTree.removeAllEdges(evenEdges);
-		WordGraph evenTree = (WordGraph) tree.clone();
-		evenTree.removeAllEdges(oddEdges);
-
-		List<StarForest> result = new ArrayList<StarForest>();
-		result.add(new StarForest(oddTree.getComponents()));
-		result.add(new StarForest(evenTree.getComponents()));
-
-		return result;
-	}
+        return result;
+    }
 
 }

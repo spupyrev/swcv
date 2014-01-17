@@ -42,8 +42,8 @@ public class WordCloudPanel extends JPanel implements ActionListener
     private boolean showRectangles = true;
     private boolean showConvexHull = false;
     private boolean showAdjacencies = false;
-    private boolean showProximity = true;
-    private boolean showWords = false;
+    private boolean showProximity = false;
+    private boolean showWords = true;
 
     private volatile List<Word> words;
     private LayoutAlgo algo;

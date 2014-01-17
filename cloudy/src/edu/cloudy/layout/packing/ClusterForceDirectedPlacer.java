@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author spupyrev
@@ -57,12 +56,6 @@ public class ClusterForceDirectedPlacer implements WordPlacer
     {
         // TODO Auto-generated method stub
         return false;
-    }
-
-    @Override
-    public Set<Word> getWords()
-    {
-        return wordPositions.keySet();
     }
 
     private List<Cluster> clusters;

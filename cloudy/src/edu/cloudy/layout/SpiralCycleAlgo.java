@@ -1,43 +1,28 @@
 package edu.cloudy.layout;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.SWCRectangle;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 /**
- * @author spupyrev
  * May 14, 2013
- * 
- * implemenation of Wordle algorithm
- * based on explanation in http://stackoverflow.com/questions/342687/algorithm-to-implement-a-word-cloud-like-wordle 
  */
-public class SpiralCycle implements LayoutAlgo
+public class SpiralCycleAlgo implements LayoutAlgo
 {
     private List<Word> words;
 
     private BoundingBoxGenerator bbGenerator;
 
-    private Map<Word, SWCRectangle> bb = new HashMap<Word, SWCRectangle>();
-
     private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
 
-    private static boolean ALLOW_VERTICAL_WORDS = false;
-
-    private Random rnd = new Random(123);
-
-    private double MAX_WIDTH;
-    private double MAX_HEIGHT;
-
-    public SpiralCycle(List<Word> wordList)
+    public SpiralCycleAlgo(List<Word> wordList)
     {
         this.words = wordList;
     }
@@ -145,75 +130,6 @@ public class SpiralCycle implements LayoutAlgo
             wordPositions.put(w, bbGenerator.getBoundingBox(w, w.weight));
     }
 
-    /**
-     * Main entry to the layout engine.
-     * User passes in a Word and Layout places it somewhere nice.
-     */
-    public boolean doLayout(Word word)
-    {
-        for (int att = 0; att < 1000; att++)
-        {
-            if (!makeInitialPosition(word))
-                return false;
-
-            if (!intersects(word))
-                return true;
-
-            int r = 1;
-            while (r < 4)
-            {
-                updatePosition(word, r++);
-                if (!intersects(word))
-                    return true;
-            }
-            wordPositions.remove(word);
-        }
-
-        return false;
-    }
-
-    /**
-     * Choose a random point on screen based on the Gaussian distribution.
-     * Sets the Word's x and y position when a valid one is found.
-     */
-    private boolean makeInitialPosition(Word word)
-    {
-        double angle = generateAngle();
-
-        // get width & height of word
-        SWCRectangle rect = bb.get(word);
-
-        int attempt = 0;
-        double x, y;
-        do
-        {
-            if (attempt++ >= 100)
-                return false;
-
-            x = rnd.nextDouble() * MAX_WIDTH / 8 + MAX_WIDTH / 2;
-            y = rnd.nextDouble() * MAX_HEIGHT / 8 + MAX_HEIGHT / 2;
-        }
-        while (x > MAX_WIDTH - rect.getWidth() || x < rect.getWidth() || y < rect.getHeight() || y > MAX_HEIGHT - rect.getHeight());
-
-        SWCRectangle r = new SWCRectangle(x, y, rect.getWidth(), rect.getHeight());
-        wordPositions.put(word, r);
-        return true;
-    }
-
-    private void updatePosition(Word word, double radius)
-    {
-        SWCRectangle rect = wordPositions.get(word);
-        radius *= rect.getWidth() / 16;
-
-        // randomly spiral out
-        double theta = rnd.nextDouble() * 2 * Math.PI;
-        double x = (radius * Math.cos(theta));
-        double y = (radius * Math.sin(theta));
-
-        rect.setRect(rect.getX() + x, rect.getY() + y, rect.getWidth(), rect.getHeight());
-        // TODO: check bounds
-    }
-
     private boolean intersects(Word word)
     {
         SWCRectangle rect = wordPositions.get(word);
@@ -224,17 +140,6 @@ public class SpiralCycle implements LayoutAlgo
                     return true;
 
         return false;
-    }
-
-    /**
-     * Generates a word angle
-     */
-    private double generateAngle()
-    {
-        if (ALLOW_VERTICAL_WORDS && rnd.nextDouble() < 0.5)
-            return -Math.PI / 2;
-
-        return 0;
     }
 
     public Map<Word, SWCRectangle> getWordPositions()
