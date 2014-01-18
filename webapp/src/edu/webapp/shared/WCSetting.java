@@ -9,7 +9,7 @@ import java.util.Random;
  */
 public class WCSetting implements Serializable
 {
-    private static final long serialVersionUID = 4967055323920398356L;
+    private static final long serialVersionUID = 5465297978880066047L;
 
     public WCSetting()
     {
@@ -27,7 +27,7 @@ public class WCSetting implements Serializable
 
     public enum LAYOUT_ALGORITHM
     {
-        WORDLE, CPDWCV, SEAM, INFLATE, STAR, CYCLE
+        WORDLE, CPWCV, SEAM, INFLATE, STAR, CYCLE, MDS
     }
 
     public enum SIMILARITY_ALGORITHM
@@ -47,7 +47,7 @@ public class WCSetting implements Serializable
 
     private COLOR_DISTRIBUTE colorDistribute = COLOR_DISTRIBUTE.KMEANS;
     private COLOR_SCHEME colorScheme = COLOR_SCHEME.BREWER_2;
-    private LAYOUT_ALGORITHM layoutAlgorithm = LAYOUT_ALGORITHM.STAR;
+    private LAYOUT_ALGORITHM layoutAlgorithm = LAYOUT_ALGORITHM.CPWCV;
     private SIMILARITY_ALGORITHM similarityAlgorithm = SIMILARITY_ALGORITHM.COSINE;
     private RANKING_ALGORITHM rankingAlgorithm = RANKING_ALGORITHM.TF;
     private FONT font = FONT.Archer;

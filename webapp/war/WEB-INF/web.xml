@@ -38,4 +38,13 @@
     <url-pattern>/cloud/cloud</url-pattern>
   </servlet-mapping>
   
+	<servlet>
+		<servlet-name>DownloadCloudServlet</servlet-name>
+		<servlet-class>edu.webapp.server.DownloadCloudServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DownloadCloudServlet</servlet-name>
+		<url-pattern>/cloud/download</url-pattern>
+	</servlet-mapping>
+  
 </web-app>

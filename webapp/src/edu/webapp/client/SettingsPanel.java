@@ -25,10 +25,12 @@ import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
 public class SettingsPanel
 {
     private WCSetting setting;
+    private boolean enabled;
 
-    public SettingsPanel(WCSetting setting)
+    public SettingsPanel(WCSetting setting, boolean enabled)
     {
         this.setting = setting;
+        this.enabled = enabled;
     }
 
     public CaptionPanel create()
@@ -45,7 +47,7 @@ public class SettingsPanel
         layout.setWidget(2, 1, createSimilarityListBox());
         layout.setWidget(3, 0, createLabel("Ranking Algorithm:"));
         layout.setWidget(3, 1, createRankingListBox());
-        
+
         layout.setWidget(0, 2, createLabel("Font:"));
         cf.setStyleName(0, 2, "adv-cell-label");
         layout.setWidget(0, 3, createFontListBox());
@@ -90,6 +92,7 @@ public class SettingsPanel
             }
         });
 
+        box.setEnabled(enabled);
         return box;
     }
 
@@ -122,6 +125,7 @@ public class SettingsPanel
             }
         });
 
+        box.setEnabled(enabled);
         return box;
     }
 
@@ -146,6 +150,7 @@ public class SettingsPanel
             }
         });
 
+        box.setEnabled(enabled);
         return box;
     }
 
@@ -156,9 +161,10 @@ public class SettingsPanel
         box.addItem("Star Forest", WCSetting.LAYOUT_ALGORITHM.STAR.toString());
         box.addItem("Cycle Cover", WCSetting.LAYOUT_ALGORITHM.CYCLE.toString());
         box.addItem("Wordle (random)", WCSetting.LAYOUT_ALGORITHM.WORDLE.toString());
-        box.addItem("Context Preserving", WCSetting.LAYOUT_ALGORITHM.CPDWCV.toString());
-        box.addItem("Seam Carving", WCSetting.LAYOUT_ALGORITHM.SEAM.toString());
+        box.addItem("Context Preserving", WCSetting.LAYOUT_ALGORITHM.CPWCV.toString());
         box.addItem("Inflate and Push", WCSetting.LAYOUT_ALGORITHM.INFLATE.toString());
+        box.addItem("Force-Directed", WCSetting.LAYOUT_ALGORITHM.MDS.toString());
+        box.addItem("Seam Carving", WCSetting.LAYOUT_ALGORITHM.SEAM.toString());
 
         box.setSelectedIndex(findIndex(box, setting.getLayoutAlgorithm().toString()));
 
@@ -171,6 +177,7 @@ public class SettingsPanel
             }
         });
 
+        box.setEnabled(enabled);
         return box;
     }
 
@@ -214,6 +221,8 @@ public class SettingsPanel
             }
         });
 
+        box.setEnabled(enabled);
+
         return box;
     }
 
@@ -250,6 +259,7 @@ public class SettingsPanel
             }
         });
 
+        box.setEnabled(enabled);
         return box;
     }
 
@@ -272,6 +282,7 @@ public class SettingsPanel
             }
         });
 
+        box.setEnabled(enabled);
         return box;
     }
 

@@ -92,7 +92,7 @@ public class WordCloudApp implements EntryPoint
 
     private void createAdvancedArea()
     {
-        final CaptionPanel settingArea = new SettingsPanel(setting).create();
+        final CaptionPanel settingArea = new SettingsPanel(setting, true).create();
         settingArea.removeStyleName("gwt-DecoratorPanel");
         RootPanel.get("settingContainer").add(settingArea);
     }
@@ -159,11 +159,6 @@ public class WordCloudApp implements EntryPoint
             {
                 loadingBox.hide();
                 Window.Location.assign("/cloud.html?id=" + result.getId());
-                //TODO: redirect here
-
-                //DialogBox dialogBox = new WordCloudDialogBox(shadow).create(result);
-                //dialogBox.center();
-                //dialogBox.show();
             }
 
             public void onFailure(Throwable caught)

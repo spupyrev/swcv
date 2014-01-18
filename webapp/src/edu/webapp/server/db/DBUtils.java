@@ -1,5 +1,14 @@
 package edu.webapp.server.db;
 
+import edu.cloudy.utils.CommonUtils;
+import edu.webapp.shared.DBCloudNotFoundException;
+import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSetting.COLOR_DISTRIBUTE;
+import edu.webapp.shared.WCSetting.COLOR_SCHEME;
+import edu.webapp.shared.WCSetting.FONT;
+import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
+import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
+import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
 import edu.webapp.shared.WordCloud;
 
 import java.sql.Connection;
@@ -41,12 +50,20 @@ public class DBUtils
             {
                 String[] fields = new String[] {
                         "ID",
-                        "INPUTTEXT",
-                        "CREATIONDATE",
+                        "INPUT_TEXT",
+                        "CREATION_DATE",
                         "WIDTH",
                         "HEIGHT",
                         "SVG",
-                        "CREATORIP" };
+                        "CREATOR_IP",
+                        "WORD_COUNT",
+                        "SIMILARITY_ALGO",
+                        "RANKING_ALGO",
+                        "LAYOUT_ALGO",
+                        "FONT",
+                        "COLOR_SCHEME",
+                        "COLOR_DISTR" };
+
                 Object[] values = new Object[] {
                         cloud.getId(),
                         cloud.getInputText(),
@@ -54,7 +71,14 @@ public class DBUtils
                         cloud.getWidth(),
                         cloud.getHeight(),
                         cloud.getSvg(),
-                        cloud.getCreatorIP() };
+                        cloud.getCreatorIP(),
+                        cloud.getSettings().getWordCount(),
+                        cloud.getSettings().getSimilarityAlgorithm().toString(),
+                        cloud.getSettings().getRankingAlgorithm().toString(),
+                        cloud.getSettings().getLayoutAlgorithm().toString(),
+                        cloud.getSettings().getFont().toString(),
+                        cloud.getSettings().getColorScheme().toString(),
+                        cloud.getSettings().getColorDistribute().toString() };
 
                 StringBuffer sql = new StringBuffer();
                 sql.append("INSERT INTO CLOUD (");
@@ -75,7 +99,7 @@ public class DBUtils
                 }
                 sql.append(");");
 
-                System.out.println("SQL: " + sql.toString());
+                //System.out.println("SQL: " + sql.toString());
                 PreparedStatement ps = c.prepareStatement(sql.toString());
                 for (int i = 0; i < values.length; i++)
                 {
@@ -99,7 +123,7 @@ public class DBUtils
         });
     }
 
-    public static WordCloud getCloud(final int id)
+    public static WordCloud getCloud(final int id) throws DBCloudNotFoundException
     {
         final WordCloud cloud = new WordCloud();
 
@@ -118,18 +142,30 @@ public class DBUtils
 
         });
 
+        if (cloud.getId() != id)
+            throw new DBCloudNotFoundException("No word cloud exists with id=" + id);
+
         return cloud;
     }
 
     private static void convertRSToCloud(final WordCloud cloud, ResultSet rs) throws SQLException
     {
         cloud.setId(rs.getInt("ID"));
-        cloud.setInputText(rs.getString("INPUTTEXT"));
+        cloud.setInputText(rs.getString("INPUT_TEXT"));
         cloud.setHeight(rs.getInt("HEIGHT"));
         cloud.setWidth(rs.getInt("WIDTH"));
-        cloud.setCreationDate(rs.getString("CREATIONDATE"));
+        cloud.setCreationDate(rs.getString("CREATION_DATE"));
         cloud.setSvg(rs.getString("SVG"));
-        cloud.setCreatorIP(rs.getString("CREATORIP"));
+        cloud.setCreatorIP(rs.getString("CREATOR_IP"));
+
+        cloud.setSettings(new WCSetting());
+        cloud.getSettings().setWordCount(rs.getInt("WORD_COUNT"));
+        cloud.getSettings().setSimilarityAlgorithm(SIMILARITY_ALGORITHM.valueOf(rs.getString("SIMILARITY_ALGO")));
+        cloud.getSettings().setRankingAlgorithm(RANKING_ALGORITHM.valueOf(rs.getString("RANKING_ALGO")));
+        cloud.getSettings().setLayoutAlgorithm(LAYOUT_ALGORITHM.valueOf(rs.getString("LAYOUT_ALGO")));
+        cloud.getSettings().setFont(FONT.valueOf(rs.getString("FONT")));
+        cloud.getSettings().setColorScheme(COLOR_SCHEME.valueOf(rs.getString("COLOR_SCHEME")));
+        cloud.getSettings().setColorDistribute(COLOR_DISTRIBUTE.valueOf(rs.getString("COLOR_DISTR")));
     }
 
     public static List<WordCloud> getLatestClouds(final int limit)
@@ -166,12 +202,19 @@ public class DBUtils
                 stmt = c.createStatement();
                 String[] fields = new String[] {
                         "ID INT PRIMARY KEY     NOT NULL",
-                        "INPUTTEXT TEXT    NOT NULL",
-                        "CREATIONDATE CHAR(50) NOT NULL",
+                        "INPUT_TEXT TEXT    NOT NULL",
+                        "CREATION_DATE CHAR(50) NOT NULL",
                         "WIDTH INT NOT NULL",
                         "HEIGHT INT NOT NULL",
                         "SVG TEXT NOT NULL",
-                        "CREATORIP CHAR(50)" };
+                        "CREATOR_IP CHAR(50)",
+                        "WORD_COUNT INT NOT NULL",
+                        "SIMILARITY_ALGO CHAR(50)",
+                        "RANKING_ALGO CHAR(50)",
+                        "LAYOUT_ALGO CHAR(50)",
+                        "FONT CHAR(50)",
+                        "COLOR_SCHEME CHAR(50)",
+                        "COLOR_DISTR CHAR(50)" };
 
                 StringBuffer sql = new StringBuffer();
                 sql.append("CREATE TABLE CLOUD (");
@@ -197,11 +240,13 @@ public class DBUtils
             Class.forName("org.sqlite.JDBC");
             try
             {
-                c = DriverManager.getConnection("jdbc:sqlite:db/clouds.db");
+                String path = CommonUtils.getAbsoluteFileName("") + "../../db/clouds.db";
+                c = DriverManager.getConnection("jdbc:sqlite:" + path);
             }
             catch (SQLException e)
             {
-                c = DriverManager.getConnection("jdbc:sqlite:war/db/clouds.db");
+                //c = DriverManager.getConnection("jdbc:sqlite:war/db/clouds.db");
+                throw e;
             }
             //System.out.println("Opened database successfully");
 

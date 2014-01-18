@@ -1,5 +1,7 @@
 package edu.webapp.server.db;
 
+import edu.webapp.shared.DBCloudNotFoundException;
+import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WordCloud;
 
 import java.util.Calendar;
@@ -13,24 +15,32 @@ public class DBTests
 {
     public static void main(String[] args)
     {
-        //DBUtils.createDB();
-        //testAddCloud();
-        testListClouds();
-        //testCount();
+        try
+        {
+            //DBUtils.createDB();
+            //testAddCloud();
+            testListClouds();
+            //testCount();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
-    private static void testAddCloud()
+    private static void testAddCloud() throws DBCloudNotFoundException
     {
         WordCloud wc = new WordCloud();
         //int id = new Random().nextInt(1234567);
         int id = DBUtils.getCloudCount();
         wc.setId(id);
-        wc.setInputText("text");
+        wc.setInputText("test");
         wc.setHeight(800);
         wc.setWidth(600);
         wc.setCreationDateAsDate(Calendar.getInstance().getTime());
         wc.setSvg("<svg /> ><g style='fill:white; stroke:white;' /></g");
         wc.setCreatorIP("127.1.3.4");
+        wc.setSettings(new WCSetting());
 
         DBUtils.addCloud(wc);
 

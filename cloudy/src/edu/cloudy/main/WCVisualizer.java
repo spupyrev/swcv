@@ -68,7 +68,7 @@ public class WCVisualizer
     {
         //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
 
-        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/test_wiki");
+        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/twitter");
         xmlReader.read();
         Iterator<String> texts = xmlReader.getTexts();
 
@@ -83,7 +83,7 @@ public class WCVisualizer
 
         System.out.println("#words: " + doc.getWords().size());
         //doc.weightFilter(15, new TFIDFRankingAlgo());
-        doc.weightFilter(150, new TFRankingAlgo());
+        doc.weightFilter(100, new TFRankingAlgo());
         //doc.weightFilter(50, new TFRankingAlgo());
         //doc.weightFilter(15, new LexRankingAlgo());
 
@@ -151,7 +151,7 @@ public class WCVisualizer
     {
         //SimilarityAlgo[] coOccurenceAlgo111 = {new LexicalSimilarityAlgo(),new CosineCoOccurenceAlgo(), new JaccardCoOccurenceAlgo()};
         //SimilarityAlgo coOccurenceAlgo = new LexicalSimilarityAlgo();
-        //SimilarityAlgo coOccurenceAlgo = new EuclideanAlgo();
+        //SimilarityAlgo coOccurenceAlgo = new DiceCoefficientAlgo();
 
         //SimilarityAlgo coOccurenceAlgo = new JaccardCoOccurenceAlgo();
         SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();

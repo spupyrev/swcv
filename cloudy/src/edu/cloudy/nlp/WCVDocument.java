@@ -82,21 +82,7 @@ public class WCVDocument
                     continue;
 
                 //words of length >= 3
-                if (currentWord.length() < 3)
-                    continue;
-
-                //skip all unicode
-                boolean unicode = false;
-                for (int k = 0; k < currentWord.length(); k++)
-                {
-                    char a = currentWord.charAt(k);
-                    if (a < 0 || a > 127)
-                    {
-                        unicode = true;
-                        break;
-                    }
-                }
-                if (unicode)
+                if (currentWord.length() < 2)
                     continue;
 
                 if (!wordMap.containsKey(currentStem))
@@ -139,8 +125,18 @@ public class WCVDocument
     private boolean isWord(String currentWord)
     {
         for (int i = 0; i < currentWord.length(); i++)
-            if (!Character.isLetter(currentWord.charAt(i)) && currentWord.charAt(i) != '-')
+        {
+            char c = currentWord.charAt(i);
+            //if (i == 0 && c == '#')
+            //    continue;
+
+            if (!Character.isLetter(c) && c != '-')
                 return false;
+
+            //skip all unicode
+            if (c < 0 || c > 127)
+                return false;
+        }
         return true;
     }
 

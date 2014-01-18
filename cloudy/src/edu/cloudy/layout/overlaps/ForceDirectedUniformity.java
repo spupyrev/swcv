@@ -30,7 +30,6 @@ public class ForceDirectedUniformity<T extends SWCRectangle> implements OverlapR
     public void run(List<Word> words, Map<Word, T> wordPositions)
     {
         int iter = 0;
-        if (iter ==0 ) return;
 
         int n = words.size();
         SWCRectangle[] rect = new SWCRectangle[n];

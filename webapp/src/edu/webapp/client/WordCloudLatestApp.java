@@ -80,7 +80,8 @@ public class WordCloudLatestApp implements EntryPoint
         if (debug)
         {
             table.setHTML(0, 3, "<b>ip</b>");
-            cf.setWidth(0, 2, "55%");
+            cf.setWidth(0, 1, "20%");
+            cf.setWidth(0, 2, "60%");
             cf.setWidth(0, 3, "10%");
             cf.setHorizontalAlignment(0, 3, HasHorizontalAlignment.ALIGN_CENTER);
         }

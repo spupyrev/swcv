@@ -11,6 +11,7 @@ import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.InflateAndPushAlgo;
 import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.MDSAlgo;
 import edu.cloudy.layout.SeamCarvingAlgo;
 import edu.cloudy.layout.StarForestAlgo;
 import edu.cloudy.layout.WordleAlgo;
@@ -117,7 +118,7 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
 
         // Ask to render into the SVG Graphics2D implementation.
         WordCloudPanel panel = new WordCloudPanel(wcvDocument.getWords(), layoutAlgo, null, wordColorScheme);
-        panel.setSize(1024, 600);
+        panel.setSize(1024, 800);
         panel.setShowRectangles(setting.isShowRectangles());
         panel.setOpaque(false);
         panel.paintComponent(svgGenerator);
@@ -186,7 +187,7 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
     private void logging(String text, WCSetting setting)
     {
         log.info("running algorithm " + setting.toString());
-        log.info("text: " + text);
+        //log.info("text: " + text);
     }
 
     private SimilarityAlgo createSimilarity(SIMILARITY_ALGORITHM algo)
@@ -210,7 +211,7 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
         if (algo.equals(LAYOUT_ALGORITHM.WORDLE))
             return new WordleAlgo();
 
-        if (algo.equals(LAYOUT_ALGORITHM.CPDWCV))
+        if (algo.equals(LAYOUT_ALGORITHM.CPWCV))
             return new ContextPreservingAlgo();
 
         if (algo.equals(LAYOUT_ALGORITHM.SEAM))
@@ -224,6 +225,9 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
 
         if (algo.equals(LAYOUT_ALGORITHM.CYCLE))
             return new CycleCoverAlgo();
+
+        if (algo.equals(LAYOUT_ALGORITHM.MDS))
+            return new MDSAlgo();
 
         throw new RuntimeException("something is wrong");
     }

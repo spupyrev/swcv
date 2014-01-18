@@ -48,7 +48,7 @@ public class AppUtils
         dialogBox.setWidget(dialogContents);
 
         // Add an image to the dialog
-        HTML html = new HTML("An error occurred while attempting to contact the server:\n" + caught.getMessage());
+        HTML html = new HTML("An error occurred while attempting to contact the server:<br/>" + caught.getClass() + ": " + caught.getMessage());
         dialogContents.add(html);
         dialogContents.setCellHorizontalAlignment(html, HasHorizontalAlignment.ALIGN_CENTER);
 

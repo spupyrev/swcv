@@ -3,6 +3,7 @@ package edu.webapp.client;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import edu.webapp.shared.DBCloudNotFoundException;
 import edu.webapp.shared.WordCloud;
 
 /**
@@ -11,5 +12,5 @@ import edu.webapp.shared.WordCloud;
 @RemoteServiceRelativePath("cloud")
 public interface WordCloudDetailService extends RemoteService
 {
-    WordCloud getWordCloud(int id);
+    WordCloud getWordCloud(int id) throws DBCloudNotFoundException;
 }
