@@ -67,13 +67,15 @@ public class CycleCoverAlgo implements LayoutAlgo
         checkConsistency(edgesInMatching);
 
         List<List<Vertex>> cycles = getCycles(edgesInMatching);
+        int CYCLE_SIZE_LIMIT = 12;
+        cycles = breakLongCycles(cycles, CYCLE_SIZE_LIMIT);
 
         List<LayoutAlgo> cycleAlgos = new ArrayList<LayoutAlgo>();
         for (List<Vertex> c : cycles)
         {
             LayoutAlgo algo = null;
 
-            if (c.size() <= 12)
+            if (c.size() <= CYCLE_SIZE_LIMIT)
                 algo = new SingleCycleAlgo(getCycleWords(c));
             else
                 algo = new SinglePathAlgo();
@@ -95,6 +97,38 @@ public class CycleCoverAlgo implements LayoutAlgo
         }
 
         new ForceDirectedUniformity<SWCRectangle>().run(graph.getWords(), wordPositions);
+    }
+
+    private List<List<Vertex>> breakLongCycles(List<List<Vertex>> cycles, int cycleSizeLimit)
+    {
+        List<List<Vertex>> result = new ArrayList<List<Vertex>>();
+        for (List<Vertex> c : cycles)
+            if (c.size() <= cycleSizeLimit)
+                result.add(c);
+            else
+                result.addAll(breakLongCycle(c, cycleSizeLimit));
+
+        return result;
+    }
+
+    private List<List<Vertex>> breakLongCycle(List<Vertex> c, int cycleSizeLimit)
+    {
+        List<List<Vertex>> result = new ArrayList<List<Vertex>>();
+        List<Vertex> cur = new ArrayList<Vertex>();
+        for (Vertex v : c)
+        {
+            cur.add(v);
+            if (cur.size() >= cycleSizeLimit)
+            {
+                result.add(new ArrayList<Vertex>(cur));
+                cur.clear();
+            }
+        }
+
+        if (cur.size() > 0)
+            result.add(new ArrayList<Vertex>(cur));
+
+        return result;
     }
 
     private List<List<Vertex>> getCycles(List<Edge> edges)

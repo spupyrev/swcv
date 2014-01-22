@@ -47,8 +47,8 @@ public class WCVisualizer
     private void run()
     {
         // 1. read a document
-        WCVDocument document = readDocument();
-        //WCVDocument document = readURL();
+        //WCVDocument document = readDocument();
+        WCVDocument document = readURL();
         //WCVDocument document = readYoutube();
 
         // 2. build similarities, words etc
@@ -68,7 +68,8 @@ public class WCVisualizer
     {
         //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
 
-        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/twitter");
+        //WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/twitter");
+        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/turing");
         xmlReader.read();
         Iterator<String> texts = xmlReader.getTexts();
 
@@ -106,7 +107,7 @@ public class WCVisualizer
 
     private WCVDocument readURL()
     {
-        String url = "http://en.wikipedia.org/wiki/62_Aurigae";
+        String url = "http://gama.cs.arizona.edu";
         Document document;
         try
         {
@@ -117,14 +118,23 @@ public class WCVisualizer
             throw new RuntimeException(e);
         }
 
-        List<Element> tn3 = document.select("div");
-        for (Element t:tn3)
+        List<Element> tn;
+        tn = document.select("div");
+        for (Element t : tn)
             t.append(".");
-        
-        List<Element> tn4 = document.select("span");
-        for (Element t:tn4)
+
+        tn = document.select("span");
+        for (Element t : tn)
             t.append(".");
-            
+
+        tn = document.select("br");
+        for (Element t : tn)
+            t.append(".");
+
+        tn = document.select("li");
+        for (Element t : tn)
+            t.append(".");
+
         String text = document.text();
         WCVDocument doc = new WCVDocument(text);
         System.out.println(text);

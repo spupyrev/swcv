@@ -127,6 +127,12 @@ public class HtmlReader implements IDocumentReader
             for (Element t : doc.select("span"))
                 t.append(".");
 
+            for (Element t : doc.select("br"))
+                t.append(".");
+
+            for (Element t : doc.select("li"))
+                t.append(".");
+
             return true;
         }
         catch (Exception e)
