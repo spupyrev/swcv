@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class SingleCycleAlgo implements LayoutAlgo
 {
-    private static final boolean LAYOUT_HORIZONTAL = true;
+    private static boolean LAYOUT_VERTICAL = false;
 
     private List<Word> cycle;
     private Map<Word, SWCRectangle> wordPositions;
@@ -36,7 +36,6 @@ public class SingleCycleAlgo implements LayoutAlgo
     @Override
     public void setData(List<Word> words, Map<WordPair, Double> similarity)
     {
-        //throw new UnsupportedOperationException();
     }
 
     @Override
@@ -46,7 +45,7 @@ public class SingleCycleAlgo implements LayoutAlgo
         if (cycle.size() == 1)
             return;
 
-        if (LAYOUT_HORIZONTAL && cycle.size() <= 30)
+        if (LAYOUT_VERTICAL && cycle.size() <= 30)
             verticalLayout();
         else
             horizontalLayout();

@@ -25,7 +25,7 @@ public class AspectRatioMetric implements QualityMetric
         SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
         double mn = Math.min(bb.getWidth(), bb.getHeight());
         double mx = Math.max(bb.getWidth(), bb.getHeight());
-        double ratio = mn / mx;
+        double ratio = mx / mn;
 
         double diff = Math.abs(ratio - GOLDEN_RATIO);
         return ratio;
