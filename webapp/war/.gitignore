@@ -1,5 +1,6 @@
 db/svgs/*
 db/htmlforclouds/*
+db/*
 webapp/*
 cloud/*
 latest/*

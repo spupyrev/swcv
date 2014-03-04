@@ -2,8 +2,8 @@ package edu.cloudy.main;
 
 import edu.cloudy.clustering.IClusterAlgo;
 import edu.cloudy.clustering.KMeansPlusPlus;
-import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -47,8 +47,8 @@ public class WCVisualizer
     private void run()
     {
         // 1. read a document
-        //WCVDocument document = readDocument();
-        WCVDocument document = readURL();
+        WCVDocument document = readDocument();
+        //WCVDocument document = readURL();
         //WCVDocument document = readYoutube();
 
         // 2. build similarities, words etc
@@ -61,7 +61,8 @@ public class WCVisualizer
         IClusterAlgo clusterAlgo = runClustering(words, similarity);
 
         // 4. visualize it
-        visualize(words, similarity, algo, clusterAlgo);
+        //visualize(words, similarity, algo, clusterAlgo);
+        visualize(words, similarity, algo, null);
     }
 
     private WCVDocument readDocument()
@@ -69,7 +70,7 @@ public class WCVisualizer
         //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
 
         //WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/twitter");
-        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/turing");
+        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/copenhagen");
         xmlReader.read();
         Iterator<String> texts = xmlReader.getTexts();
 
@@ -84,7 +85,7 @@ public class WCVisualizer
 
         System.out.println("#words: " + doc.getWords().size());
         //doc.weightFilter(15, new TFIDFRankingAlgo());
-        doc.weightFilter(100, new TFRankingAlgo());
+        doc.weightFilter(50, new TFRankingAlgo());
         //doc.weightFilter(50, new TFRankingAlgo());
         //doc.weightFilter(15, new LexRankingAlgo());
 
@@ -229,9 +230,9 @@ public class WCVisualizer
         //LayoutAlgo algo = new InflateAndPushAlgo();
         //LayoutAlgo algo = new MDSAlgo();
         //LayoutAlgo algo = new StarForestAlgo();
-        LayoutAlgo algo = new CycleCoverAlgo();
+        //LayoutAlgo algo = new CycleCoverAlgo();
         //LayoutAlgo algo = new SeamCarvingAlgo();
-        //LayoutAlgo algo = new WordleAlgo();
+        LayoutAlgo algo = new WordleAlgo();
         algo.setData(words, similarity);
         algo.setConstraints(new BoundingBoxGenerator(25000.0));
 

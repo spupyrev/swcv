@@ -7,9 +7,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -37,13 +37,13 @@ public class WordCloudLatestApp implements EntryPoint
     public void onModuleLoad()
     {
         final String debug = Window.Location.getParameter("debug");
-        listService.getLatestWordClouds(25, new AsyncCallback<List<WordCloud>>()
+        listService.getLatestWordClouds(15, new AsyncCallback<List<WordCloud>>()
         {
             public void onSuccess(List<WordCloud> clouds)
             {
                 try
                 {
-                    FlexTable table = createTable(clouds, "true".equalsIgnoreCase(debug));
+                    Grid table = createTable(clouds, "true".equalsIgnoreCase(debug));
                     RootPanel.get("latestTable").add(table);
                 }
                 catch (Exception e)
@@ -61,11 +61,11 @@ public class WordCloudLatestApp implements EntryPoint
         });
     }
 
-    private FlexTable createTable(List<WordCloud> clouds, boolean debug) throws ParseException
+    private Grid createTable(List<WordCloud> clouds, boolean debug) throws ParseException
     {
-        FlexTable table = new FlexTable();
+        Grid table = new Grid(clouds.size() + 1, debug ? 4 : 3);
         table.addStyleName("latest");
-        FlexCellFormatter cf = table.getFlexCellFormatter();
+        CellFormatter cf = table.getCellFormatter();
 
         table.setHTML(0, 0, "<b>id</b>");
         table.setHTML(0, 1, "<b>creation date</b>");
