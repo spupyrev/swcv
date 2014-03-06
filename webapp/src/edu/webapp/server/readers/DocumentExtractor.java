@@ -14,6 +14,7 @@ public class DocumentExtractor
     static
     {
         readers = new ArrayList<IDocumentReader>();
+        readers.add(new TwitterReader());
         readers.add(new DotReader());
         readers.add(new PDFReader());
         readers.add(new YouTubeReader());

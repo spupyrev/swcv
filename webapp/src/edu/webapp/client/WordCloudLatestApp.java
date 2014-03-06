@@ -90,7 +90,7 @@ public class WordCloudLatestApp implements EntryPoint
         {
             WordCloud cloud = clouds.get(i);
 
-            table.setHTML(i + 1, 0, "<a href='/cloud.html?id=" + cloud.getId() + "'>" + cloud.getId() + "</a>");
+            table.setHTML(i + 1, 0, "<a href='cloud.html?id=" + cloud.getId() + "'>" + cloud.getId() + "</a>");
             Date dt = cloud.getCreationDateAsDate();
             table.setHTML(i + 1, 1, DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss").format(dt));
             table.setWidget(i + 1, 2, createSourceField(cloud.getInputText()));

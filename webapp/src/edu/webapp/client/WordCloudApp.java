@@ -158,7 +158,7 @@ public class WordCloudApp implements EntryPoint
             public void onSuccess(WordCloud result)
             {
                 loadingBox.hide();
-                Window.Location.assign("/cloud.html?id=" + result.getId());
+                Window.Location.assign("cloud.html?id=" + result.getId());
             }
 
             public void onFailure(Throwable caught)
