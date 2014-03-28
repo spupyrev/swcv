@@ -3,13 +3,12 @@ package edu.webapp.server.readers;
 import java.util.List;
 import java.util.logging.Logger;
 
-import edu.webapp.server.WordCloudServiceImpl;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterReader implements IDocumentReader
 {
-	
+
 	private static final Logger log = Logger.getLogger(TwitterReader.class.getName());
 	private String text;
 
@@ -60,7 +59,7 @@ public class TwitterReader implements IDocumentReader
 				List<Status> tweets = result.getTweets();
 				for (Status tweet : tweets)
 				{
-					text += removeLinks(tweet.getText());
+					text += removeLinks(tweet.getText()) + ".";
 				}
 			} while ((query = result.nextQuery()) != null);
 			return true;

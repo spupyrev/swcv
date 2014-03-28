@@ -99,14 +99,14 @@ public class WordCloudApp implements EntryPoint
 
     private void createCreateWordCloudButton(final TextArea textArea)
     {
-        Button sendButton = Button.wrap(Document.get().getElementById("btn_create_wc"));
-        sendButton.addClickHandler(new ClickHandler()
-        {
-            public void onClick(ClickEvent event)
-            {
-                createWordCloud();
-            }
-        });
+		Button sendButton = Button.wrap(Document.get().getElementById("btn_create_wc"));
+		sendButton.addClickHandler(new ClickHandler()
+		{
+			public void onClick(ClickEvent event)
+			{
+				createWordCloud();
+			}
+		});
     }
 
     private TextArea createTextArea()
@@ -150,14 +150,13 @@ public class WordCloudApp implements EntryPoint
         final DialogBox loadingBox = createLoadingBox();
         loadingBox.show();
         loadingBox.center();
-
-        
         
         wcService.buildWordCloud(text, setting, new AsyncCallback<WordCloud>()
         {
             public void onSuccess(WordCloud result)
             {
                 loadingBox.hide();
+                shadow.hide();
                 Window.Location.assign("/cloud.html?id=" + result.getId());
             }
 

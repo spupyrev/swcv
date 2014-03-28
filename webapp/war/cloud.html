@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-		<meta name="title" content="Semantic Word Cloud Visualization - Cloud">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="title" content="Semantic Word Cloud Visualization - Cloud">
 
-		<title>Semantic Word Cloud Visualization - Cloud</title>
+<title>Semantic Word Cloud Visualization - Cloud</title>
 
-		<link type="image/ico" rel="shortcut icon" href="favicon.ico" />
-		<link type="text/css" rel="stylesheet" href="static/css/swc.css">
-		<link type="text/css" rel="stylesheet" href="static/css/bootstrap.css">
+<link type="image/ico" rel="shortcut icon" href="favicon.ico" />
+<link type="text/css" rel="stylesheet" href="static/css/swc.css">
+<link type="text/css" rel="stylesheet" href="static/css/bootstrap.css">
 
-		<script type="text/javascript" src="cloud/cloud.nocache.js"></script>
-		<script type="text/javascript" src="static/js/ga.js"></script>
-	</head>
+<script type="text/javascript" src="cloud/cloud.nocache.js"></script>
+<script type="text/javascript" src="static/js/ga.js"></script>
+</head>
 
 <body>
 	<noscript>
@@ -37,6 +37,9 @@
 	</div>
 
 	<div id="cloud-setting" class="wide" style="margin: 5px;"></div>
+	<button id='btn_create_new_wc'
+		class="btn btn-primary buttonWidth actionmanNormal">Create
+		New Word Cloud</button>
 
 	<div id="cloud-div">
 		<script>
@@ -46,10 +49,11 @@
 	</div>
 
 	<h4 style="position: absolute; top: 20px; right: 10px;">
-	Save as <a id="save-as-svg" download>svg</a> 
-			<a id="save-as-png" download>png</a> 
-			<a id="save-as-pdf" download>pdf</a>
-</h4>
+		Save as <a id="save-as-svg" download>svg</a> <a id="save-as-png"
+			download>png</a> <a id="save-as-pdf" download>pdf</a>
+	</h4>
+
+
 </body>
 
 </html>
