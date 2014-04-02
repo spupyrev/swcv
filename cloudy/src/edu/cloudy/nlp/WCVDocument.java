@@ -134,8 +134,8 @@ public class WCVDocument
                 return false;
 
             //skip all unicode
-            if (c < 0 || c > 127)
-                return false;
+			// if (c < 0 || c > 127)
+			// return false;
         }
         return true;
     }

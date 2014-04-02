@@ -97,30 +97,29 @@ public class WordCloudDetailApp implements EntryPoint
 	private void createWordCloud()
 	{
 		final DialogBox shadow = AppUtils.createShadow();
-        shadow.center();
-        shadow.show();
+		shadow.center();
+		shadow.show();
 
-        final DialogBox loadingBox = createLoadingBox();
-        loadingBox.show();
-        loadingBox.center();
-        
-        service.createWordCloud(inputText, setting, new AsyncCallback<WordCloud>()
-        {
-            public void onSuccess(WordCloud result)
-            {
-                loadingBox.hide();
-                shadow.hide();
-                Window.Location.assign("/cloud.html?id=" + result.getId());
-            }
+		final DialogBox loadingBox = createLoadingBox();
+		loadingBox.show();
+		loadingBox.center();
+		service.createWordCloud(inputText, setting, new AsyncCallback<WordCloud>()
+		{
+			public void onSuccess(WordCloud result)
+			{
+				loadingBox.hide();
+				shadow.hide();
+				Window.Location.assign("/cloud.html?id=" + result.getId());
+			}
 
-            public void onFailure(Throwable caught)
-            {
-                loadingBox.hide();
-                DialogBox errorBox = AppUtils.createErrorBox(caught, shadow);
-                errorBox.center();
-                errorBox.show();
-            }
-        });
+			public void onFailure(Throwable caught)
+			{
+				loadingBox.hide();
+				DialogBox errorBox = AppUtils.createErrorBox(caught, shadow);
+				errorBox.center();
+				errorBox.show();
+			}
+		});
 	}
 
 	private SimplePanel createPanel(WordCloud cloud)
@@ -145,24 +144,24 @@ public class WordCloudDetailApp implements EntryPoint
 	}
 
 	private DialogBox createLoadingBox()
-    {
-        final DialogBox box = new DialogBox();
-        VerticalPanel rows = new VerticalPanel();
-        rows.setSpacing(1);
+	{
+		final DialogBox box = new DialogBox();
+		VerticalPanel rows = new VerticalPanel();
+		rows.setSpacing(1);
 
-        HTML html = new HTML("<img src=\"" + GWT.getHostPageBaseURL() + "static/imgs/loader.gif\" alt=\"loading\" />");
-        rows.add(html);
-        rows.addStyleName("whiteWithBorder");
-        rows.setCellHeight(html, "100");
-        rows.setCellWidth(html, "300");
+		HTML html = new HTML("<img src=\"" + GWT.getHostPageBaseURL() + "static/imgs/loader.gif\" alt=\"loading\" />");
+		rows.add(html);
+		rows.addStyleName("whiteWithBorder");
+		rows.setCellHeight(html, "100");
+		rows.setCellWidth(html, "300");
 
-        rows.setCellHorizontalAlignment(html, HasHorizontalAlignment.ALIGN_CENTER);
-        rows.setCellVerticalAlignment(html, HasVerticalAlignment.ALIGN_MIDDLE);
+		rows.setCellHorizontalAlignment(html, HasHorizontalAlignment.ALIGN_CENTER);
+		rows.setCellVerticalAlignment(html, HasVerticalAlignment.ALIGN_MIDDLE);
 
-        HorizontalPanel hp = new HorizontalPanel();
-        hp.add(rows);
-        box.setWidget(hp);
-        box.hide();
-        return box;
-    }
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.add(rows);
+		box.setWidget(hp);
+		box.hide();
+		return box;
+	}
 }
