@@ -34,14 +34,10 @@ public class WordCloudDetailApp implements EntryPoint
 	 */
 	private final WordCloudDetailServiceAsync service = GWT.create(WordCloudDetailService.class);
 	/**
-	 * 
-	 */
-	private final WordCloudServiceAsync wcService = GWT.create(WordCloudService.class);
-	/**
 	 * used for get new setting from a generated word cloud
 	 */
-	WCSetting setting;
-	String text = new String();
+	private WCSetting setting;
+	private String inputText;
 
 	/**
 	 * This is the entry point method.
@@ -68,7 +64,7 @@ public class WordCloudDetailApp implements EntryPoint
 				SimplePanel panel = createPanel(cloud);
 				RootPanel.get("cloud-div").add(panel);
 				setting = cloud.getSettings();
-				text = cloud.getInputText();
+				inputText = cloud.getInputText();
 				CaptionPanel settingArea = new SettingsPanel(setting, true).create();
 				settingArea.setCaptionText("options");
 				RootPanel.get("cloud-setting").add(settingArea);
@@ -108,7 +104,7 @@ public class WordCloudDetailApp implements EntryPoint
         loadingBox.show();
         loadingBox.center();
         
-        wcService.buildWordCloud(text, setting, new AsyncCallback<WordCloud>()
+        service.createWordCloud(inputText, setting, new AsyncCallback<WordCloud>()
         {
             public void onSuccess(WordCloud result)
             {
