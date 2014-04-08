@@ -15,4 +15,8 @@ public interface WordCloudService extends RemoteService
     WordCloud buildWordCloud(String input, WCSetting setting);
     
     String getRandomWikiUrl();
+
+    String getRandomTwitterUrl();
+
+    String getRandomYoutubeUrl();
 }

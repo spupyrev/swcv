@@ -32,7 +32,9 @@ import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.FontUtils;
 import edu.webapp.client.WordCloudService;
 import edu.webapp.server.readers.DocumentExtractor;
+import edu.webapp.server.utils.RandomTwitterTrendExtractor;
 import edu.webapp.server.utils.RandomWikiUrlExtractor;
+import edu.webapp.server.utils.RandomYoutubeUrlExtractor;
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WCSetting.COLOR_SCHEME;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
@@ -232,10 +234,20 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
 		throw new RuntimeException("something is wrong");
 	}
 
-	public String getRandomWikiUrl()
-	{
-		return RandomWikiUrlExtractor.getRandomWikiPage();
-	}
+    public String getRandomWikiUrl()
+    {
+        return RandomWikiUrlExtractor.getRandomWikiPage();
+    }
+
+    public String getRandomTwitterUrl()
+    {
+        return RandomTwitterTrendExtractor.getRandomTrend();
+    }
+
+    public String getRandomYoutubeUrl()
+    {
+        return RandomYoutubeUrlExtractor.getRandomUrl();
+    }
 
 	private int guessNumberOfClusters(int n, WCSetting setting)
 	{

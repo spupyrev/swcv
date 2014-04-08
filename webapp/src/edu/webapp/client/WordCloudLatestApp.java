@@ -37,7 +37,7 @@ public class WordCloudLatestApp implements EntryPoint
     public void onModuleLoad()
     {
         final String debug = Window.Location.getParameter("debug");
-        listService.getLatestWordClouds(15, new AsyncCallback<List<WordCloud>>()
+        listService.getLatestWordClouds(25, new AsyncCallback<List<WordCloud>>()
         {
             public void onSuccess(List<WordCloud> clouds)
             {

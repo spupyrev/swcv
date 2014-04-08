@@ -13,4 +13,8 @@ public interface WordCloudServiceAsync
     void buildWordCloud(String input, WCSetting setting, AsyncCallback<WordCloud> callback) throws IllegalArgumentException;
 
     void getRandomWikiUrl(AsyncCallback<String> callback);
+    
+    void getRandomTwitterUrl(AsyncCallback<String> callback);
+    
+    void getRandomYoutubeUrl(AsyncCallback<String> callback);
 }
