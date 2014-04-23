@@ -38,7 +38,7 @@ public class WCVDocument4Sentiment extends WCVDocument
 		{
 			text += str;
 		}
-		super.setText(text);
+		setText(text);
 	}
 
 	@Override
@@ -108,24 +108,24 @@ public class WCVDocument4Sentiment extends WCVDocument
 	private double getMostSignificant(double posRatio, double negRatio, double neuRatio)
 	{
 		if (posRatio > negRatio)
-		{
+		{ 	// pos > neg
 			if (posRatio > neuRatio)
-			{
+			{	// pos > neu && pos > neg
 				return posRatio;
 			}
 			else
-			{
+			{	// neu > pos > neg
 				return 0.;
 			}
 		}
 		else
-		{
+		{	// neg > pos
 			if (negRatio > neuRatio)
-			{
+			{	// neg > neu && neg > pos
 				return -negRatio;
 			}
 			else
-			{
+			{	// neu > neg > pos
 				return 0.;
 			}
 		}
