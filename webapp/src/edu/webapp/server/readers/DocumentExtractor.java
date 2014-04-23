@@ -29,14 +29,16 @@ public class DocumentExtractor
         this.input = input;
     }
 
-    public String getText()
+    public IDocumentReader getText()
     {
         for (IDocumentReader reader : readers)
         {
-            if (reader.isConnected(input))
-                return reader.getText(input);
+            if (reader.isConnected(input)){
+            	return reader;
+            }
         }
 
         throw new RuntimeException("none of the readers is available");
     }
+    
 }

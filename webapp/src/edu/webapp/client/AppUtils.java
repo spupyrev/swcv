@@ -1,5 +1,6 @@
 package edu.webapp.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -37,6 +38,27 @@ public class AppUtils
         return box;
     }
 
+	public static DialogBox createLoadingBox()
+	{
+		final DialogBox box = new DialogBox();
+		VerticalPanel rows = new VerticalPanel();
+		rows.setSpacing(1);
+
+		HTML html = new HTML("<img src=\"" + GWT.getHostPageBaseURL() + "static/imgs/loader.gif\" alt=\"loading\" />");
+		rows.add(html);
+		rows.addStyleName("whiteWithBorder");
+		rows.setCellHeight(html, "100");
+		rows.setCellWidth(html, "300");
+
+		rows.setCellHorizontalAlignment(html, HasHorizontalAlignment.ALIGN_CENTER);
+		rows.setCellVerticalAlignment(html, HasVerticalAlignment.ALIGN_MIDDLE);
+
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.add(rows);
+		box.setWidget(hp);
+		box.hide();
+		return box;
+	}
     public static DialogBox createErrorBox(Throwable caught, final DialogBox shadow)
     {
         // Create a dialog box and set the caption text

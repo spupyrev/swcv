@@ -82,6 +82,13 @@ public interface IColorScheme
             new Color(152, 237, 0),
             new Color(166, 54, 3),
             new Color(0, 129, 10) };
+    
+    static final Color[] sentiment = {
+    		new Color(217,72,1),    // Orange Class7
+    		new Color(253,141,60),  // Orange Class5
+    		new Color(150,150,150), // Grey Class5
+    		new Color(107,174,214), // Blue Class5
+    		new Color(33,113,181)}; // Blue Class7	
 
     Color getColor(Word word);
 }

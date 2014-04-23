@@ -1,14 +1,14 @@
 package edu.webapp.server.readers;
 
-import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * @author spupyrev
@@ -78,5 +78,4 @@ public class YouTubeReader implements IDocumentReader
     {
         return text;
     }
-
 }

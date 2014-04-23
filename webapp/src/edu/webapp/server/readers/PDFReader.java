@@ -1,12 +1,12 @@
 package edu.webapp.server.readers;
 
-import org.apache.pdfbox.pdfparser.PDFParser;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
-
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
 
 public class PDFReader implements IDocumentReader
 {
@@ -50,5 +50,4 @@ public class PDFReader implements IDocumentReader
     {
         return text;
     }
-
 }

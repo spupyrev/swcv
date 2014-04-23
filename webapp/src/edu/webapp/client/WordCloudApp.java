@@ -204,7 +204,7 @@ public class WordCloudApp implements EntryPoint
         shadow.center();
         shadow.show();
 
-        final DialogBox loadingBox = createLoadingBox();
+        final DialogBox loadingBox = AppUtils.createLoadingBox();
         loadingBox.show();
         loadingBox.center();
 
@@ -225,27 +225,5 @@ public class WordCloudApp implements EntryPoint
                 errorBox.show();
             }
         });
-    }
-
-    private DialogBox createLoadingBox()
-    {
-        final DialogBox box = new DialogBox();
-        VerticalPanel rows = new VerticalPanel();
-        rows.setSpacing(1);
-
-        HTML html = new HTML("<img src=\"" + GWT.getHostPageBaseURL() + "static/imgs/loader.gif\" alt=\"loading\" />");
-        rows.add(html);
-        rows.addStyleName("whiteWithBorder");
-        rows.setCellHeight(html, "100");
-        rows.setCellWidth(html, "300");
-
-        rows.setCellHorizontalAlignment(html, HasHorizontalAlignment.ALIGN_CENTER);
-        rows.setCellVerticalAlignment(html, HasVerticalAlignment.ALIGN_MIDDLE);
-
-        HorizontalPanel hp = new HorizontalPanel();
-        hp.add(rows);
-        box.setWidget(hp);
-        box.hide();
-        return box;
     }
 }
