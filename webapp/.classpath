@@ -3,8 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-labs.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-endpoints.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/batik-anim.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/batik-awt-util.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/batik-bridge.jar"/>
@@ -30,7 +28,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/batik-xml.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/batik.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/core.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jgraph.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jgrapht-jdk1.6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/js.jar"/>
@@ -46,8 +43,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/xerces_2_5_0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/xml-apis-ext.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/xml-apis.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-1.0-sdk-1.8.4.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-jsr107cache-1.8.4.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jsoup-1.7.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/pdfbox-1.8.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/ws4j-1.0.1.jar"/>

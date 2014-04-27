@@ -80,7 +80,7 @@ public class SettingsPanel
         box.addItem("KMeans++", WCSetting.COLOR_DISTRIBUTE.KMEANS.toString());
         box.addItem("Random", WCSetting.COLOR_DISTRIBUTE.RANDOM.toString());
         box.addItem("Words Rank", WCSetting.COLOR_DISTRIBUTE.WORD_RANK.toString());
-        box.addItem("Sentiment(TwitterOnly)",WCSetting.COLOR_DISTRIBUTE.SENTIMENT.toString());
+        box.addItem("Sentiment (TwitterOnly)",WCSetting.COLOR_DISTRIBUTE.SENTIMENT.toString());
         box.setSelectedIndex(findIndex(box, setting.getColorDistribute().toString()));
 
         box.addChangeHandler(new ChangeHandler()

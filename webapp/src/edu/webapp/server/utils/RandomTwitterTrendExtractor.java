@@ -44,12 +44,23 @@ public class RandomTwitterTrendExtractor
         //1 - worldwide
         //23424977 - United States
         //23424936 - Russia
+        //2508428 - Tucson
+        //Los Angeles 2442047
+        //New York 2459115
+        //San Francisco 2487956
+        //Seattle 2490383
 
-        int id = rnd.nextInt(3);
-        if (id == 0)
-            return 1;
-        else if (id == 1)
-            return 23424977;
-        return 23424936;
+        int[] codes = {
+                1,
+                23424977,
+                23424936,
+                2508428,
+                2442047,
+                2459115,
+                2487956,
+                2490383 };
+
+        int id = rnd.nextInt(codes.length);
+        return codes[id];
     }
 }

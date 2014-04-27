@@ -35,10 +35,10 @@ public interface IColorScheme
             new Color(77, 175, 74),
             new Color(152, 78, 163),
             new Color(255, 127, 0),
-            new Color(255, 255, 51),
             new Color(166, 86, 40),
+            new Color(153, 153, 153),
             new Color(247, 129, 191),
-            new Color(153, 153, 153) };
+            new Color(50, 50, 50) };
 
     static final Color[] colorbrewer_3 = {
             new Color(141, 211, 199),
@@ -82,13 +82,13 @@ public interface IColorScheme
             new Color(152, 237, 0),
             new Color(166, 54, 3),
             new Color(0, 129, 10) };
-    
+
     static final Color[] sentiment = {
-    		new Color(217,72,1),    // Orange Class7
-    		new Color(253,141,60),  // Orange Class5
-    		new Color(150,150,150), // Grey Class5
-    		new Color(107,174,214), // Blue Class5
-    		new Color(33,113,181)}; // Blue Class7	
+            new Color(217, 72, 1), // Orange Class7
+            new Color(253, 141, 60), // Orange Class5
+            new Color(150, 150, 150), // Grey Class5
+            new Color(107, 174, 214), // Blue Class5
+            new Color(33, 113, 181) }; // Blue Class7	
 
     Color getColor(Word word);
 }
