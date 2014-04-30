@@ -58,13 +58,10 @@ public class WCVDocument4Sentiment extends WCVDocument
 	private void AssignSentiValueToChunks()
 	{
 		SentimentClassifier sc = SentimentClassifier.resourceClassifier();
-		System.out.println("sentiValues:");
 		for (int i = 0; i < sentences.length; ++i)
 		{
 			sentiValues[i] = sc.predict(sentences[i]);
-			System.out.print(sentiValues[i]);
 		}
-		System.out.println();
 	}
 
 	private void CalculateSentiValueToWords()
@@ -96,31 +93,31 @@ public class WCVDocument4Sentiment extends WCVDocument
 			double neuRatio = (double) neuCount / totalCount;
 			double sentiValue = getMostSignificant(posRatio, negRatio, neuRatio);
 			currentWord.setSentiValue(sentiValue);
-			currentWord.setSentCount(posCount,negCount,neuCount,totalCount);
+			currentWord.setSentCount(posCount, negCount, neuCount, totalCount);
 		}
 	}
 
 	private double getMostSignificant(double posRatio, double negRatio, double neuRatio)
 	{
 		if (posRatio > negRatio)
-		{ 	// pos > neg
+		{ // pos > neg
 			if (posRatio > neuRatio)
-			{	// pos > neu && pos > neg
+			{ // pos > neu && pos > neg
 				return posRatio;
 			}
 			else
-			{	// neu > pos > neg
+			{ // neu > pos > neg
 				return 0.;
 			}
 		}
 		else
-		{	// neg > pos
+		{ // neg >= pos
 			if (negRatio > neuRatio)
-			{	// neg > neu && neg > pos
+			{ // neg > neu && neg > pos
 				return -negRatio;
 			}
 			else
-			{	// neu > neg > pos
+			{ // neu > neg > pos
 				return 0.;
 			}
 		}
