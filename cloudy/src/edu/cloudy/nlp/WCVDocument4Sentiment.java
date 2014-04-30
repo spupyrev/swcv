@@ -112,7 +112,11 @@ public class WCVDocument4Sentiment extends WCVDocument
 		}
 		else
 		{ // neg >= pos
-			if (negRatio > neuRatio)
+			if (posRatio == negRatio)
+			{
+				return 0.;
+			}
+			else if (negRatio > neuRatio)
 			{ // neg > neu && neg > pos
 				return -negRatio;
 			}
