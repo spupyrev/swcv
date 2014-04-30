@@ -1,6 +1,5 @@
 package edu.webapp.server.readers;
 
-import java.util.List;
 
 /**
  * @author spupyrev

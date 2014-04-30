@@ -1,15 +1,9 @@
 package edu.cloudy.nlp;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import edu.cloudy.nlp.stemming.AbstractStemmer;
-import edu.cloudy.nlp.stemming.PorterStemmer;
-import opennlp.tools.tokenize.Tokenizer;
 import edu.arizona.sista.twitter4food.SentimentClassifier;
 
 /**
@@ -102,6 +96,7 @@ public class WCVDocument4Sentiment extends WCVDocument
 			double neuRatio = (double) neuCount / totalCount;
 			double sentiValue = getMostSignificant(posRatio, negRatio, neuRatio);
 			currentWord.setSentiValue(sentiValue);
+			currentWord.setSentCount(posCount,negCount,neuCount,totalCount);
 		}
 	}
 

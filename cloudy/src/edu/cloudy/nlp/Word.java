@@ -10,6 +10,11 @@ public class Word implements Comparable<Word>
 	public String stem;
 	public double weight;
 	public double sentiValue;
+	
+	// debug info
+	public int posCount,negCount,neuCount;
+	// debug info
+	public double totalCount;
 
 	private Set<Integer> sentences;
 	private Set<Point> coordinate;
@@ -85,5 +90,13 @@ public class Word implements Comparable<Word>
 	public double getSentiValue()
 	{
 		return this.sentiValue;
+	}
+
+	public void setSentCount(int posCount, int negCount, int neuCount, double totalCount)
+	{
+		this.posCount = posCount;
+		this.negCount = negCount;
+		this.neuCount = neuCount;
+		this.totalCount = totalCount;
 	}
 }
