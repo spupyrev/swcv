@@ -1,7 +1,5 @@
 package edu.webapp.server;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Calendar;
@@ -9,7 +7,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -58,11 +55,11 @@ import edu.webapp.server.utils.RandomTwitterTrendExtractor;
 import edu.webapp.server.utils.RandomWikiUrlExtractor;
 import edu.webapp.server.utils.RandomYoutubeUrlExtractor;
 import edu.webapp.shared.WCSetting;
-import edu.webapp.shared.WordCloud;
 import edu.webapp.shared.WCSetting.COLOR_SCHEME;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
+import edu.webapp.shared.WordCloud;
 
 public class WordCloudGenerator
 {
@@ -78,7 +75,7 @@ public class WordCloudGenerator
 		WCVDocument wcvDocument;
 		String text = reader.getText(input);
 		
-		if (reader instanceof ISentimentReader)
+		if (reader instanceof ISentimentReader && setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT)
 			wcvDocument = new WCVDocument4Sentiment(((ISentimentReader) reader).getStrChunks());
 		else
 			wcvDocument = new WCVDocument(text);
