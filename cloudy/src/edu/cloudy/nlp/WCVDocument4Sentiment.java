@@ -30,7 +30,7 @@ public class WCVDocument4Sentiment extends WCVDocument
 		// following statements just for WCVDocument
 		for (String str : strChunks)
 		{
-			text += str;
+			text += str+"@$@$";
 		}
 		setText(text);
 	}

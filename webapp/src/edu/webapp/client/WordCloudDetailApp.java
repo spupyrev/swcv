@@ -12,12 +12,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WordCloud;
@@ -64,7 +60,7 @@ public class WordCloudDetailApp implements EntryPoint
 				SimplePanel panel = createPanel(cloud);
 				RootPanel.get("cloud-div").add(panel);
 				setting = cloud.getSettings();
-				inputText = cloud.getInputText();
+				inputText = cloud.getSourceText();
 				CaptionPanel settingArea = new SettingsPanel(setting, true).create();
 				settingArea.setCaptionText("options");
 				RootPanel.get("cloud-setting").add(settingArea);
@@ -125,7 +121,7 @@ public class WordCloudDetailApp implements EntryPoint
 	private SimplePanel createPanel(WordCloud cloud)
 	{
 		SimplePanel panel = new SimplePanel();
-		panel.setPixelSize(cloud.getWidth() + 10, cloud.getHeight() + 10);
+		panel.setPixelSize(cloud.getWidth()+10, cloud.getHeight()+10);
 		panel.addStyleName("center");
 		panel.add(new HTML(cloud.getSvg()));
 		return panel;

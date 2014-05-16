@@ -17,6 +17,7 @@ public class WordCloud implements Serializable
     private int id;
 
     private String inputText;
+    private String sourceText;
     private WCSetting settings;
 
     private String creationDate;
@@ -136,5 +137,15 @@ public class WordCloud implements Serializable
     {
         this.creationDate = dtf.format(creationDate);
     }
+
+	public String getSourceText()
+	{
+		return sourceText;
+	}
+
+	public void setSourceText(String sourceText)
+	{
+		this.sourceText = sourceText;
+	}
 
 }

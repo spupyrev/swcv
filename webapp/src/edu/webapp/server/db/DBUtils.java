@@ -51,6 +51,7 @@ public class DBUtils
                 String[] fields = new String[] {
                         "ID",
                         "INPUT_TEXT",
+                        "SOURCE_TEXT",
                         "CREATION_DATE",
                         "WIDTH",
                         "HEIGHT",
@@ -67,6 +68,7 @@ public class DBUtils
                 Object[] values = new Object[] {
                         cloud.getId(),
                         cloud.getInputText(),
+                        cloud.getSourceText(),
                         cloud.getCreationDate(),
                         cloud.getWidth(),
                         cloud.getHeight(),
@@ -152,6 +154,7 @@ public class DBUtils
     {
         cloud.setId(rs.getInt("ID"));
         cloud.setInputText(rs.getString("INPUT_TEXT"));
+        cloud.setSourceText(rs.getString("SOURCE_TEXT"));
         cloud.setHeight(rs.getInt("HEIGHT"));
         cloud.setWidth(rs.getInt("WIDTH"));
         cloud.setCreationDate(rs.getString("CREATION_DATE"));
@@ -203,6 +206,7 @@ public class DBUtils
                 String[] fields = new String[] {
                         "ID INT PRIMARY KEY     NOT NULL",
                         "INPUT_TEXT TEXT    NOT NULL",
+                        "SOURCE_TEXT TEXT NOT NULL",
                         "CREATION_DATE CHAR(50) NOT NULL",
                         "WIDTH INT NOT NULL",
                         "HEIGHT INT NOT NULL",

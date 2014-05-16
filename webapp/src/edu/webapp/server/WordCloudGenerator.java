@@ -2,6 +2,7 @@ package edu.webapp.server;
 
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -75,10 +76,15 @@ public class WordCloudGenerator
 		WCVDocument wcvDocument;
 		String text = reader.getText(input);
 		
-		if (reader instanceof ISentimentReader && setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT)
+		if (reader instanceof ISentimentReader && setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT){
 			wcvDocument = new WCVDocument4Sentiment(((ISentimentReader) reader).getStrChunks());
-		else
+			text = wcvDocument.getText();
+		}else if (setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT && input.contains("@$@$")){
+			String [] strs = input.split("\\@\\$\\@\\$");
+			wcvDocument = new WCVDocument4Sentiment(Arrays.asList(strs));
+		}else
 			wcvDocument = new WCVDocument(text);
+			
 		
 		// parse text
 		wcvDocument.parse();
@@ -169,6 +175,7 @@ public class WordCloudGenerator
 	{
 		WordCloud cloud = new WordCloud();
 		cloud.setInputText(input);
+		cloud.setSourceText(text);
 		cloud.setCreationDateAsDate(timestamp);
 		cloud.setSettings(setting);
 		cloud.setSvg(svg);

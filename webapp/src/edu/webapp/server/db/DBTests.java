@@ -18,9 +18,9 @@ public class DBTests
         try
         {
             //DBUtils.createDB();
-            //testAddCloud();
+            testAddCloud();
             testListClouds();
-            //testCount();
+            testCount();
         }
         catch (Exception e)
         {
@@ -35,6 +35,7 @@ public class DBTests
         int id = DBUtils.getCloudCount();
         wc.setId(id);
         wc.setInputText("test");
+        wc.setSourceText("test source");
         wc.setHeight(800);
         wc.setWidth(600);
         wc.setCreationDateAsDate(Calendar.getInstance().getTime());
@@ -52,7 +53,8 @@ public class DBTests
     private static void testListClouds()
     {
         List<WordCloud> clouds = DBUtils.getLatestClouds(25);
-        System.out.println("size: " + clouds.size());
+        for (WordCloud c : clouds)
+        	System.out.println(c.toString());
     }
 
     private static void testCount()

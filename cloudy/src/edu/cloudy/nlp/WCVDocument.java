@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
+
 public class WCVDocument
 {
 	private String text;
@@ -274,13 +276,21 @@ public class WCVDocument
 		if (words.size() > maxWords)
 			words = words.subList(0, maxWords);
 
-		rescaleWeights(5);
+		try
+		{
+			rescaleWeights(5);
+		}
+		catch (NanDoubleValueException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * scaling weights from 1 to upper
+	 * @throws NanDoubleValueException 
 	 */
-	private void rescaleWeights(double upper)
+	private void rescaleWeights(double upper) throws NanDoubleValueException
 	{
 		if (words.size() <= 1)
 			return;
@@ -295,7 +305,13 @@ public class WCVDocument
 		{
 			double d = w.weight - 1.0;
 			w.weight = 1.0 + (d / diff) * (upper - 1.0);
+			if (Double.isNaN(w.weight))
+				throw new NanDoubleValueException();
 		}
 	}
 
+	public class NanDoubleValueException extends Exception
+	{
+
+	}
 }
