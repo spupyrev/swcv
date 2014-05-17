@@ -121,7 +121,7 @@ public class WordCloudDetailApp implements EntryPoint
 	private SimplePanel createPanel(WordCloud cloud)
 	{
 		SimplePanel panel = new SimplePanel();
-		panel.setPixelSize(cloud.getWidth()+10, cloud.getHeight()+10);
+		panel.setPixelSize(cloud.getWidth() + 10, cloud.getHeight() + 10);
 		panel.addStyleName("center");
 		panel.add(new HTML(cloud.getSvg()));
 		return panel;
@@ -138,6 +138,5 @@ public class WordCloudDetailApp implements EntryPoint
 		Anchor linkPDF = Anchor.wrap(Document.get().getElementById("save-as-pdf"));
 		linkPDF.setHref("/cloud/download?ft=pdf&id=" + cloud.getId());
 	}
-
 
 }

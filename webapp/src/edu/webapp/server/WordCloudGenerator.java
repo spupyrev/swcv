@@ -75,17 +75,20 @@ public class WordCloudGenerator
 		IDocumentReader reader = extractor.getText();
 		WCVDocument wcvDocument;
 		String text = reader.getText(input);
-		
-		if (reader instanceof ISentimentReader && setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT){
+
+		if (reader instanceof ISentimentReader && setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT)
+		{
 			wcvDocument = new WCVDocument4Sentiment(((ISentimentReader) reader).getStrChunks());
 			text = wcvDocument.getText();
-		}else if (setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT && input.contains("@$@$")){
-			String [] strs = input.split("\\@\\$\\@\\$");
+		}
+		else if (setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT && input.contains("@$@$"))
+		{
+			String[] strs = input.split("\\@\\$\\@\\$");
 			wcvDocument = new WCVDocument4Sentiment(Arrays.asList(strs));
-		}else
+		}
+		else
 			wcvDocument = new WCVDocument(text);
-			
-		
+
 		// parse text
 		wcvDocument.parse();
 

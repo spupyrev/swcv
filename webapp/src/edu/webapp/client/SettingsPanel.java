@@ -106,10 +106,11 @@ public class SettingsPanel
 
 	private void setNonEn(Boolean b)
 	{
-		ListBox fontsbox = (ListBox)fontWidget;
-		ListBox ranksbox = (ListBox)rankingWidget;
+		ListBox fontsbox = (ListBox) fontWidget;
+		ListBox ranksbox = (ListBox) rankingWidget;
 		RANKING_ALGORITHM rankval = WCSetting.RANKING_ALGORITHM.valueOf(ranksbox.getValue(ranksbox.getSelectedIndex()));
-		if (b){ // non en setting
+		if (b)
+		{ // non en setting
 			List<Integer> enFonts = getEnOnlyFonts();
 			if (rankval == WCSetting.RANKING_ALGORITHM.TF_IDF)
 				ranksbox.setSelectedIndex(0);
@@ -118,11 +119,13 @@ public class SettingsPanel
 			for (int i = 0; i < fontsbox.getItemCount(); ++i)
 				if (enFonts.contains(i))
 					setDisabled(fontsbox, i);
-			setDisabled(ranksbox, findIndex(ranksbox,WCSetting.RANKING_ALGORITHM.TF_IDF.toString()));
-		}else{ // en setting
-			for ( int i = 0; i < fontsbox.getItemCount(); ++i)
+			setDisabled(ranksbox, findIndex(ranksbox, WCSetting.RANKING_ALGORITHM.TF_IDF.toString()));
+		}
+		else
+		{ // en setting
+			for (int i = 0; i < fontsbox.getItemCount(); ++i)
 				removeDisabled(fontsbox, i);
-			for ( int i = 0; i < ranksbox.getItemCount(); ++i)
+			for (int i = 0; i < ranksbox.getItemCount(); ++i)
 				removeDisabled(ranksbox, i);
 		}
 	}
@@ -130,20 +133,20 @@ public class SettingsPanel
 	private List<Integer> getEnOnlyFonts()
 	{
 		List<Integer> indices = new ArrayList<Integer>();
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Archer.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Dearest.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Eraser.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Harting.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Inconsolata.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Kingthings_Gothique.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.MaiandraGD.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Pacifico.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Porcelai.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Report1942.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Stentiga.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Teen.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Waker.toString()));
-		indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Wetpet.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Archer.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Dearest.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Eraser.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Harting.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Inconsolata.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Kingthings_Gothique.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.MaiandraGD.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Pacifico.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Porcelai.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Report1942.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Stentiga.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Teen.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Waker.toString()));
+		indices.add(findIndex((ListBox) fontWidget, WCSetting.FONT.Wetpet.toString()));
 		return indices;
 	}
 
@@ -322,7 +325,19 @@ public class SettingsPanel
 	{
 		final ListBox box = new ListBox();
 		box.addStyleName("inconsolataNormal");
-		String[] values = new String[] { "5", "10", "15", "20", "30", "40", "50", "75", "100", "125", "150", "200" };
+		String[] values = new String[] { 
+			"5",
+			"10", 
+			"15", 
+			"20", 
+			"30", 
+			"40", 
+			"50", 
+			"75", 
+			"100", 
+			"125", 
+			"150", 
+			"200" };
 
 		for (int i = 0; i < values.length; i++)
 			box.addItem(values[i]);
