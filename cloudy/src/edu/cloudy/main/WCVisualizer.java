@@ -70,7 +70,7 @@ public class WCVisualizer
         //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
 
         //WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/twitter");
-        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/copenhagen");
+        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/test");
         xmlReader.read();
         Iterator<String> texts = xmlReader.getTexts();
 

@@ -10,7 +10,13 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextArea;
 
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WordCloud;
@@ -213,8 +219,18 @@ public class WordCloudApp implements EntryPoint
             public void onSuccess(WordCloud result)
             {
                 loadingBox.hide();
-                shadow.hide();
-                Window.Location.assign("/cloud.html?id=" + result.getId());
+                if (result != null)
+                {
+                    shadow.hide();
+                    Window.Location.assign("/cloud.html?id=" + result.getId());
+                }
+                else
+                {
+                    //possibly empty text
+                    DialogBox errorBox = AppUtils.createMessageBox("Text must contain at least one word", shadow);
+                    errorBox.center();
+                    errorBox.show();
+                }
             }
 
             public void onFailure(Throwable caught)

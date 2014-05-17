@@ -1,10 +1,10 @@
 package edu.cloudy.nlp;
 
+import edu.arizona.sista.twitter4food.SentimentClassifier;
+
 import java.awt.Point;
 import java.util.List;
 import java.util.Set;
-
-import edu.arizona.sista.twitter4food.SentimentClassifier;
 
 /**
  * WCVDocument4Sentiment
@@ -17,113 +17,115 @@ import edu.arizona.sista.twitter4food.SentimentClassifier;
  */
 public class WCVDocument4Sentiment extends WCVDocument
 {
+    public static final String SENTIMENT_DELIMETER_TEXT = "@$@$"; 
+    
+    private List<String> strChunks;
+    private int[] sentiValues;
+    private String[] sentences;
 
-	List<String> strChunks;
-	int[] sentiValues;
-	String[] sentences;
+    public WCVDocument4Sentiment(List<String> strChunks)
+    {
+        this.strChunks = strChunks;
+        sentiValues = new int[strChunks.size()];
+        StringBuffer sb = new StringBuffer();
+        
+        for (String chunk : strChunks)
+        {
+            sb.append(chunk + SENTIMENT_DELIMETER_TEXT);
+        }
+        
+        setText(sb.toString());
+    }
 
-	public WCVDocument4Sentiment(List<String> strChunks)
-	{
-		String text = "";
-		this.strChunks = strChunks;
-		sentiValues = new int[strChunks.size()];
-		// following statements just for WCVDocument
-		for (String str : strChunks)
-		{
-			text += str + "@$@$";
-		}
-		setText(text);
-	}
+    @Override
+    public void parse()
+    {
+        super.parse();
+        assignSentiValueToChunks();
+        calculateSentiValueToWords();
+    }
 
-	@Override
-	public void parse()
-	{
-		super.parse();
-		AssignSentiValueToChunks();
-		CalculateSentiValueToWords();
-	}
+    @Override
+    public String[] buildSentences()
+    {
+        String[] strs = new String[strChunks.size()];
+        for (int i = 0; i < strs.length; ++i)
+        {
+            strs[i] = strChunks.get(i);
+        }
+        sentences = strs;
+        return strs;
+    }
 
-	@Override
-	public String[] buildSentences()
-	{
-		String[] strs = new String[strChunks.size()];
-		for (int i = 0; i < strs.length; ++i)
-		{
-			strs[i] = strChunks.get(i);
-		}
-		sentences = strs;
-		return strs;
-	}
+    private void assignSentiValueToChunks()
+    {
+        SentimentClassifier sc = SentimentClassifier.resourceClassifier();
+        for (int i = 0; i < sentences.length; ++i)
+        {
+            sentiValues[i] = sc.predict(sentences[i]);
+        }
+    }
 
-	private void AssignSentiValueToChunks()
-	{
-		SentimentClassifier sc = SentimentClassifier.resourceClassifier();
-		for (int i = 0; i < sentences.length; ++i)
-		{
-			sentiValues[i] = sc.predict(sentences[i]);
-		}
-	}
+    private void calculateSentiValueToWords()
+    {
+        List<Word> words = getWords();
+        for (int i = 0; i < words.size(); ++i)
+        {
+            int posCount = 0, negCount = 0, neuCount = 0;
+            Word currentWord = words.get(i);
+            Set<Point> coordinates = words.get(i).getCoordinates();
+            for (Point p : coordinates)
+            {
+                switch (sentiValues[p.y])
+                {
+                case 0:
+                    neuCount++;
+                    break;
+                case 1:
+                    posCount++;
+                    break;
+                case -1:
+                    negCount++;
+                    break;
+                }
+            }
+            double totalCount = posCount + negCount + neuCount;
+            double posRatio = posCount / totalCount;
+            double negRatio = negCount / totalCount;
+            double neuRatio = neuCount / totalCount;
+            double sentiValue = getMostSignificant(posRatio, negRatio, neuRatio);
+            currentWord.setSentiValue(sentiValue);
+            currentWord.setSentCount(posCount, negCount, neuCount, totalCount);
+        }
+    }
 
-	private void CalculateSentiValueToWords()
-	{
-		List<Word> words = getWords();
-		for (int i = 0; i < words.size(); ++i)
-		{
-			int posCount = 0, negCount = 0, neuCount = 0;
-			Word currentWord = words.get(i);
-			Set<Point> coordinates = words.get(i).getCoordinates();
-			for (Point p : coordinates)
-			{
-				switch (sentiValues[p.y])
-				{
-				case 0:
-					neuCount++;
-					break;
-				case 1:
-					posCount++;
-					break;
-				case -1:
-					negCount++;
-					break;
-				}
-			}
-			double totalCount = posCount + negCount + neuCount;
-			double posRatio = (double) posCount / totalCount;
-			double negRatio = (double) negCount / totalCount;
-			double neuRatio = (double) neuCount / totalCount;
-			double sentiValue = getMostSignificant(posRatio, negRatio, neuRatio);
-			currentWord.setSentiValue(sentiValue);
-			currentWord.setSentCount(posCount, negCount, neuCount, totalCount);
-		}
-	}
-
-	private double getMostSignificant(double posRatio, double negRatio, double neuRatio)
-	{
-		if (posRatio > negRatio)
-		{ // pos > neg
-			if (posRatio > neuRatio)
-			{ // pos > neu && pos > neg
-				return posRatio;
-			}
-			else
-			{ // neu > pos > neg
-				return 0.;
-			}
-		}
-		else
-		{ // neg >= pos
-			if (posRatio == negRatio)
-			{
-				return 0.;
-			}
-			else if (negRatio > neuRatio)
-			{ // neg > neu && neg > pos
-				return -negRatio;
-			}
-			else
-			{ // neu > neg > pos
-				return 0.;
-			}
-		}
-	}
+    private double getMostSignificant(double posRatio, double negRatio, double neuRatio)
+    {
+        if (posRatio > negRatio)
+        { // pos > neg
+            if (posRatio > neuRatio)
+            { // pos > neu && pos > neg
+                return posRatio;
+            }
+            else
+            { // neu > pos > neg
+                return 0.;
+            }
+        }
+        else
+        { // neg >= pos
+            if (posRatio == negRatio)
+            {
+                return 0.;
+            }
+            else if (negRatio > neuRatio)
+            { // neg > neu && neg > pos
+                return -negRatio;
+            }
+            else
+            { // neu > neg > pos
+                return 0.;
+            }
+        }
+    }
 }

@@ -76,7 +76,7 @@ public class SettingsPanel
 		colorSchemeWidget = createColorListBox();
 		layout.setWidget(2, 3, colorSchemeWidget);
 
-		layout.setWidget(3, 2, createLabel("Non English Word:"));
+		layout.setWidget(3, 2, createLabel("Non-English Text:"));
 		cf.setStyleName(3, 2, "adv-cell-label");
 		layout.setWidget(3, 3, createCheckBox());
 		colorSchemeAndDistrCheck();
@@ -97,19 +97,19 @@ public class SettingsPanel
 			@Override
 			public void onClick(ClickEvent event)
 			{
-				setNonEn(box.getValue());
+				setNonEnglishText(box.getValue());
 			}
 
 		});
 		return box;
 	}
 
-	private void setNonEn(Boolean b)
+	private void setNonEnglishText(boolean checked)
 	{
 		ListBox fontsbox = (ListBox) fontWidget;
 		ListBox ranksbox = (ListBox) rankingWidget;
 		RANKING_ALGORITHM rankval = WCSetting.RANKING_ALGORITHM.valueOf(ranksbox.getValue(ranksbox.getSelectedIndex()));
-		if (b)
+		if (checked)
 		{ // non en setting
 			List<Integer> enFonts = getEnOnlyFonts();
 			if (rankval == WCSetting.RANKING_ALGORITHM.TF_IDF)

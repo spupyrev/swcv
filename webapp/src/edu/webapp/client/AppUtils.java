@@ -38,28 +38,35 @@ public class AppUtils
         return box;
     }
 
-	public static DialogBox createLoadingBox()
-	{
-		final DialogBox box = new DialogBox();
-		VerticalPanel rows = new VerticalPanel();
-		rows.setSpacing(1);
+    public static DialogBox createLoadingBox()
+    {
+        final DialogBox box = new DialogBox();
+        VerticalPanel rows = new VerticalPanel();
+        rows.setSpacing(1);
 
-		HTML html = new HTML("<img src=\"" + GWT.getHostPageBaseURL() + "static/imgs/loader.gif\" alt=\"loading\" />");
-		rows.add(html);
-		rows.addStyleName("whiteWithBorder");
-		rows.setCellHeight(html, "100");
-		rows.setCellWidth(html, "300");
+        HTML html = new HTML("<img src=\"" + GWT.getHostPageBaseURL() + "static/imgs/loader.gif\" alt=\"loading\" />");
+        rows.add(html);
+        rows.addStyleName("whiteWithBorder");
+        rows.setCellHeight(html, "100");
+        rows.setCellWidth(html, "300");
 
-		rows.setCellHorizontalAlignment(html, HasHorizontalAlignment.ALIGN_CENTER);
-		rows.setCellVerticalAlignment(html, HasVerticalAlignment.ALIGN_MIDDLE);
+        rows.setCellHorizontalAlignment(html, HasHorizontalAlignment.ALIGN_CENTER);
+        rows.setCellVerticalAlignment(html, HasVerticalAlignment.ALIGN_MIDDLE);
 
-		HorizontalPanel hp = new HorizontalPanel();
-		hp.add(rows);
-		box.setWidget(hp);
-		box.hide();
-		return box;
-	}
+        HorizontalPanel hp = new HorizontalPanel();
+        hp.add(rows);
+        box.setWidget(hp);
+        box.hide();
+        return box;
+    }
+
     public static DialogBox createErrorBox(Throwable caught, final DialogBox shadow)
+    {
+        String message = "An error occurred while attempting to contact the server:<br/>" + caught.getClass() + ": " + caught.getMessage();
+        return createMessageBox(message, shadow);
+    }
+
+    public static DialogBox createMessageBox(String message, final DialogBox shadow)
     {
         // Create a dialog box and set the caption text
         final DialogBox dialogBox = new DialogBox();
@@ -70,7 +77,7 @@ public class AppUtils
         dialogBox.setWidget(dialogContents);
 
         // Add an image to the dialog
-        HTML html = new HTML("An error occurred while attempting to contact the server:<br/>" + caught.getClass() + ": " + caught.getMessage());
+        HTML html = new HTML(message);
         dialogContents.add(html);
         dialogContents.setCellHorizontalAlignment(html, HasHorizontalAlignment.ALIGN_CENTER);
 
