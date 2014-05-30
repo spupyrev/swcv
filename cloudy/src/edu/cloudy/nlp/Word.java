@@ -10,7 +10,10 @@ public class Word implements Comparable<Word>
 	public String stem;
 	public double weight;
 	public double sentiValue;
-	public int documentIndex;
+	public enum DocIndex{
+		First,Second,Both
+	}
+	public DocIndex documentIndex;
 	
 	// debug info
 	public int posCount,negCount,neuCount;
@@ -26,7 +29,7 @@ public class Word implements Comparable<Word>
 		this.stem = null;
 		this.weight = weight;
 		this.sentiValue = 0;
-		this.documentIndex = 0;
+		this.documentIndex = DocIndex.First;
 		this.coordinate = new HashSet<Point>();
 		this.sentences = new HashSet<Integer>();
 	}

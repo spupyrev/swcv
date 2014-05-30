@@ -113,9 +113,15 @@ public class SettingsPanel
 		{ // non en setting
 			List<Integer> enFonts = getEnOnlyFonts();
 			if (rankval == WCSetting.RANKING_ALGORITHM.TF_IDF)
+			{
 				ranksbox.setSelectedIndex(0);
+				setting.setFont(WCSetting.FONT.Archer);
+			}
 			if (enFonts.contains(fontsbox.getSelectedIndex()))
+			{
 				fontsbox.setSelectedIndex(1);
+				setting.setFont(WCSetting.FONT.ComicSansMS);
+			}
 			for (int i = 0; i < fontsbox.getItemCount(); ++i)
 				if (enFonts.contains(i))
 					setDisabled(fontsbox, i);
@@ -190,8 +196,10 @@ public class SettingsPanel
 		List<Integer> sentiIndices = getSentiIndices();
 		if (distValue == WCSetting.COLOR_DISTRIBUTE.SENTIMENT)
 		{
-			if (!sentiIndices.contains(schmbox.getSelectedIndex()))
+			if (!sentiIndices.contains(schmbox.getSelectedIndex())){
 				schmbox.setSelectedIndex(sentiIndices.get(0));
+				setting.setColorScheme(COLOR_SCHEME.SENTIMENT);
+			}
 			for (Integer i : sentiIndices)
 				removeDisabled(schmbox, i);
 			for (int i = 0; i < schmbox.getItemCount(); ++i)
@@ -200,8 +208,10 @@ public class SettingsPanel
 		}
 		else
 		{
-			if (sentiIndices.contains(schmbox.getSelectedIndex()))
+			if (sentiIndices.contains(schmbox.getSelectedIndex())){
 				schmbox.setSelectedIndex(0);
+				setting.setColorScheme(COLOR_SCHEME.BEAR_DOWN);
+			}
 			for (Integer i : sentiIndices)
 				setDisabled(schmbox, i);
 			for (int i = 0; i < schmbox.getItemCount(); ++i)
@@ -214,6 +224,7 @@ public class SettingsPanel
 	{
 		List<Integer> indices = new ArrayList<Integer>();
 		indices.add(findIndex((ListBox) colorSchemeWidget, WCSetting.COLOR_SCHEME.SENTIMENT.toString()));
+		indices.add(findIndex((ListBox) colorSchemeWidget, WCSetting.COLOR_SCHEME.SENTIMENT2.toString()));
 		return indices;
 	}
 
@@ -244,7 +255,8 @@ public class SettingsPanel
 		box.addItem("Similar Scheme 1", WCSetting.COLOR_SCHEME.SIMILAR_1.toString());
 		box.addItem("Similar Scheme 2", WCSetting.COLOR_SCHEME.SIMILAR_2.toString());
 		box.addItem("Similar Scheme 3", WCSetting.COLOR_SCHEME.SIMILAR_3.toString());
-		box.addItem("Sentiment Scheme 1", WCSetting.COLOR_SCHEME.SENTIMENT.toString());
+		box.addItem("Sentiment ORANGE-BLUE", WCSetting.COLOR_SCHEME.SENTIMENT.toString());
+		box.addItem("Sentiment GREEN-RED", WCSetting.COLOR_SCHEME.SENTIMENT2.toString());
 
 		box.setSelectedIndex(findIndex(box, setting.getColorScheme().toString()));
 
@@ -325,19 +337,7 @@ public class SettingsPanel
 	{
 		final ListBox box = new ListBox();
 		box.addStyleName("inconsolataNormal");
-		String[] values = new String[] { 
-			"5",
-			"10", 
-			"15", 
-			"20", 
-			"30", 
-			"40", 
-			"50", 
-			"75", 
-			"100", 
-			"125", 
-			"150", 
-			"200" };
+		String[] values = new String[] { "5", "10", "15", "20", "30", "40", "50", "75", "100", "125", "150", "200" };
 
 		for (int i = 0; i < values.length; i++)
 			box.addItem(values[i]);

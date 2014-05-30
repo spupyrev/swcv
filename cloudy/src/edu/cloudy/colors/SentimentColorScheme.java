@@ -2,11 +2,21 @@ package edu.cloudy.colors;
 
 import java.awt.Color;
 
+import weka.Run.SchemeType;
 import edu.cloudy.nlp.Word;
 
 public class SentimentColorScheme implements IColorScheme
 {
-	private Color[] colorSet = sentiment;
+	private Color[] colorSet;
+	
+	public SentimentColorScheme(String colorSchemeName){
+		if (colorSchemeName.equals("SENTIMENT2")){
+			colorSet = sentiment2;
+		}else{
+			colorSet = sentiment;
+		}
+	}
+	
 	@Override
 	public Color getColor(Word word)
 	{

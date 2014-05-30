@@ -1,65 +1,128 @@
 package edu.cloudy.nlp;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-public class WCVDocument4dynamic
+import edu.cloudy.nlp.ranking.RankingAlgo;
+
+public class WCVDocument4dynamic extends WCVDocument
 {
 
-	private WCVDocument combined;
 	private WCVDocument doc1;
 	private WCVDocument doc2;
 
 	public WCVDocument4dynamic(String text1, String text2)
 	{
-		combined = new WCVDocument(text1 + text2);
+		super(text1 + ".\n" + text2);
 		doc1 = new WCVDocument(text1);
 		doc2 = new WCVDocument(text2);
+	}
 
+	@Override
+	public void parse()
+	{
+		super.parse();
 		doc1.parse();
-		List<Word> words1 = doc1.getWords();
 		doc2.parse();
-		List<Word> words2 = doc2.getWords();
-		combined.parse();
-		List<Word> cwords = combined.getWords();
 
-		for (Word w : cwords)
-			for (Word w2 : words2)
-				if (w.word.equals(w2.word))
+		for (Word w : this.getWords())
+		{
+			if (doc2.hasWord(w.word))
+			{
+				if (doc1.hasWord(w.word))
 				{
-					w.documentIndex = 1; // in document 2
-					for (Word w1 : words1)
-						if (w.word.equals(w1.word))
-							w.documentIndex = 2;// in both text
+					doc1.getWord(w.word).documentIndex = Word.DocIndex.Both;
+					doc2.getWord(w.word).documentIndex = Word.DocIndex.Both;
+					w.documentIndex = Word.DocIndex.Both;
 				}
-	}
-
-	public WCVDocument getDocument()
-	{
-		return combined;
-	}
-
-	public WCVDocument getDocument1(WCVDocument doc)
-	{
-		List<Word> words1 = new ArrayList<Word>();
-		for (Word w : doc.getWords()){
-			if (w.documentIndex == 0 || w.documentIndex == 2){
-				words1.add(w);
+				else
+				{
+					doc2.getWord(w.word).documentIndex = Word.DocIndex.Second;
+					w.documentIndex = Word.DocIndex.Second;
+				}
 			}
 		}
-		doc1.setWords(words1);
+	}
+
+	@Override
+	public void weightFilter(int maxCount, RankingAlgo rankingAlgo)
+	{
+		rankingAlgo.buildWeights(doc1);
+		rankingAlgo.buildWeights(doc2);
+
+		HashMap<String, Word> addedWords = new HashMap<String, Word>();
+
+		sortListByWeight(doc1.getWords());
+		sortListByWeight(doc2.getWords());
+
+		doc1.setWords(doc1.getWords().subList(0, maxCount));
+		doc2.setWords(doc2.getWords().subList(0, maxCount));
+
+		int one = 0, two = 0;
+		List<Word> cwords = new ArrayList<Word>();
+		for (; one != maxCount && two != maxCount;)
+		{
+			Word word1 = doc1.getWords().get(one);
+			Word word2 = doc2.getWords().get(two);
+
+			if (word1.weight >= word2.weight)
+			{
+				if (!addedWords.containsKey(word1.word))
+				{
+					addedWords.put(word1.word, word1);
+					cwords.add(word1);
+				}
+				one++;
+			}
+			else
+			{
+				if (!addedWords.containsKey(word2.word))
+				{
+					addedWords.put(word2.word, word2);
+					cwords.add(word2);
+				}
+				two++;
+			}
+		}
+		if (one != maxCount)
+		{
+			for (; one < maxCount; one++)
+			{
+				Word w = doc1.getWords().get(one);
+				cwords.add(w);
+			}
+		}
+		else if (two != maxCount)
+		{
+			for (; two < maxCount; two++)
+			{
+				Word w = doc2.getWords().get(two);
+				//getWord(w.stem).weight = w.weight;
+				cwords.add(w);
+			}
+		}
+		sortListByWeight(cwords);
+		this.setWords(cwords);
+		rescaleWeights(doc1.getWords(), 5);
+		rescaleWeights(doc2.getWords(), 5);
+		rescaleWeights(this.getWords(), 5);
+	}
+
+	private void sortListByWeight(List<Word> list)
+	{
+		Collections.sort(list);
+		Collections.reverse(list);
+	}
+
+	public WCVDocument getDoc1()
+	{
 		return doc1;
 	}
 
-	public WCVDocument getDocument2(WCVDocument doc)
+	public WCVDocument getDoc2()
 	{
-		List<Word> words2 = new ArrayList<Word>();
-		for (Word w : doc.getWords()){
-			if (w.documentIndex == 1 || w.documentIndex == 2){
-				words2.add(w);
-			}
-		}
-		doc2.setWords(words2);
 		return doc2;
 	}
 }

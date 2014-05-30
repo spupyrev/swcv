@@ -31,6 +31,7 @@ public class WCVDocument
 {
 	private String text;
 	private List<Word> words;
+	private HashMap<String,Word> wordsMap;
 
 	/**
 	 * This is a default constructor used by WCVDocument4Sentiment
@@ -38,16 +39,19 @@ public class WCVDocument
 	public WCVDocument()
 	{
 		this.text = null;
+		wordsMap = new HashMap<String,Word>();
 	}
 
 	public WCVDocument(String text)
 	{
 		this.text = text;
+		wordsMap = new HashMap<String,Word>();
 	}
 
 	public void setWords(List<Word> list)
 	{
 		this.words = list;
+		setWordsMap();
 	}
 
 	public List<Word> getWords()
@@ -137,6 +141,7 @@ public class WCVDocument
 			wordMap.get(stem).word = bestVariant;
 			words.add(wordMap.get(stem));
 		}
+		setWordsMap();
 
 	}
 
@@ -278,14 +283,18 @@ public class WCVDocument
 
 		if (words.size() > maxWords)
 			words = words.subList(0, maxWords);
-
-		rescaleWeights(5);
+		setWordsMap();
+		rescaleWeights(words, 5);
 	}
 
+	private void setWordsMap(){
+		for (Word w: words)
+			wordsMap.put(w.word, w);
+	}
 	/**
 	 * scaling weights from 1 to upper
 	 */
-	private void rescaleWeights(double upper)
+	public void rescaleWeights(List<Word> words, double upper)
 	{
 		if (words.size() <= 1)
 			return;
@@ -304,5 +313,20 @@ public class WCVDocument
 			else
 				w.weight = 1.0 + (d / diff) * (upper - 1.0);
 		}
+	}
+	
+	public double getWordWeight(String word){
+		Word w = wordsMap.get(word);
+		if (w!=null)
+			return w.weight;
+		return 0.;
+	}
+	
+	public boolean hasWord(String word){
+		return wordsMap.containsKey(word);
+	}
+	
+	public Word getWord(String word){
+		return wordsMap.get(word);
 	}
 }

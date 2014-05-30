@@ -125,7 +125,7 @@ public class WordCloudGenerator
 		}
 		else if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.SENTIMENT))
 		{
-			wordColorScheme = new SentimentColorScheme();
+			wordColorScheme = new SentimentColorScheme(setting.getColorScheme().toString());
 		}
 		else
 		{
