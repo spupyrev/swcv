@@ -64,19 +64,19 @@ public class DBUtils
 					sql.append("=");
 					sql.append("?");
 				}
-				
+
 				sql.append("WHERE ID = ?;");
-				
+
 				PreparedStatement ps = c.prepareStatement(sql.toString());
 				for (int i = 0; i < values.length; i++)
 				{
 					addValue(ps, i + 1, values[i]);
 				}
-				addValue(ps,values.length+1,cloud.getId());
+				addValue(ps, values.length + 1, cloud.getId());
 				ps.execute();
-				
+
 			}
-			
+
 			private void addValue(PreparedStatement ps, int index, Object o) throws SQLException
 			{
 				if (o instanceof String)

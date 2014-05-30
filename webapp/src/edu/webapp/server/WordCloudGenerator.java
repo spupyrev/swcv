@@ -72,14 +72,14 @@ public class WordCloudGenerator
 		updated.setId(saveCloud(id, updated));
 		return updated;
 	}
-	
+
 	public static WordCloud createWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
 	{
 		WordCloud newcloud = buildWordCloud(input, setting, ip);
 		newcloud.setId(saveCloud(-1, newcloud));
 		return newcloud;
 	}
-	
+
 	public static WordCloud buildWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
 	{
 		logging(input, setting);
@@ -192,8 +192,9 @@ public class WordCloudGenerator
 
 		return cloud;
 	}
-	
-	public static int saveCloud(int id, WordCloud cloud){
+
+	public static int saveCloud(int id, WordCloud cloud)
+	{
 		return WCExporter.saveCloud(id, cloud);
 	}
 

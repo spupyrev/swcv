@@ -16,15 +16,15 @@ import java.util.logging.Logger;
 @SuppressWarnings("serial")
 public class WordCloudLatestServiceImpl extends RemoteServiceServlet implements WordCloudLatestService
 {
-    private static final Logger log = Logger.getLogger(WordCloudLatestServiceImpl.class.getName());
+	private static final Logger log = Logger.getLogger(WordCloudLatestServiceImpl.class.getName());
 
-    public List<WordCloud> getLatestWordClouds(int limit)
-    {
-        long start = System.currentTimeMillis();
-        List<WordCloud> latestClouds = DBUtils.getLatestClouds(limit);
-        long end = System.currentTimeMillis();
-        log.info("latest query time: " + (end - start) / 1000.0);
-        return latestClouds;
-    }
+	public List<WordCloud> getLatestWordClouds(int limit)
+	{
+		long start = System.currentTimeMillis();
+		List<WordCloud> latestClouds = DBUtils.getLatestClouds(limit);
+		long end = System.currentTimeMillis();
+		log.info("latest query time: " + (end - start) / 1000.0);
+		return latestClouds;
+	}
 
 }

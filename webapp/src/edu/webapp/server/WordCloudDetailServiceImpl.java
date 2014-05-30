@@ -20,10 +20,10 @@ public class WordCloudDetailServiceImpl extends RemoteServiceServlet implements 
 		return DBUtils.getCloud(id);
 	}
 
-	public WordCloud updateWordCloud(int id,String input, WCSetting setting) throws IllegalArgumentException
+	public WordCloud updateWordCloud(int id, String input, WCSetting setting) throws IllegalArgumentException
 	{
 		String ip = getThreadLocalRequest().getRemoteAddr();
-		return WordCloudGenerator.updateWordCloud(id,input, setting, ip);
+		return WordCloudGenerator.updateWordCloud(id, input, setting, ip);
 	}
 
 }
