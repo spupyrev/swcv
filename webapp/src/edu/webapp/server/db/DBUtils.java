@@ -42,6 +42,56 @@ public class DBUtils
 		return tmp.get(0);
 	}
 
+	public static void updateCloud(final WordCloud cloud)
+	{
+		executeDBAction(new IDBAction()
+		{
+
+			public void execute(Connection c, Statement stmt) throws Exception
+			{
+				String[] fields = new String[] { "WIDTH", "HEIGHT", "SVG", "CREATOR_IP", "WORD_COUNT", "SIMILARITY_ALGO", "RANKING_ALGO", "LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR" };
+				Object[] values = new Object[] { cloud.getWidth(), cloud.getHeight(), cloud.getSvg(), cloud.getCreatorIP(), cloud.getSettings().getWordCount(),
+					cloud.getSettings().getSimilarityAlgorithm().toString(), cloud.getSettings().getRankingAlgorithm().toString(), cloud.getSettings().getLayoutAlgorithm().toString(),
+					cloud.getSettings().getFont().toString(), cloud.getSettings().getColorScheme().toString(), cloud.getSettings().getColorDistribute().toString() };
+
+				StringBuffer sql = new StringBuffer();
+				sql.append("UPDATE CLOUD SET ");
+				for (int i = 0; i < fields.length; ++i)
+				{
+					if (i != 0)
+						sql.append(",");
+					sql.append(fields[i]);
+					sql.append("=");
+					sql.append("?");
+				}
+				
+				sql.append("WHERE ID = ?;");
+				
+				PreparedStatement ps = c.prepareStatement(sql.toString());
+				for (int i = 0; i < values.length; i++)
+				{
+					addValue(ps, i + 1, values[i]);
+				}
+				addValue(ps,values.length+1,cloud.getId());
+				ps.execute();
+				
+			}
+			
+			private void addValue(PreparedStatement ps, int index, Object o) throws SQLException
+			{
+				if (o instanceof String)
+					ps.setString(index, o.toString());
+				else if (o instanceof Integer)
+					ps.setInt(index, (Integer) o);
+				else if (o == null)
+					ps.setNull(index, Types.VARCHAR);
+				else
+					throw new RuntimeException("unknown db type for object: " + o);
+			}
+		});
+
+	};
+
 	public static void addCloud(final WordCloud cloud)
 	{
 		executeDBAction(new IDBAction()
@@ -233,6 +283,6 @@ public class DBUtils
 	interface IDBAction
 	{
 		void execute(Connection c, Statement stmt) throws Exception;
-	};
+	}
 
 }

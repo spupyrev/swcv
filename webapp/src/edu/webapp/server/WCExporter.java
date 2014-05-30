@@ -20,10 +20,16 @@ public class WCExporter
     /**
      * Save the constructed cloud to database
      */
-    public static void saveCloud(WordCloud cloud)
+    public static int saveCloud(int id,WordCloud cloud)
     {
-        cloud.setId(DBUtils.getCloudCount());
-        DBUtils.addCloud(cloud);
+    	if (id == -1){
+	        cloud.setId(DBUtils.getCloudCount());
+	        DBUtils.addCloud(cloud);
+    	}else{
+    		cloud.setId(id);
+    		DBUtils.updateCloud(cloud);
+    	}
+    	return cloud.getId();
     }
 
     /**

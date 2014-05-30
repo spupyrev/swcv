@@ -14,5 +14,5 @@ import edu.webapp.shared.WordCloud;
 public interface WordCloudDetailService extends RemoteService
 {
     WordCloud getWordCloud(int id) throws DBCloudNotFoundException;
-    WordCloud createWordCloud(String input, WCSetting setting) throws IllegalArgumentException;
+    WordCloud updateWordCloud(int id,String input, WCSetting setting) throws IllegalArgumentException;
 }

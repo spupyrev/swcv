@@ -66,6 +66,20 @@ public class WordCloudGenerator
 {
 	private static final Logger log = Logger.getLogger(WordCloudGenerator.class.getName());
 
+	public static WordCloud updateWordCloud(int id, String input, WCSetting setting, String ip) throws IllegalArgumentException
+	{
+		WordCloud updated = buildWordCloud(input, setting, ip);
+		updated.setId(saveCloud(id, updated));
+		return updated;
+	}
+	
+	public static WordCloud createWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
+	{
+		WordCloud newcloud = buildWordCloud(input, setting, ip);
+		newcloud.setId(saveCloud(-1, newcloud));
+		return newcloud;
+	}
+	
 	public static WordCloud buildWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
 	{
 		logging(input, setting);
@@ -172,11 +186,15 @@ public class WordCloudGenerator
 		//computeMetrics(cloud, wcvDocument.getWords(), similarity, layoutAlgo);
 
 		//export
-		WCExporter.saveCloud(cloud);
+		//WCExporter.saveCloud(cloud);
 		//WCExporter.saveCloudAsSVG(timestamp + ".svg", cloud, setting);
 		//WCExporter.saveCloudAsHTML(timestamp + ".html", cloud, setting);
 
 		return cloud;
+	}
+	
+	public static int saveCloud(int id, WordCloud cloud){
+		return WCExporter.saveCloud(id, cloud);
 	}
 
 	private static WordCloud createCloud(WCSetting setting, String input, String text, Date timestamp, String svg, int width, int height, String ip)

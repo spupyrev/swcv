@@ -19,7 +19,8 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
 	public WordCloud buildWordCloud(String input, WCSetting setting) throws IllegalArgumentException
 	{
 		String ip = getThreadLocalRequest().getRemoteAddr();
-		return WordCloudGenerator.buildWordCloud(input, setting, ip);
+		WordCloud newcloud =  WordCloudGenerator.createWordCloud(input, setting, ip);
+		return newcloud;
 	}
 
 	public String getRandomWikiUrl()
