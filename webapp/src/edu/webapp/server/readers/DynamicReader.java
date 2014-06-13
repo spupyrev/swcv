@@ -1,5 +1,6 @@
 package edu.webapp.server.readers;
 
+
 public class DynamicReader implements IDocumentReader
 {
 
@@ -30,5 +31,12 @@ public class DynamicReader implements IDocumentReader
 	{
 		return text1+text2;
 	}
+	
+	public String getText1(){
+		return text1;
+	}
 
+	public String getText2(){
+		return text2;
+	}
 }

@@ -97,5 +97,17 @@ public interface IColorScheme
     		new Color(251,106,74), // Red Class5
     		new Color(203,24,29) }; // Red Class7
     
+    static final Color[] redblueblack = {
+    		new Color(255,0,0),
+    		new Color(0,0,255),
+    		new Color(0,0,0)
+    };
+    
+    static final Color[] redblueblack2 = {
+    		new Color(203,24,29),
+    		new Color(33,113,181),
+    		new Color(0,0,0)
+    };
+    
     Color getColor(Word word);
 }

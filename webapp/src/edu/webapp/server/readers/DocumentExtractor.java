@@ -14,6 +14,7 @@ public class DocumentExtractor
 	static
 	{
 		readers = new ArrayList<IDocumentReader>();
+		readers.add(new DynamicReader());
 		readers.add(new TwitterReader());
 		readers.add(new RedditReader());
 		readers.add(new DotReader());

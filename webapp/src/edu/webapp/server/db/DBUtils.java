@@ -49,8 +49,8 @@ public class DBUtils
 
 			public void execute(Connection c, Statement stmt) throws Exception
 			{
-				String[] fields = new String[] { "WIDTH", "HEIGHT", "SVG", "CREATOR_IP", "WORD_COUNT", "SIMILARITY_ALGO", "RANKING_ALGO", "LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR" };
-				Object[] values = new Object[] { cloud.getWidth(), cloud.getHeight(), cloud.getSvg(), cloud.getCreatorIP(), cloud.getSettings().getWordCount(),
+				String[] fields = new String[] { "WIDTH", "HEIGHT", "SVG", "SVG2", "CREATOR_IP", "WORD_COUNT", "SIMILARITY_ALGO", "RANKING_ALGO", "LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR" };
+				Object[] values = new Object[] { cloud.getWidth(), cloud.getHeight(), cloud.getSvg(), cloud.getSvg2(), cloud.getCreatorIP(), cloud.getSettings().getWordCount(),
 					cloud.getSettings().getSimilarityAlgorithm().toString(), cloud.getSettings().getRankingAlgorithm().toString(), cloud.getSettings().getLayoutAlgorithm().toString(),
 					cloud.getSettings().getFont().toString(), cloud.getSettings().getColorScheme().toString(), cloud.getSettings().getColorDistribute().toString() };
 
@@ -98,13 +98,13 @@ public class DBUtils
 		{
 			public void execute(Connection c, Statement stmt) throws Exception
 			{
-				String[] fields = new String[] { "ID", "INPUT_TEXT", "SOURCE_TEXT", "CREATION_DATE", "WIDTH", "HEIGHT", "SVG", "CREATOR_IP", "WORD_COUNT", "SIMILARITY_ALGO", "RANKING_ALGO",
-					"LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR" };
+				String[] fields = new String[] { "ID", "INPUT_TEXT", "SOURCE_TEXT", "CREATION_DATE", "WIDTH", "HEIGHT", "WIDTH2", "HEIGHT2", "SVG", "SVG2", "CREATOR_IP", "WORD_COUNT",
+					"SIMILARITY_ALGO", "RANKING_ALGO", "LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR" };
 
-				Object[] values = new Object[] { cloud.getId(), cloud.getInputText(), cloud.getSourceText(), cloud.getCreationDate(), cloud.getWidth(), cloud.getHeight(), cloud.getSvg(),
-					cloud.getCreatorIP(), cloud.getSettings().getWordCount(), cloud.getSettings().getSimilarityAlgorithm().toString(), cloud.getSettings().getRankingAlgorithm().toString(),
-					cloud.getSettings().getLayoutAlgorithm().toString(), cloud.getSettings().getFont().toString(), cloud.getSettings().getColorScheme().toString(),
-					cloud.getSettings().getColorDistribute().toString() };
+				Object[] values = new Object[] { cloud.getId(), cloud.getInputText(), cloud.getSourceText(), cloud.getCreationDate(), cloud.getWidth(), cloud.getHeight(), cloud.getWidth2(),
+					cloud.getHeight2(), cloud.getSvg(), cloud.getSvg2(), cloud.getCreatorIP(), cloud.getSettings().getWordCount(), cloud.getSettings().getSimilarityAlgorithm().toString(),
+					cloud.getSettings().getRankingAlgorithm().toString(), cloud.getSettings().getLayoutAlgorithm().toString(), cloud.getSettings().getFont().toString(),
+					cloud.getSettings().getColorScheme().toString(), cloud.getSettings().getColorDistribute().toString() };
 
 				StringBuffer sql = new StringBuffer();
 				sql.append("INSERT INTO CLOUD (");
@@ -181,8 +181,11 @@ public class DBUtils
 		cloud.setSourceText(rs.getString("SOURCE_TEXT"));
 		cloud.setHeight(rs.getInt("HEIGHT"));
 		cloud.setWidth(rs.getInt("WIDTH"));
+		cloud.setHeight2(rs.getInt("HEIGHT2"));
+		cloud.setWidth2(rs.getInt("WIDTH2"));
 		cloud.setCreationDate(rs.getString("CREATION_DATE"));
 		cloud.setSvg(rs.getString("SVG"));
+		cloud.setSvg2(rs.getString("SVG2"));
 		cloud.setCreatorIP(rs.getString("CREATOR_IP"));
 
 		cloud.setSettings(new WCSetting());
@@ -228,8 +231,8 @@ public class DBUtils
 			{
 				stmt = c.createStatement();
 				String[] fields = new String[] { "ID INT PRIMARY KEY     NOT NULL", "INPUT_TEXT TEXT    NOT NULL", "SOURCE_TEXT TEXT NOT NULL", "CREATION_DATE CHAR(50) NOT NULL",
-					"WIDTH INT NOT NULL", "HEIGHT INT NOT NULL", "SVG TEXT NOT NULL", "CREATOR_IP CHAR(50)", "WORD_COUNT INT NOT NULL", "SIMILARITY_ALGO CHAR(50)", "RANKING_ALGO CHAR(50)",
-					"LAYOUT_ALGO CHAR(50)", "FONT CHAR(50)", "COLOR_SCHEME CHAR(50)", "COLOR_DISTR CHAR(50)" };
+					"WIDTH INT NOT NULL", "HEIGHT INT NOT NULL", "WIDTH2 INT NOT NULL", "HEIGHT2 INT NOT NULL", "SVG TEXT NOT NULL", "SVG2 TEXT NOT NULL", "CREATOR_IP CHAR(50)",
+					"WORD_COUNT INT NOT NULL", "SIMILARITY_ALGO CHAR(50)", "RANKING_ALGO CHAR(50)", "LAYOUT_ALGO CHAR(50)", "FONT CHAR(50)", "COLOR_SCHEME CHAR(50)", "COLOR_DISTR CHAR(50)" };
 
 				StringBuffer sql = new StringBuffer();
 				sql.append("CREATE TABLE CLOUD (");

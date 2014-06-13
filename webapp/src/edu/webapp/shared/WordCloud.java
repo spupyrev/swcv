@@ -22,6 +22,7 @@ public class WordCloud implements Serializable
 
     private String creationDate;
     private String svg;
+    private String svg2;
     private int width;
     private int height;
 
@@ -29,9 +30,13 @@ public class WordCloud implements Serializable
     
     private String creatorIP;
 
+	private int width2;
+
+	private int height2;
+
     public WordCloud()
     {
-
+    	svg2 = "";
     }
 
     public String getCreatorIP()
@@ -94,6 +99,16 @@ public class WordCloud implements Serializable
         this.svg = svg;
     }
 
+    public String getSvg2()
+    {
+        return svg2;
+    }
+
+    public void setSvg2(String svg)
+    {
+        this.svg2 = svg;
+    }
+    
     public int getWidth()
     {
         return width;
@@ -146,6 +161,24 @@ public class WordCloud implements Serializable
 	public void setSourceText(String sourceText)
 	{
 		this.sourceText = sourceText;
+	}
+
+	public void setWidth2(int width2)
+	{
+		this.width2 = width2;
+	}
+
+	public int getWidth2(){
+		return this.width2;
+	}
+	
+	public void setHeight2(int height2)
+	{
+		this.height2 = height2;
+	}
+	
+	public int getHeight2(){
+		return this.height2;
 	}
 
 }

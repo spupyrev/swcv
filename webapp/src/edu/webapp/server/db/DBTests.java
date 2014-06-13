@@ -17,8 +17,8 @@ public class DBTests
 	{
 		try
 		{
-			//DBUtils.createDB();
-			//testAddCloud();
+			DBUtils.createDB();
+			testAddCloud();
 			testListClouds();
 			testUpdateClouds();
 			testListClouds();

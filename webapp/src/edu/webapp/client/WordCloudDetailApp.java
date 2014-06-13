@@ -64,6 +64,15 @@ public class WordCloudDetailApp implements EntryPoint
 				rPanel.setPixelSize(cloud.getWidth() + 20, cloud.getHeight() + 20);
 				rPanel.addStyleName("center");
 
+				SimplePanel panel2 = createPanel2(cloud);
+				RootPanel rPanel2 = RootPanel.get("cloud-div2");
+				rPanel2.add(panel2);
+				if (cloud.getWidth2() != 0)
+					rPanel2.setPixelSize(cloud.getWidth2() + 20, cloud.getHeight2() + 20);
+				else
+					rPanel2.setPixelSize(0, 0);
+				rPanel2.addStyleName("center");
+
 				setting = cloud.getSettings();
 				inputText = cloud.getSourceText();
 				CaptionPanel settingArea = new SettingsPanel(setting, true).create();
@@ -129,6 +138,15 @@ public class WordCloudDetailApp implements EntryPoint
 		panel.setPixelSize(cloud.getWidth() + 10, cloud.getHeight() + 10);
 		panel.addStyleName("center");
 		panel.add(new HTML(cloud.getSvg()));
+		return panel;
+	}
+
+	private SimplePanel createPanel2(WordCloud cloud)
+	{
+		SimplePanel panel = new SimplePanel();
+		panel.setPixelSize(cloud.getWidth2(), cloud.getHeight2());
+		panel.addStyleName("center");
+		panel.add(new HTML(cloud.getSvg2()));
 		return panel;
 	}
 

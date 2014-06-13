@@ -172,6 +172,7 @@ public class SettingsPanel
 		box.addItem("Random", WCSetting.COLOR_DISTRIBUTE.RANDOM.toString());
 		box.addItem("Words Rank", WCSetting.COLOR_DISTRIBUTE.WORD_RANK.toString());
 		box.addItem("Sentiment (TwitterOnly)", WCSetting.COLOR_DISTRIBUTE.SENTIMENT.toString());
+		box.addItem("Dynamic (testing feature)", WCSetting.COLOR_DISTRIBUTE.DYNAMIC.toString());
 		box.setSelectedIndex(findIndex(box, setting.getColorDistribute().toString()));
 
 		box.addChangeHandler(new ChangeHandler()
@@ -194,9 +195,11 @@ public class SettingsPanel
 		COLOR_DISTRIBUTE distValue = WCSetting.COLOR_DISTRIBUTE.valueOf(distbox.getValue(distbox.getSelectedIndex()));
 		ListBox schmbox = (ListBox) colorSchemeWidget;
 		List<Integer> sentiIndices = getSentiIndices();
+		List<Integer> dynamicIndices = getDynamicIndices();
 		if (distValue == WCSetting.COLOR_DISTRIBUTE.SENTIMENT)
 		{
-			if (!sentiIndices.contains(schmbox.getSelectedIndex())){
+			if (!sentiIndices.contains(schmbox.getSelectedIndex()))
+			{
 				schmbox.setSelectedIndex(sentiIndices.get(0));
 				setting.setColorScheme(COLOR_SCHEME.SENTIMENT);
 			}
@@ -206,9 +209,22 @@ public class SettingsPanel
 				if (!sentiIndices.contains(i))
 					setDisabled(schmbox, i);
 		}
+		else if (distValue == WCSetting.COLOR_DISTRIBUTE.DYNAMIC)
+		{
+			if (!dynamicIndices.contains(schmbox.getSelectedIndex())){
+				schmbox.setSelectedIndex(dynamicIndices.get(0));
+				setting.setColorScheme(COLOR_SCHEME.REDBLUEBLACK);
+			}
+			for (Integer i: dynamicIndices)
+				removeDisabled(schmbox, i);
+			for (int i = 0; i< schmbox.getItemCount(); ++i)
+				if (!dynamicIndices.contains(i))
+					setDisabled(schmbox, i);
+		}
 		else
 		{
-			if (sentiIndices.contains(schmbox.getSelectedIndex())){
+			if (sentiIndices.contains(schmbox.getSelectedIndex()))
+			{
 				schmbox.setSelectedIndex(0);
 				setting.setColorScheme(COLOR_SCHEME.BEAR_DOWN);
 			}
@@ -218,6 +234,14 @@ public class SettingsPanel
 				if (!sentiIndices.contains(i))
 					removeDisabled(schmbox, i);
 		}
+	}
+
+	private List<Integer> getDynamicIndices()
+	{
+		List<Integer> indices = new ArrayList<Integer>();
+		indices.add(findIndex((ListBox) colorSchemeWidget,WCSetting.COLOR_SCHEME.REDBLUEBLACK.toString()));
+		indices.add(findIndex((ListBox) colorSchemeWidget,WCSetting.COLOR_SCHEME.REDBLUEBLACK2.toString()));
+		return indices;
 	}
 
 	private List<Integer> getSentiIndices()
@@ -257,6 +281,8 @@ public class SettingsPanel
 		box.addItem("Similar Scheme 3", WCSetting.COLOR_SCHEME.SIMILAR_3.toString());
 		box.addItem("Sentiment ORANGE-BLUE", WCSetting.COLOR_SCHEME.SENTIMENT.toString());
 		box.addItem("Sentiment GREEN-RED", WCSetting.COLOR_SCHEME.SENTIMENT2.toString());
+		box.addItem("RedBlueBlack", WCSetting.COLOR_SCHEME.REDBLUEBLACK.toString());
+		box.addItem("RedBlueBlack2", WCSetting.COLOR_SCHEME.REDBLUEBLACK2.toString());
 
 		box.setSelectedIndex(findIndex(box, setting.getColorScheme().toString()));
 
