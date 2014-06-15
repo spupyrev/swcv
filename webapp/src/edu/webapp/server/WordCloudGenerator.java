@@ -255,7 +255,7 @@ public class WordCloudGenerator
 		// two Clouds
 		WordCloudPanel panel1 = new WordCloudPanel(doc.getDoc1().getWords(), layoutAlgo, null, wordColorScheme, bbg);
 		panel1.setSize(1024, 800);
-		panel1.setShowRectangles(true);
+		panel1.setShowRectangles(setting.isShowRectangles());
 		panel1.setOpaque(false);
 		panel1.paintComponent(svgGenerator);
 		Writer writer;
@@ -287,7 +287,7 @@ public class WordCloudGenerator
 		// two Clouds
 		WordCloudPanel panel2 = new WordCloudPanel(doc.getDoc2().getWords(), layoutAlgo, null, wordColorScheme2, bbg);
 		panel2.setSize(1024, 800);
-		panel2.setShowRectangles(true);
+		panel2.setShowRectangles(setting.isShowRectangles());
 		panel2.setOpaque(false);
 		panel2.paintComponent(svgGenerator2);
 
