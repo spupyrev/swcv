@@ -104,6 +104,7 @@ public class SWCRectangle {
 
 		double x0 = getX();
 		double y0 = getY();
+		
 		return (rect.x + rect.getWidth() > x0 && rect.y + rect.getHeight() > y0 && rect.x < x0 + getWidth() && rect.y < y0 + getHeight());
 	}
 
@@ -150,4 +151,12 @@ public class SWCRectangle {
 		setRect(x - (width / 2.0), y - (height / 2.0), width, height);
 	}
 
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("x: "+getX()+"\n");
+		sb.append("y: "+getY()+"\n");
+		sb.append("width: "+getWidth()+"\n");
+		sb.append("height: "+getHeight()+"\n");
+		return sb.toString();
+	}
 }

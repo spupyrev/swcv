@@ -4,6 +4,7 @@ import edu.cloudy.clustering.IClusterAlgo;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
+import edu.cloudy.utils.BoundingBoxGenerator;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -42,7 +43,7 @@ public class WordCloudFrame extends JFrame {
 	private void initPanel(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo, IClusterAlgo clusterAlgo) {
 		setLayout(new BorderLayout());
 
-		WordCloudPanel panel = new WordCloudPanel(words, algo, clusterAlgo, null);
+		WordCloudPanel panel = new WordCloudPanel(words, algo, clusterAlgo, null,new BoundingBoxGenerator(25000.0));
 		add(BorderLayout.CENTER, panel);
 		add(BorderLayout.EAST, new MetricsPanel(words, similarity, algo));
 

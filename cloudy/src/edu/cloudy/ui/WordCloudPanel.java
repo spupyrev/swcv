@@ -60,7 +60,9 @@ public class WordCloudPanel extends JPanel implements ActionListener
 
 	private Timer timer;
 
-	public WordCloudPanel(List<Word> words, LayoutAlgo algo, IClusterAlgo clusterAlgo, IColorScheme colorScheme)
+	private BoundingBoxGenerator bbg;
+	
+	public WordCloudPanel(List<Word> words, LayoutAlgo algo, IClusterAlgo clusterAlgo, IColorScheme colorScheme,BoundingBoxGenerator bbg)
 	{
 		this.algo = algo;
 		this.words = words;
@@ -69,6 +71,7 @@ public class WordCloudPanel extends JPanel implements ActionListener
 		else
 			wordColors = (clusterAlgo != null ? new ClusterColorScheme(clusterAlgo, words) : new RandomColorScheme());
 
+		this.bbg = bbg;
 		this.setBackground(Color.WHITE);
 		timer = new Timer(100, this);
 	}
@@ -124,7 +127,6 @@ public class WordCloudPanel extends JPanel implements ActionListener
 		for (Word w : words)
 		{
 			SWCRectangle rect5 = algo.getWordRectangle(w);
-			BoundingBoxGenerator bbg = new BoundingBoxGenerator(25000.0);
 			SWCRectangle swcRect = bbg.getBoundingBox(w, w.weight);
 
 			swcRect.moveTo(rect5.getX(), rect5.getY());
@@ -165,7 +167,6 @@ public class WordCloudPanel extends JPanel implements ActionListener
 		for (Word w : words)
 		{
 			SWCRectangle rect5 = algo.getWordRectangle(w);
-			BoundingBoxGenerator bbg = new BoundingBoxGenerator(25000.0);
 			SWCRectangle rect = bbg.getBoundingBox(w, w.weight);
 
 			rect.moveTo(rect5.getX(), rect5.getY());

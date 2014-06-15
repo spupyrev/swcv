@@ -137,7 +137,8 @@ public class WordCloudGenerator
 			// algo
 			LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm());
 			layoutAlgo.setData(wcvDocument.getWords(), similarity);
-			layoutAlgo.setConstraints(new BoundingBoxGenerator(25000.0));
+			BoundingBoxGenerator bbg = new BoundingBoxGenerator(25000.0);
+			layoutAlgo.setConstraints(bbg);
 			layoutAlgo.run();
 
 			// colors
@@ -151,7 +152,7 @@ public class WordCloudGenerator
 			SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
 
 			// Ask to render into the SVG Graphics2D implementation.
-			WordCloudPanel panel = new WordCloudPanel(wcvDocument.getWords(), layoutAlgo, null, wordColorScheme);
+			WordCloudPanel panel = new WordCloudPanel(wcvDocument.getWords(), layoutAlgo, null, wordColorScheme, bbg);
 			panel.setSize(1024, 800);
 			panel.setShowRectangles(setting.isShowRectangles());
 			panel.setOpaque(false);
@@ -237,7 +238,8 @@ public class WordCloudGenerator
 
 		LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm());
 		layoutAlgo.setData(doc.getWords(), similarity);
-		layoutAlgo.setConstraints(new BoundingBoxGenerator(25000.0));
+		BoundingBoxGenerator bbg = new BoundingBoxGenerator(25000.0);
+		layoutAlgo.setConstraints(bbg);
 		layoutAlgo.run();
 
 		IColorScheme wordColorScheme = getColorScheme(doc.getDoc1(), similarity, setting);
@@ -251,9 +253,9 @@ public class WordCloudGenerator
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
 
 		// two Clouds
-		WordCloudPanel panel1 = new WordCloudPanel(doc.getDoc1().getWords(), layoutAlgo, null, wordColorScheme);
+		WordCloudPanel panel1 = new WordCloudPanel(doc.getDoc1().getWords(), layoutAlgo, null, wordColorScheme, bbg);
 		panel1.setSize(1024, 800);
-		panel1.setShowRectangles(setting.isShowRectangles());
+		panel1.setShowRectangles(true);
 		panel1.setOpaque(false);
 		panel1.paintComponent(svgGenerator);
 		Writer writer;
@@ -283,9 +285,9 @@ public class WordCloudGenerator
 		SVGGraphics2D svgGenerator2 = new SVGGraphics2D(document2);
 
 		// two Clouds
-		WordCloudPanel panel2 = new WordCloudPanel(doc.getDoc2().getWords(), layoutAlgo, null, wordColorScheme2);
+		WordCloudPanel panel2 = new WordCloudPanel(doc.getDoc2().getWords(), layoutAlgo, null, wordColorScheme2, bbg);
 		panel2.setSize(1024, 800);
-		panel2.setShowRectangles(setting.isShowRectangles());
+		panel2.setShowRectangles(true);
 		panel2.setOpaque(false);
 		panel2.paintComponent(svgGenerator2);
 
