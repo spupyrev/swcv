@@ -10,7 +10,7 @@ import edu.cloudy.layout.InflateAndPushAlgo;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.SinglePathAlgo;
 import edu.cloudy.nlp.WCVDocument;
-import edu.cloudy.nlp.WCVDocument4dynamic;
+import edu.cloudy.nlp.WCVDynamicDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
@@ -23,7 +23,7 @@ public class LayoutTest
 
 	public static void main(String[] args)
 	{
-		WCVDocument doc = new WCVDocument4dynamic("meow", "meow");
+		WCVDocument doc = new WCVDynamicDocument("meow", "meow");
 		doc.parse();
 		doc.weightFilter(100, new TFRankingAlgo());
 

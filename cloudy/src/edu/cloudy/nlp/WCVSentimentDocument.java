@@ -15,15 +15,14 @@ import java.util.Set;
  * @author jixianli
  *
  */
-public class WCVDocument4Sentiment extends WCVDocument
+public class WCVSentimentDocument extends WCVDocument
 {
-    public static final String SENTIMENT_DELIMETER_TEXT = "@$@$"; 
     
     private List<String> strChunks;
     private int[] sentiValues;
     private String[] sentences;
 
-    public WCVDocument4Sentiment(List<String> strChunks)
+    public WCVSentimentDocument(List<String> strChunks)
     {
         this.strChunks = strChunks;
         sentiValues = new int[strChunks.size()];
@@ -31,7 +30,7 @@ public class WCVDocument4Sentiment extends WCVDocument
         
         for (String chunk : strChunks)
         {
-            sb.append(chunk + SENTIMENT_DELIMETER_TEXT);
+            sb.append(chunk + ContextDelimiter.SENTIMENT_DELIMITER_TEXT);
         }
         
         setText(sb.toString());

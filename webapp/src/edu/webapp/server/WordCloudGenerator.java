@@ -18,6 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.svg.GetSVGDocument;
 import org.w3c.dom.svg.SVGDocument;
 
 import edu.cloudy.clustering.IClusterAlgo;
@@ -35,9 +36,10 @@ import edu.cloudy.layout.MDSAlgo;
 import edu.cloudy.layout.SeamCarvingAlgo;
 import edu.cloudy.layout.StarForestAlgo;
 import edu.cloudy.layout.WordleAlgo;
+import edu.cloudy.nlp.ContextDelimiter;
 import edu.cloudy.nlp.WCVDocument;
-import edu.cloudy.nlp.WCVDocument4Sentiment;
-import edu.cloudy.nlp.WCVDocument4dynamic;
+import edu.cloudy.nlp.WCVSentimentDocument;
+import edu.cloudy.nlp.WCVDynamicDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.LexRankingAlgo;
@@ -100,19 +102,31 @@ public class WordCloudGenerator
 
 		if (reader instanceof DynamicReader)
 		{
-			cloud = generateWordCloudFromDynamic((DynamicReader) reader, input, setting, ip);
+			DynamicReader r = (DynamicReader) reader;
+			cloud = generateWordCloudFromDynamic(input,r.getText1(),r.getText2(), setting, ip);
+		}else if(input.contains(ContextDelimiter.DYNAMIC_DELIMITER_TEXT)){
+			String[] strs = input.split(ContextDelimiter.DYNAMIC_DELIMITER_REGEX);
+			if (strs.length == 2){
+				cloud = generateWordCloudFromDynamic("", strs[0], strs[1], setting, ip);
+			}else{
+				String inputText = "";
+				for (int i = 0; i<strs.length;++i){
+					inputText += strs[i];
+				}
+				buildWordCloud(inputText, setting, ip);
+			}
 		}
 		else
 		{
 			if (reader instanceof ISentimentReader && setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT)
 			{
-				wcvDocument = new WCVDocument4Sentiment(((ISentimentReader) reader).getStrChunks());
+				wcvDocument = new WCVSentimentDocument(((ISentimentReader) reader).getStrChunks());
 				text = wcvDocument.getText();
 			}
-			else if (setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT && input.contains(WCVDocument4Sentiment.SENTIMENT_DELIMETER_TEXT))
+			else if (setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT && input.contains(ContextDelimiter.SENTIMENT_DELIMITER_TEXT))
 			{
-				String[] strs = input.split("\\@\\$\\@\\$");
-				wcvDocument = new WCVDocument4Sentiment(Arrays.asList(strs));
+				String[] strs = input.split(ContextDelimiter.SENTIMENT_DELIMITER_REGEX);
+				wcvDocument = new WCVSentimentDocument(Arrays.asList(strs));
 			}
 			else
 			{
@@ -144,41 +158,16 @@ public class WordCloudGenerator
 			// colors
 			IColorScheme wordColorScheme = getColorScheme(wcvDocument, similarity, setting);
 
-			// get svg
-			DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
-
-			// Create an instance of org.w3c.dom.Document.
-			SVGDocument document = (SVGDocument) domImpl.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
-			SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
-
 			// Ask to render into the SVG Graphics2D implementation.
 			WordCloudPanel panel = new WordCloudPanel(wcvDocument.getWords(), layoutAlgo, null, wordColorScheme, bbg);
 			panel.setSize(1024, 800);
 			panel.setShowRectangles(setting.isShowRectangles());
 			panel.setOpaque(false);
-			panel.paintComponent(svgGenerator);
-
-			Writer writer;
-			try
-			{
-				TransformerFactory tf = TransformerFactory.newInstance();
-				Transformer transformer = tf.newTransformer();
-				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-				writer = new StringWriter();
-				transformer.transform(new DOMSource(document), new StreamResult(writer));
-				writer.close();
-
-				writer = new StringWriter();
-				svgGenerator.stream(writer, true);
-				writer.close();
-			}
-			catch (Exception e)
-			{
-				throw new RuntimeException(e);
-			}
+			
+			String svg = getSvg(panel);
 
 			Date timestamp = Calendar.getInstance().getTime();
-			cloud = createCloud(setting, input, text, timestamp, writer.toString(), "", (int) panel.getActualWidth(), (int) panel.getActualHeight(), 0, 0, ip);
+			cloud = createCloud(setting, input, text, timestamp, svg, "", (int) panel.getActualWidth(), (int) panel.getActualHeight(), 0, 0, ip);
 
 		}
 
@@ -220,31 +209,8 @@ public class WordCloudGenerator
 		return wordColorScheme;
 	}
 
-	private static WordCloud generateWordCloudFromDynamic(DynamicReader reader, String input, WCSetting setting, String ip)
+	private static String getSvg(WordCloudPanel panel)
 	{
-		WordCloud cloud = null;
-		String svg1, svg2, text;
-
-		WCVDocument4dynamic doc = new WCVDocument4dynamic(reader.getText1(), reader.getText2());
-		doc.parse();
-		doc.weightFilter(setting.getWordCount(), createRanking(setting.getRankingAlgorithm(), doc));
-
-		text = doc.getText();
-
-		SimilarityAlgo similarityAlgo = createSimilarity(setting.getSimilarityAlgorithm());
-		similarityAlgo.initialize(doc);
-		similarityAlgo.run();
-		Map<WordPair, Double> similarity = similarityAlgo.getSimilarity();
-
-		LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm());
-		layoutAlgo.setData(doc.getWords(), similarity);
-		BoundingBoxGenerator bbg = new BoundingBoxGenerator(25000.0);
-		layoutAlgo.setConstraints(bbg);
-		layoutAlgo.run();
-
-		IColorScheme wordColorScheme = getColorScheme(doc.getDoc1(), similarity, setting);
-		IColorScheme wordColorScheme2 = getColorScheme(doc.getDoc2(), similarity, setting);
-
 		// get svg
 		DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
 
@@ -253,11 +219,7 @@ public class WordCloudGenerator
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
 
 		// two Clouds
-		WordCloudPanel panel1 = new WordCloudPanel(doc.getDoc1().getWords(), layoutAlgo, null, wordColorScheme, bbg);
-		panel1.setSize(1024, 800);
-		panel1.setShowRectangles(setting.isShowRectangles());
-		panel1.setOpaque(false);
-		panel1.paintComponent(svgGenerator);
+		panel.paintComponent(svgGenerator);
 		Writer writer;
 		try
 		{
@@ -277,45 +239,52 @@ public class WordCloudGenerator
 		{
 			throw new RuntimeException(e);
 		}
-		svg1 = writer.toString();
-		DOMImplementation domImpl2 = SVGDOMImplementation.getDOMImplementation();
+		return writer.toString();
+	}
 
-		// Create an instance of org.w3c.dom.Document.
-		SVGDocument document2 = (SVGDocument) domImpl2.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
-		SVGGraphics2D svgGenerator2 = new SVGGraphics2D(document2);
+	private static WordCloud generateWordCloudFromDynamic(String input, String text1, String text2, WCSetting setting, String ip)
+	{
+		WordCloud cloud = null;
+		String svg1, svg2, text;
 
-		// two Clouds
+		WCVDynamicDocument doc = new WCVDynamicDocument(text1, text2);
+		doc.parse();
+		doc.weightFilter(setting.getWordCount(), createRanking(setting.getRankingAlgorithm(), doc));
+
+		text = doc.getText();
+
+		SimilarityAlgo similarityAlgo = createSimilarity(setting.getSimilarityAlgorithm());
+		similarityAlgo.initialize(doc);
+		similarityAlgo.run();
+		Map<WordPair, Double> similarity = similarityAlgo.getSimilarity();
+
+		LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm());
+		layoutAlgo.setData(doc.getWords(), similarity);
+		BoundingBoxGenerator bbg = new BoundingBoxGenerator(25000.0);
+		layoutAlgo.setConstraints(bbg);
+		layoutAlgo.run();
+
+		IColorScheme wordColorScheme = getColorScheme(doc.getDoc1(), similarity, setting);
+		IColorScheme wordColorScheme2 = getColorScheme(doc.getDoc2(), similarity, setting);
+
+		WordCloudPanel panel1 = new WordCloudPanel(doc.getDoc1().getWords(), layoutAlgo, null, wordColorScheme, bbg);
+		panel1.setSize(1024, 800);
+		panel1.setShowRectangles(setting.isShowRectangles());
+		panel1.setOpaque(false);
+
+		svg1 = getSvg(panel1);
+
 		WordCloudPanel panel2 = new WordCloudPanel(doc.getDoc2().getWords(), layoutAlgo, null, wordColorScheme2, bbg);
 		panel2.setSize(1024, 800);
 		panel2.setShowRectangles(setting.isShowRectangles());
 		panel2.setOpaque(false);
-		panel2.paintComponent(svgGenerator2);
 
-		Writer writer2;
-		try
-		{
-
-			TransformerFactory tf = TransformerFactory.newInstance();
-			Transformer transformer = tf.newTransformer();
-			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-			writer2 = new StringWriter();
-			transformer.transform(new DOMSource(document2), new StreamResult(writer2));
-			writer2.close();
-
-			writer2 = new StringWriter();
-			svgGenerator2.stream(writer2, true);
-			writer2.close();
-
-		}
-		catch (Exception e)
-		{
-			throw new RuntimeException(e);
-		}
-		svg2 = writer2.toString();
+		svg2 = getSvg(panel2);
 
 		Date timestamp = Calendar.getInstance().getTime();
 
-		cloud = createCloud(setting, input, text, timestamp, svg1, svg2, panel1.getWidth(), panel1.getHeight(), panel2.getWidth(), panel2.getHeight(), ip);
+		cloud = createCloud(setting, input, text, timestamp, svg1, svg2, (int) panel1.getActualWidth(), (int) panel1.getActualHeight(), (int) panel2.getActualWidth(), (int) panel2.getActualHeight(),
+				ip);
 
 		return cloud;
 	}

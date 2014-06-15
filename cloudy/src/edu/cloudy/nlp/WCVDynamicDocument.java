@@ -8,15 +8,15 @@ import java.util.List;
 import edu.cloudy.nlp.Word.DocIndex;
 import edu.cloudy.nlp.ranking.RankingAlgo;
 
-public class WCVDocument4dynamic extends WCVDocument
+public class WCVDynamicDocument extends WCVDocument
 {
 
 	private WCVDocument doc1;
 	private WCVDocument doc2;
 
-	public WCVDocument4dynamic(String text1, String text2)
+	public WCVDynamicDocument(String text1, String text2)
 	{
-		super(text1 + ".\n" + text2);
+		super(text1 + ContextDelimiter.DYNAMIC_DELIMITER_TEXT + text2);
 		doc1 = new WCVDocument(text1);
 		doc2 = new WCVDocument(text2);
 	}
