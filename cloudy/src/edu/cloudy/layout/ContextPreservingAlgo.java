@@ -206,7 +206,7 @@ public class ContextPreservingAlgo implements LayoutAlgo
         {
             SWCRectangle rect = wordPositions.get(words[i]);
             SWCPoint dxy = new SWCPoint(0, 0);
-
+            
             if (!overlap(i))
             {
                 //attractive force (compact principle)
@@ -242,7 +242,7 @@ public class ContextPreservingAlgo implements LayoutAlgo
         double cnt = 0;
         for (int j = 0; j < words.length; j++)
         {
-            if (i == j)
+            if ((i == j)||words[i]==words[j])
                 continue;
 
             SWCRectangle rectJ = wordPositions.get(words[j]);
@@ -255,6 +255,7 @@ public class ContextPreservingAlgo implements LayoutAlgo
                 force *= T;
 
             SWCPoint dir = new SWCPoint(rectJ.getCenterX() - rectI.getCenterX(), rectJ.getCenterY() - rectI.getCenterY());
+            
             double len = dir.distance(0, 0);
             if (len < EPS)
                 continue;
@@ -266,6 +267,8 @@ public class ContextPreservingAlgo implements LayoutAlgo
             cnt++;
         }
 
+        if (cnt == 0.0)
+        	cnt = 1;
         dxy.scale(1.0 / cnt);
         return dxy;
     }
@@ -277,7 +280,7 @@ public class ContextPreservingAlgo implements LayoutAlgo
         double cnt = 0;
         for (int j = 0; j < words.length; j++)
         {
-            if (i == j)
+            if ((i == j)||(words[i] == words[j]))
                 continue;
 
             // compute the displacement due to the overlap repulsive force
@@ -297,6 +300,7 @@ public class ContextPreservingAlgo implements LayoutAlgo
                 double force = KR * Math.min(dx, dy);
 
                 SWCPoint dir = new SWCPoint(rectJ.getCenterX() - rectI.getCenterX(), rectJ.getCenterY() - rectI.getCenterY());
+                
                 double len = dir.distance(0, 0);
                 if (len < EPS)
                     continue;
@@ -308,7 +312,9 @@ public class ContextPreservingAlgo implements LayoutAlgo
                 cnt++;
             }
         }
-
+        
+        if (cnt == 0.0)
+        	cnt = 1;
         dxy.scale(1.0 / cnt);
         return dxy;
     }
