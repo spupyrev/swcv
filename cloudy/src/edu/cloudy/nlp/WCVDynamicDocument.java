@@ -37,64 +37,43 @@ public class WCVDynamicDocument extends WCVDocument
 
 		sortListByWeight(doc1.getWords());
 		sortListByWeight(doc2.getWords());
-		
+
 		int count1 = Math.min(maxCount, doc1.getWords().size());
 		int count2 = Math.min(maxCount, doc2.getWords().size());
 
 		doc1.setWords(doc1.getWords().subList(0, count1));
 		doc2.setWords(doc2.getWords().subList(0, count2));
 
-		int one = 0, two = 0;
 		List<Word> cwords = new ArrayList<Word>();
-		for (; one != count1 && two != count2;)
-		{
-			Word word1 = doc1.getWords().get(one);
-			Word word2 = doc2.getWords().get(two);
 
-			if (word1.weight >= word2.weight)
+		cwords.addAll(doc1.getWords());
+		cwords.addAll(doc2.getWords());
+
+		sortListByWeight(cwords);
+		this.setWords(cwords);
+
+		assignDocIndex();
+
+		rescaleWeights(this.getWords(), 5);
+	}
+
+	private void assignDocIndex()
+	{
+		HashMap<String, Word> map1 = new HashMap<String, Word>();
+
+		for (Word w : doc1.getWords())
+			map1.put(w.word, w);
+
+		for (Word w : doc2.getWords())
+			if (map1.containsKey(w.word))
 			{
-				cwords.add(word1);
-				one++;
+				map1.get(w.word).documentIndex = DocIndex.Both;
+				w.documentIndex = DocIndex.Both;
 			}
 			else
 			{
-				cwords.add(word2);
-				two++;
-			}
-		}
-		if (one != count1)
-		{
-			for (; one < count1; one++)
-			{
-				Word w = doc1.getWords().get(one);
-				cwords.add(w);
-			}
-		}
-		else if (two != count2)
-		{
-			for (; two < count2; two++)
-			{
-				Word w = doc2.getWords().get(two);
-				cwords.add(w);
-			}
-		}
-		sortListByWeight(cwords);
-		this.setWords(cwords);
-		HashMap<String,Word> map1 = new HashMap<String,Word>();
-		
-		for (Word w: doc1.getWords())
-			map1.put(w.word, w);
-		
-		for (Word w: doc2.getWords())
-			if (map1.containsKey(w.word)){
-				map1.get(w.word).documentIndex = DocIndex.Both;
-				w.documentIndex = DocIndex.Both;
-			}else{
 				w.documentIndex = DocIndex.Second;
 			}
-		rescaleWeights(doc1.getWords(), 5);
-		rescaleWeights(doc2.getWords(), 5);
-		rescaleWeights(this.getWords(), 5);
 	}
 
 	private void sortListByWeight(List<Word> list)

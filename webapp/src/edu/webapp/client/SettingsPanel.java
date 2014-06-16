@@ -240,7 +240,7 @@ public class SettingsPanel
 	{
 		List<Integer> indices = new ArrayList<Integer>();
 		indices.add(findIndex((ListBox) colorSchemeWidget,WCSetting.COLOR_SCHEME.REDBLUEBLACK.toString()));
-		indices.add(findIndex((ListBox) colorSchemeWidget,WCSetting.COLOR_SCHEME.REDBLUEBLACK2.toString()));
+		indices.add(findIndex((ListBox) colorSchemeWidget,WCSetting.COLOR_SCHEME.BLUEREDBLACK.toString()));
 		return indices;
 	}
 
@@ -282,7 +282,7 @@ public class SettingsPanel
 		box.addItem("Sentiment ORANGE-BLUE", WCSetting.COLOR_SCHEME.SENTIMENT.toString());
 		box.addItem("Sentiment GREEN-RED", WCSetting.COLOR_SCHEME.SENTIMENT2.toString());
 		box.addItem("RedBlueBlack", WCSetting.COLOR_SCHEME.REDBLUEBLACK.toString());
-		box.addItem("RedBlueBlack2", WCSetting.COLOR_SCHEME.REDBLUEBLACK2.toString());
+		box.addItem("BlueRedBlack", WCSetting.COLOR_SCHEME.BLUEREDBLACK.toString());
 
 		box.setSelectedIndex(findIndex(box, setting.getColorScheme().toString()));
 

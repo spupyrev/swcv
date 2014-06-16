@@ -103,9 +103,9 @@ public interface IColorScheme
     		new Color(0,0,0)
     };
     
-    static final Color[] redblueblack2 = {
+    static final Color[] blueredblack = {
+    		new Color(33,113,181),	
     		new Color(203,24,29),
-    		new Color(33,113,181),
     		new Color(0,0,0)
     };
     

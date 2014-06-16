@@ -4,28 +4,33 @@ import edu.cloudy.nlp.Word;
 
 public class BoundingBoxGenerator
 {
-    private double weightToAreaFactor;
+	private double weightToAreaFactor;
 
-    public BoundingBoxGenerator(double weightToAreaFactor)
-    {
-        this.weightToAreaFactor = weightToAreaFactor;
-    }
+	public BoundingBoxGenerator()
+	{
+		this.weightToAreaFactor = 1.0;
+	}
 
-    public SWCRectangle getBoundingBox(Word w, double weight)
-    {
-        SWCRectangle bb = FontUtils.getBoundingBox(w.word);
+	public BoundingBoxGenerator(double weightToAreaFactor)
+	{
+		this.weightToAreaFactor = weightToAreaFactor;
+	}
 
-        double origWidth = bb.getWidth();
-        double origHeight = bb.getHeight();
+	public SWCRectangle getBoundingBox(Word w, double weight)
+	{
+		SWCRectangle bb = FontUtils.getBoundingBox(w.word);
 
-        //double scaling = Math.sqrt(weight * weightToAreaFactor / (origWidth * origHeight));
-        double scaling = weight;
-        return new SWCRectangle(0, 0, origWidth * scaling, origHeight * scaling);
-    }
+		double origWidth = bb.getWidth();
+		double origHeight = bb.getHeight();
 
-    public double getWeightToAreaFactor()
-    {
-        return weightToAreaFactor;
-    }
+		//double scaling = Math.sqrt(weight * weightToAreaFactor / (origWidth * origHeight));
+		double scaling = weight * weightToAreaFactor;
+		return new SWCRectangle(0, 0, origWidth * scaling, origHeight * scaling);
+	}
+
+	public double getWeightToAreaFactor()
+	{
+		return weightToAreaFactor;
+	}
 
 }

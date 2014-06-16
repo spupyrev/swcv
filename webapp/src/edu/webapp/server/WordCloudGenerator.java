@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.management.RuntimeErrorException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -18,7 +17,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.svg.GetSVGDocument;
 import org.w3c.dom.svg.SVGDocument;
 
 import edu.cloudy.clustering.IClusterAlgo;
@@ -38,9 +36,8 @@ import edu.cloudy.layout.StarForestAlgo;
 import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.nlp.ContextDelimiter;
 import edu.cloudy.nlp.WCVDocument;
-import edu.cloudy.nlp.WCVSentimentDocument;
 import edu.cloudy.nlp.WCVDynamicDocument;
-import edu.cloudy.nlp.Word;
+import edu.cloudy.nlp.WCVSentimentDocument;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.LexRankingAlgo;
 import edu.cloudy.nlp.ranking.RankingAlgo;
@@ -55,7 +52,6 @@ import edu.cloudy.nlp.similarity.SimilarityAlgo;
 import edu.cloudy.ui.WordCloudPanel;
 import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.FontUtils;
-import edu.cloudy.utils.SWCRectangle;
 import edu.webapp.server.readers.DocumentExtractor;
 import edu.webapp.server.readers.DynamicReader;
 import edu.webapp.server.readers.IDocumentReader;
@@ -103,18 +99,7 @@ public class WordCloudGenerator
 		if (reader instanceof DynamicReader)
 		{
 			DynamicReader r = (DynamicReader) reader;
-			cloud = generateWordCloudFromDynamic(input,r.getText1(),r.getText2(), setting, ip);
-		}else if(input.contains(ContextDelimiter.DYNAMIC_DELIMITER_TEXT)){
-			String[] strs = input.split(ContextDelimiter.DYNAMIC_DELIMITER_REGEX);
-			if (strs.length == 2){
-				cloud = generateWordCloudFromDynamic("", strs[0], strs[1], setting, ip);
-			}else{
-				String inputText = "";
-				for (int i = 0; i<strs.length;++i){
-					inputText += strs[i];
-				}
-				buildWordCloud(inputText, setting, ip);
-			}
+			cloud = generateWordCloudFromDynamic(input, r.getText1(), r.getText2(), setting, ip);
 		}
 		else
 		{
@@ -151,7 +136,7 @@ public class WordCloudGenerator
 			// algo
 			LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm());
 			layoutAlgo.setData(wcvDocument.getWords(), similarity);
-			BoundingBoxGenerator bbg = new BoundingBoxGenerator(25000.0);
+			BoundingBoxGenerator bbg = new BoundingBoxGenerator();
 			layoutAlgo.setConstraints(bbg);
 			layoutAlgo.run();
 
@@ -163,7 +148,7 @@ public class WordCloudGenerator
 			panel.setSize(1024, 800);
 			panel.setShowRectangles(setting.isShowRectangles());
 			panel.setOpaque(false);
-			
+
 			String svg = getSvg(panel);
 
 			Date timestamp = Calendar.getInstance().getTime();
@@ -260,7 +245,7 @@ public class WordCloudGenerator
 
 		LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm());
 		layoutAlgo.setData(doc.getWords(), similarity);
-		BoundingBoxGenerator bbg = new BoundingBoxGenerator(25000.0);
+		BoundingBoxGenerator bbg = new BoundingBoxGenerator();
 		layoutAlgo.setConstraints(bbg);
 		layoutAlgo.run();
 

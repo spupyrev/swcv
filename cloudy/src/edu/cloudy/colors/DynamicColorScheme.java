@@ -10,8 +10,8 @@ public class DynamicColorScheme implements IColorScheme
 	private Color[] colorSet;
 	
 	public DynamicColorScheme(String colorSetName){
-		if (colorSetName.equals("REDBLACKBLUE2")){
-			colorSet = redblueblack2;
+		if (colorSetName.equals("BLUEREDBLACK")){
+			colorSet = blueredblack;
 		}else{
 			colorSet = redblueblack;
 		}

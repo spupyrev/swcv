@@ -1,8 +1,12 @@
 package edu.test;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JPanel;
 
 import edu.cloudy.colors.DynamicColorScheme;
 import edu.cloudy.layout.ContextPreservingAlgo;
@@ -29,48 +33,20 @@ public class LayoutTest
 
 		Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
 		MatchingTest.randomSimilarities(doc.getWords(), similarity);
-		BoundingBoxGenerator bbg = new BoundingBoxGenerator(25000.0);
+		BoundingBoxGenerator bbg = new BoundingBoxGenerator(1.0);
 		LayoutAlgo algo = runLayout(doc.getWords(), similarity, bbg);
 
 		Word w = doc.getWords().get(0);// two meows share 1 rect
 		SWCRectangle rect = algo.getWordRectangle(w);
-
+		SWCRectangle rect2 = bbg.getBoundingBox(w, w.weight);
 		System.out.println("word: " + w.word);
 		System.out.println(rect); // this is the size before transformation in WordCloudPanel panel
-
-		// use same step in WordCloudPanel to rescale each word.
-		// assume a panel size is 1024 * 800 offset = 50
-		double max_width = 1024;
-		double max_height = 800;
-		double offset = 50;
-		double scale;
-		
-		double maxX = rect.getMaxX();
-		double minX = rect.getMinX();
-		double maxY = rect.getMaxY();
-		double minY = rect.getMinY();
-		
-		double panel_width = max_width - offset * 2;
-		double panel_height = max_height - offset * 2;
-		
-		scale = panel_width / (maxX - minX);
-		scale = Math.min(scale, panel_height / (maxY - minY));
-		
-		System.out.println("scale: "+scale);
-		
-		double shiftX = -1 * minX + offset / scale;
-		double shiftY = -1 * minY + offset / scale;
-		System.out.println("sx: "+shiftX);
-		System.out.println("sy: "+shiftY);
-		
-		double finalX = scale * (shiftX + rect.getX());
-		double finalY = scale * (shiftY + rect.getY());
-		double finalW = scale * rect.getWidth();
-		double finalH = scale * rect.getHeight();
-		System.out.println("x:"+finalX);
-		System.out.println("y:"+finalY);
-		System.out.println("width:"+finalW);
-		System.out.println("height:"+finalH);
+		System.out.println(rect2);
+		/*
+		WordCloudPanel panel = new WordCloudPanel(doc.getWords(), algo, null, new DynamicColorScheme("REDBLUEBLACK"), bbg);
+		BufferedImage dummy = new BufferedImage(1000, 1000, BufferedImage.TYPE_3BYTE_BGR);
+		panel.paintComponent(dummy.getGraphics());
+		*/
 	}
 
 	private static LayoutAlgo runLayout(List<Word> words, Map<WordPair, Double> similarity, BoundingBoxGenerator bbg)
