@@ -266,9 +266,16 @@ public class WordCloudGenerator
 
 		svg2 = getSvg(panel2);
 
+		WordCloudPanel panel = new WordCloudPanel(doc.getWords(), layoutAlgo, null, wordColorScheme, bbg);
+		panel.setSize(1024, 800);
+		panel.setShowRectangles(setting.isShowRectangles());
+		panel.setOpaque(false);
+		
+		String svg = getSvg(panel);
+		
 		Date timestamp = Calendar.getInstance().getTime();
 
-		cloud = createCloud(setting, input, text, timestamp, svg1, svg2, (int) panel1.getActualWidth(), (int) panel1.getActualHeight(), (int) panel2.getActualWidth(), (int) panel2.getActualHeight(),
+		cloud = createCloud(setting, input, text, timestamp, svg1, svg2, (int) panel.getActualWidth(), (int) panel.getActualHeight(), (int) panel.getActualWidth(), (int) panel.getActualHeight(),
 				ip);
 
 		return cloud;

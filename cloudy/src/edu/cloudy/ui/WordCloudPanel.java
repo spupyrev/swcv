@@ -128,8 +128,6 @@ public class WordCloudPanel extends JPanel implements ActionListener
 		{
 			SWCRectangle rect5 = algo.getWordRectangle(w);
 			SWCRectangle swcRect = bbg.getBoundingBox(w, w.weight);
-			if (w.word.equals("meow"))
-				System.out.println(swcRect.getHeight());
 
 			swcRect.moveTo(rect5.getX(), rect5.getY());
 

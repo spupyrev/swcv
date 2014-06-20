@@ -18,11 +18,11 @@ public class TFRankingAlgo implements RankingAlgo
 
         int maxCount = -1;
         for (Word w : words)
-            maxCount = Math.max(maxCount, w.getSentences().size());
+            maxCount = Math.max(maxCount, w.getCoordinates().size());
 
         for (Word w : words)
         {
-            w.weight = (double)w.getSentences().size() / (double)maxCount;
+            w.weight = (double)w.getCoordinates().size() / (double)maxCount;
         }
     }
 }

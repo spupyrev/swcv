@@ -50,6 +50,7 @@ public class WCVDynamicDocument extends WCVDocument
 		cwords.addAll(doc2.getWords());
 
 		sortListByWeight(cwords);
+		Collections.reverse(cwords);
 		this.setWords(cwords);
 
 		assignDocIndex();

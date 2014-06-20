@@ -242,7 +242,7 @@ public class ContextPreservingAlgo implements LayoutAlgo
         double cnt = 0;
         for (int j = 0; j < words.length; j++)
         {
-            if ((i == j)||words[i]==words[j])
+            if (i == j)
                 continue;
 
             SWCRectangle rectJ = wordPositions.get(words[j]);
@@ -280,7 +280,7 @@ public class ContextPreservingAlgo implements LayoutAlgo
         double cnt = 0;
         for (int j = 0; j < words.length; j++)
         {
-            if ((i == j)||(words[i] == words[j]))
+            if (i == j)
                 continue;
 
             // compute the displacement due to the overlap repulsive force
