@@ -87,17 +87,17 @@ public class Word implements Comparable<Word>
 		return Double.compare(weight, o.weight);
 	}
 
-	public void setSentiValue(double sentiValue)
+	public void setSentimentValue(double sentiValue)
 	{
 		this.sentiValue = sentiValue;
 	}
 
-	public double getSentiValue()
+	public double getSentimentValue()
 	{
 		return this.sentiValue;
 	}
 
-	public void setSentCount(int posCount, int negCount, int neuCount, double totalCount)
+	public void setSentimentCount(int posCount, int negCount, int neuCount, double totalCount)
 	{
 		this.posCount = posCount;
 		this.negCount = negCount;

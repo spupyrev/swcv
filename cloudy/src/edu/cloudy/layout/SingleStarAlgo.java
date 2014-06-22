@@ -9,7 +9,6 @@ import edu.cloudy.layout.packing.WordPlacer;
 import edu.cloudy.metrics.AdjacenciesMetric;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.SWCRectangle;
 
@@ -25,11 +24,9 @@ import java.util.Set;
 import knapsack.core.KnapsackInstance;
 import knapsack.strategies.KnapsackFPTAS;
 
-public class SingleStarAlgo implements LayoutAlgo
+public class SingleStarAlgo extends BaseLayoutAlgo
 {
     private Map<Word, SWCRectangle> wordToRect;
-
-    private BoundingBoxGenerator bbGenerator;
 
     private static final double BETA = 1.01;
     private static final double EPS = 0.01;
@@ -45,23 +42,14 @@ public class SingleStarAlgo implements LayoutAlgo
     private Vertex center;
     private WordGraph graph;
 
-    private Map<WordPair, Double> similarity;
-
-    @Override
-    public void setConstraints(BoundingBoxGenerator bbGenerator)
+    public SingleStarAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-        this.bbGenerator = bbGenerator;
+        super(words, similarity);
     }
 
     public void setGraph(WordGraph g)
     {
         this.graph = g;
-    }
-
-    @Override
-    public void setData(List<Word> words, Map<WordPair, Double> similarity)
-    {
-        this.similarity = similarity;
     }
 
     public double getRealizedWeight()
@@ -132,7 +120,7 @@ public class SingleStarAlgo implements LayoutAlgo
 
         wordToRect = new HashMap<Word, SWCRectangle>();
         // center box, position 0,0
-        SWCRectangle centerRect = new SWCRectangle(bbGenerator.getBoundingBox(center, center.weight));
+        SWCRectangle centerRect = new SWCRectangle(getBoundingBox(center));
         wordToRect.put(center, centerRect);
 
         //sides
@@ -149,7 +137,7 @@ public class SingleStarAlgo implements LayoutAlgo
         double taken = 0;
         for (Vertex v : sortBoxes(boxesLeft))
         {
-            SWCRectangle wordRect = new SWCRectangle(bbGenerator.getBoundingBox(v, v.weight));
+            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
             // translate to left and up
             wordRect.move(-1 * wordRect.getWidth(), taken);
             taken += wordRect.getHeight();
@@ -164,7 +152,7 @@ public class SingleStarAlgo implements LayoutAlgo
         double taken = 0;
         for (Vertex v : sortBoxes(boxesRight))
         {
-            SWCRectangle wordRect = new SWCRectangle(bbGenerator.getBoundingBox(v, v.weight));
+            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
             // translate to right and up
             wordRect.move(centerRect.getWidth(), taken);
             taken += wordRect.getHeight();
@@ -179,7 +167,7 @@ public class SingleStarAlgo implements LayoutAlgo
         double taken = 0;
         for (Vertex v : sortBoxes(boxesBottom))
         {
-            SWCRectangle wordRect = new SWCRectangle(bbGenerator.getBoundingBox(v, v.weight));
+            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
             // translate to bottom and right
             wordRect.move(taken, -1 * wordRect.getHeight());
             taken += wordRect.getWidth();
@@ -192,7 +180,7 @@ public class SingleStarAlgo implements LayoutAlgo
         if (found > 3)
         {
             Vertex v = cornerVertices[3];
-            SWCRectangle wordRect = new SWCRectangle(bbGenerator.getBoundingBox(v, v.weight));
+            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
             wordRect.move(taken, -1 * wordRect.getHeight());
 
             wordToRect.put(v, wordRect);
@@ -202,7 +190,7 @@ public class SingleStarAlgo implements LayoutAlgo
         if (found > 0)
         {
             Vertex v = cornerVertices[0];
-            SWCRectangle wordRect = new SWCRectangle(bbGenerator.getBoundingBox(v, v.weight));
+            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
             wordRect.move(-1 * wordRect.getWidth(), -1 * wordRect.getHeight());
 
             wordToRect.put(v, wordRect);
@@ -214,7 +202,7 @@ public class SingleStarAlgo implements LayoutAlgo
         double taken = 0;
         for (Vertex v : sortBoxes(boxesTop))
         {
-            SWCRectangle wordRect = new SWCRectangle(bbGenerator.getBoundingBox(v, v.weight));
+            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
             // translate to top and right
             wordRect.move(taken, centerRect.getHeight());
             taken += wordRect.getWidth();
@@ -229,7 +217,7 @@ public class SingleStarAlgo implements LayoutAlgo
         if (found > 2)
         {
             Vertex v = cornerVertices[2];
-            SWCRectangle wordRect = new SWCRectangle(bbGenerator.getBoundingBox(v, v.weight));
+            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
             wordRect.move(taken, centerRect.getHeight());
 
             wordToRect.put(v, wordRect);
@@ -239,7 +227,7 @@ public class SingleStarAlgo implements LayoutAlgo
         if (found > 1)
         {
             Vertex v = cornerVertices[1];
-            SWCRectangle wordRect = new SWCRectangle(bbGenerator.getBoundingBox(v, v.weight));
+            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
             wordRect.move(-1 * wordRect.getWidth(), centerRect.getHeight());
 
             wordToRect.put(v, wordRect);
@@ -353,7 +341,7 @@ public class SingleStarAlgo implements LayoutAlgo
         }
 
         this.center = center;
-        SWCRectangle centerRect = new SWCRectangle(bbGenerator.getBoundingBox(center, center.weight));
+        SWCRectangle centerRect = new SWCRectangle(getBoundingBox(center));
 
         final int horizontalSize = (int)Math.round(centerRect.getWidth() * (SIZE_SCALING));
         final int verticalSize = (int)Math.round(centerRect.getHeight() * (SIZE_SCALING));
@@ -382,8 +370,8 @@ public class SingleStarAlgo implements LayoutAlgo
             if (v == center)
                 continue;
 
-            heights[k] = (int)Math.round(bbGenerator.getBoundingBox(v, v.weight).getHeight() * (SIZE_SCALING)) + 1;
-            widths[k] = (int)Math.round(bbGenerator.getBoundingBox(v, v.weight).getWidth() * (SIZE_SCALING)) + 1;
+            heights[k] = (int)Math.round(getBoundingBox(v).getHeight() * (SIZE_SCALING)) + 1;
+            widths[k] = (int)Math.round(getBoundingBox(v).getWidth() * (SIZE_SCALING)) + 1;
 
             //Logger.log("Putting width: " + widths[k]);
             //Logger.log("Pixel width: " + this.bbGenerator.getBoundingBox(v, v.weight).getWidth());
@@ -605,6 +593,7 @@ public class SingleStarAlgo implements LayoutAlgo
         }
     }
 
+    @SuppressWarnings("unused")
     private void checkSanity()
     {
         // make sure that all the sets sum up
@@ -653,15 +642,15 @@ public class SingleStarAlgo implements LayoutAlgo
         if (boxesNotRealized.size() > 0)
         {
             Vertex first = boxesNotRealized.iterator().next();
-            double neededWidth = bbGenerator.getBoundingBox(first, first.weight).getWidth();
-            double neededHeight = bbGenerator.getBoundingBox(first, first.weight).getHeight();
+            double neededWidth = getBoundingBox(first).getWidth();
+            double neededHeight = getBoundingBox(first).getHeight();
 
             Vertex minWidth = first, minHeight = first;
 
             for (Vertex v : boxesNotRealized)
             {
-                double width = bbGenerator.getBoundingBox(v, v.weight).getWidth();
-                double height = bbGenerator.getBoundingBox(v, v.weight).getHeight();
+                double width = getBoundingBox(v).getWidth();
+                double height = getBoundingBox(v).getHeight();
 
                 if (width < neededWidth)
                 {
@@ -692,7 +681,7 @@ public class SingleStarAlgo implements LayoutAlgo
     }
 
     @Override
-    public SWCRectangle getWordRectangle(Word w)
+    public SWCRectangle getWordPosition(Word w)
     {
         if (boxesNotRealized.contains(w))
             return null;
@@ -708,7 +697,7 @@ public class SingleStarAlgo implements LayoutAlgo
 
         for (Word w : boxesNotRealized)
         {
-            SWCRectangle rect = bbGenerator.getBoundingBox(w, w.weight);
+            SWCRectangle rect = getBoundingBox(w);
             placers.add(new FixedPositionWordPlacer(w, rect));
         }
 

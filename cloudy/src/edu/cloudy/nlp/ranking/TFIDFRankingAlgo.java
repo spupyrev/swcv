@@ -1,13 +1,13 @@
 package edu.cloudy.nlp.ranking;
 
+import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.Word;
+
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import edu.cloudy.nlp.WCVDocument;
-import edu.cloudy.nlp.Word;
 
 /**
  * @author spupyrev
@@ -15,7 +15,6 @@ import edu.cloudy.nlp.Word;
  */
 public class TFIDFRankingAlgo implements RankingAlgo
 {
-
     public TFIDFRankingAlgo()
     {
     }

@@ -30,8 +30,8 @@ public class OverlapsMetric implements QualityMetric {
 	}
 
 	private boolean overlap(LayoutAlgo algo, SWCRectangle bb, Word first, Word second) {
-		SWCRectangle rect1 = algo.getWordRectangle(first);
-		SWCRectangle rect2 = algo.getWordRectangle(second);
+		SWCRectangle rect1 = algo.getWordPosition(first);
+		SWCRectangle rect2 = algo.getWordPosition(second);
 		return overlap(bb, rect1, rect2);
 	}
 

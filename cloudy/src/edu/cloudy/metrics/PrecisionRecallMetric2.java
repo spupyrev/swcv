@@ -54,7 +54,7 @@ public class PrecisionRecallMetric2 implements QualityMetric
 
     private List<Word> getCloseWords(Word word, List<Word> words, LayoutAlgo algo)
     {
-        SWCRectangle rect = algo.getWordRectangle(word);
+        SWCRectangle rect = algo.getWordPosition(word);
         LinkedList<Word> closeWords = new LinkedList<Word>();
         Ellipse2D elip = new Ellipse2D.Double(rect.getX() - Math.abs((rect.getX() - rect.getCenterX())), rect.getY()
                 + Math.abs(rect.getY() - rect.getCenterY()), rect.getWidth() * 2, rect.getHeight() * 2);
@@ -64,7 +64,7 @@ public class PrecisionRecallMetric2 implements QualityMetric
             if (temp.equals(word))
                 continue;
 
-            SWCRectangle rect2 = algo.getWordRectangle(temp);
+            SWCRectangle rect2 = algo.getWordPosition(temp);
             if (close(elip, rect2))
                 closeWords.add(temp);
         }

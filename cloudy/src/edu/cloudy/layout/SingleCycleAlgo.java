@@ -2,7 +2,6 @@ package edu.cloudy.layout;
 
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.SWCRectangle;
 
 import java.util.HashMap;
@@ -13,39 +12,25 @@ import java.util.Map;
  * @author spupyrev
  * May 15, 2013
  */
-public class SingleCycleAlgo implements LayoutAlgo
+public class SingleCycleAlgo extends BaseLayoutAlgo
 {
     private static boolean LAYOUT_VERTICAL = false;
 
-    private List<Word> cycle;
     private Map<Word, SWCRectangle> wordPositions;
 
-    private BoundingBoxGenerator bbGenerator;
-
-    public SingleCycleAlgo(List<Word> cycle)
+    public SingleCycleAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-        this.cycle = cycle;
-    }
-
-    @Override
-    public void setConstraints(BoundingBoxGenerator bbGenerator)
-    {
-        this.bbGenerator = bbGenerator;
-    }
-
-    @Override
-    public void setData(List<Word> words, Map<WordPair, Double> similarity)
-    {
+        super(words, similarity);
     }
 
     @Override
     public void run()
     {
         generateBoundingBoxes();
-        if (cycle.size() == 1)
+        if (words.size() == 1)
             return;
 
-        if (LAYOUT_VERTICAL && cycle.size() <= 30)
+        if (LAYOUT_VERTICAL && words.size() <= 30)
             verticalLayout();
         else
             horizontalLayout();
@@ -54,12 +39,12 @@ public class SingleCycleAlgo implements LayoutAlgo
     private void horizontalLayout()
     {
         int lowerIndex = 0;
-        SWCRectangle lowerRect = wordPositions.get(cycle.get(lowerIndex));
+        SWCRectangle lowerRect = wordPositions.get(words.get(lowerIndex));
         //keep it unchanged
         double currentX = lowerRect.getMaxX();
 
-        int upperIndex = cycle.size() - 1;
-        SWCRectangle upperRect = wordPositions.get(cycle.get(upperIndex));
+        int upperIndex = words.size() - 1;
+        SWCRectangle upperRect = wordPositions.get(words.get(upperIndex));
         //place it above
         upperRect.setRect(currentX, lowerRect.getY(), upperRect.getWidth(), upperRect.getHeight());
 
@@ -72,7 +57,7 @@ public class SingleCycleAlgo implements LayoutAlgo
             if (lowerRect.getMaxY() > upperRect.getMaxY())
             {
                 //placing a new rectangle on top
-                SWCRectangle ur = wordPositions.get(cycle.get(upperIndex - 1));
+                SWCRectangle ur = wordPositions.get(words.get(upperIndex - 1));
                 ur.setRect(currentX, upperRect.getMaxY(), ur.getWidth(), ur.getHeight());
 
                 upperRect = ur;
@@ -81,7 +66,7 @@ public class SingleCycleAlgo implements LayoutAlgo
             else
             {
                 //placing a new rectangle on bottom
-                SWCRectangle lr = wordPositions.get(cycle.get(lowerIndex + 1));
+                SWCRectangle lr = wordPositions.get(words.get(lowerIndex + 1));
                 lr.setRect(currentX - lr.getWidth(), lowerRect.getMaxY(), lr.getWidth(), lr.getHeight());
 
                 lowerRect = lr;
@@ -93,12 +78,12 @@ public class SingleCycleAlgo implements LayoutAlgo
     private void verticalLayout()
     {
         int lowerIndex = 0;
-        SWCRectangle lowerRect = wordPositions.get(cycle.get(lowerIndex));
+        SWCRectangle lowerRect = wordPositions.get(words.get(lowerIndex));
         //keep it unchanged
         double currentY = lowerRect.getMaxY();
 
-        int upperIndex = cycle.size() - 1;
-        SWCRectangle upperRect = wordPositions.get(cycle.get(upperIndex));
+        int upperIndex = words.size() - 1;
+        SWCRectangle upperRect = wordPositions.get(words.get(upperIndex));
         //place it above
         upperRect.setRect(lowerRect.getX(), currentY, upperRect.getWidth(), upperRect.getHeight());
 
@@ -111,7 +96,7 @@ public class SingleCycleAlgo implements LayoutAlgo
             if (lowerRect.getMaxX() > upperRect.getMaxX())
             {
                 //placing a new rectangle on top
-                SWCRectangle ur = wordPositions.get(cycle.get(upperIndex - 1));
+                SWCRectangle ur = wordPositions.get(words.get(upperIndex - 1));
                 ur.setRect(upperRect.getMaxX(), currentY, ur.getWidth(), ur.getHeight());
 
                 upperRect = ur;
@@ -120,7 +105,7 @@ public class SingleCycleAlgo implements LayoutAlgo
             else
             {
                 //placing a new rectangle on bottom
-                SWCRectangle lr = wordPositions.get(cycle.get(lowerIndex + 1));
+                SWCRectangle lr = wordPositions.get(words.get(lowerIndex + 1));
                 lr.setRect(lowerRect.getMaxX(), currentY - lr.getHeight(), lr.getWidth(), lr.getHeight());
 
                 lowerRect = lr;
@@ -132,12 +117,12 @@ public class SingleCycleAlgo implements LayoutAlgo
     private void generateBoundingBoxes()
     {
         wordPositions = new HashMap<Word, SWCRectangle>();
-        for (Word w : cycle)
-            wordPositions.put(w, bbGenerator.getBoundingBox(w, w.weight));
+        for (Word w : words)
+            wordPositions.put(w, getBoundingBox(w));
     }
 
     @Override
-    public SWCRectangle getWordRectangle(Word w)
+    public SWCRectangle getWordPosition(Word w)
     {
         return wordPositions.get(w);
     }

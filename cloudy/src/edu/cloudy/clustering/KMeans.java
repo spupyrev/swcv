@@ -49,6 +49,8 @@ public class KMeans implements IClusterAlgo
 
         FarthestFirst km = new FarthestFirst(K, new AbstractSimilarity()
         {
+            private static final long serialVersionUID = 1L;
+
             @Override
             public double measure(Instance arg0, Instance arg1)
             {

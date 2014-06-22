@@ -8,7 +8,6 @@ import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.nlp.similarity.RandomSimilarityAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.Logger;
 
 import java.util.ArrayList;
@@ -84,9 +83,7 @@ public class DegreeWeightAnalyzer
     private static List<Double> realizedWeights(List<Word> words, Map<WordPair, Double> similarity)
     {
         //LayoutAlgo algo = new CycleCoverAlgo();
-        LayoutAlgo algo = new ContextPreservingAlgo();
-        algo.setData(words, similarity);
-        algo.setConstraints(new BoundingBoxGenerator(25000.0));
+        LayoutAlgo algo = new ContextPreservingAlgo(words, similarity);
         algo.run();
 
         //List<WordPair> wpl = new AdjacenciesMetric().realizedPairs(words, similarity, algo);

@@ -17,30 +17,17 @@ import java.util.Map;
  *
  * i added the "inflate" part to the algorithm and changed the overlap removal code
  */
-public class InflateAndPushAlgo implements LayoutAlgo
+public class InflateAndPushAlgo extends BaseLayoutAlgo
 {
-    private List<Word> words;
-    private Map<WordPair, Double> similarity;
-
-    private BoundingBoxGenerator bbGenerator;
-
     private Map<Word, SWCRectangle> wordPositions;
 
-    @Override
-    public void setConstraints(BoundingBoxGenerator bbGenerator)
+    public InflateAndPushAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-        this.bbGenerator = bbGenerator;
+        super(words, similarity);
     }
 
     @Override
-    public void setData(List<Word> words, Map<WordPair, Double> similarity)
-    {
-        this.words = words;
-        this.similarity = similarity;
-    }
-
-    @Override
-    public SWCRectangle getWordRectangle(Word w)
+    public SWCRectangle getWordPosition(Word w)
     {
         return wordPositions.get(w);
     }
@@ -72,17 +59,15 @@ public class InflateAndPushAlgo implements LayoutAlgo
     private Map<Word, SWCRectangle> initialPlacement(double scale)
     {
         //find initial placement by mds layout
-        MDSAlgo algo = new MDSAlgo();
-        BoundingBoxGenerator genNew = new BoundingBoxGenerator(bbGenerator.getWeightToAreaFactor() * scale);
-        algo.setConstraints(genNew);
-        algo.setData(words, similarity);
+        MDSAlgo algo = new MDSAlgo(words, similarity);
+        algo.setBoundingBoxGenerator(new BoundingBoxGenerator(scale));
         algo.run();
 
         //run mds
         Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
         for (Word w : words)
         {
-            SWCRectangle rect = new SWCRectangle(algo.getWordRectangle(w));
+            SWCRectangle rect = new SWCRectangle(algo.getWordPosition(w));
             wordPositions.put(w, rect);
         }
 

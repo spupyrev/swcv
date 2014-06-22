@@ -51,7 +51,7 @@ public class SpaceMetric implements QualityMetric {
 	private List<SWCPoint> extractPoints(List<Word> words, LayoutAlgo algo) {
 		List<SWCPoint> points = new ArrayList<SWCPoint>();
 		for (Word w : words) {
-			SWCRectangle rect = algo.getWordRectangle(w);
+			SWCRectangle rect = algo.getWordPosition(w);
 			points.add(new SWCPoint(rect.getMinX(), rect.getMinY()));
 			points.add(new SWCPoint(rect.getMaxX(), rect.getMinY()));
 			points.add(new SWCPoint(rect.getMinX(), rect.getMaxY()));
@@ -67,7 +67,7 @@ public class SpaceMetric implements QualityMetric {
 		double maxY = Double.NEGATIVE_INFINITY;
 		
 		for (Word w : words) {
-			SWCRectangle rect = algo.getWordRectangle(w);
+			SWCRectangle rect = algo.getWordPosition(w);
 			if(rect != null){
 				minX = Math.min(minX, rect.getMinX());
 				maxX = Math.max(maxX, rect.getMaxX());
@@ -93,7 +93,7 @@ public class SpaceMetric implements QualityMetric {
 	public static double computeUsedArea(List<Word> words, LayoutAlgo algo) {
 		double res = 0;
 		for (Word w : words) {
-			SWCRectangle rect = algo.getWordRectangle(w);
+			SWCRectangle rect = algo.getWordPosition(w);
 			res += rect.getHeight() * rect.getWidth();
 		}
 

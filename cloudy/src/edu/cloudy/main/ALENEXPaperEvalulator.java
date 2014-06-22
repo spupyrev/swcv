@@ -23,7 +23,6 @@ import edu.cloudy.nlp.ranking.RankingAlgo;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.WikipediaXMLReader;
 
@@ -115,14 +114,14 @@ public class ALENEXPaperEvalulator
                 int runCount = 3;
                 for (int j = 0; j < runCount; j++)
                 {
-                    wordleResult.add(computeMetrics(new WordleAlgo(), document.getWords(), similarity));
-                    cpResults.add(computeMetrics(new ContextPreservingAlgo(), document.getWords(), similarity));
+                    wordleResult.add(computeMetrics(new WordleAlgo(document.getWords(), similarity)));
+                    cpResults.add(computeMetrics(new ContextPreservingAlgo(document.getWords(), similarity)));
                     if (i % 5 == 0)
-                    seamResult.add(computeMetrics(new SeamCarvingAlgo(), document.getWords(), similarity));
-                    inflateResult.add(computeMetrics(new InflateAndPushAlgo(), document.getWords(), similarity));
-                    starsResult.add(computeMetrics(new StarForestAlgo(), document.getWords(), similarity));
-                    cyclesResult.add(computeMetrics(new CycleCoverAlgo(), document.getWords(), similarity));
-                    mdsResult.add(computeMetrics(new MDSAlgo(), document.getWords(), similarity));
+                    seamResult.add(computeMetrics(new SeamCarvingAlgo(document.getWords(), similarity)));
+                    inflateResult.add(computeMetrics(new InflateAndPushAlgo(document.getWords(), similarity)));
+                    starsResult.add(computeMetrics(new StarForestAlgo(document.getWords(), similarity)));
+                    cyclesResult.add(computeMetrics(new CycleCoverAlgo(document.getWords(), similarity)));
+                    mdsResult.add(computeMetrics(new MDSAlgo(document.getWords(), similarity)));
                 }
 
                 takeAverage(wordleResult, runCount);
@@ -218,10 +217,11 @@ public class ALENEXPaperEvalulator
 
     }
 
-    private static RunResult computeMetrics(LayoutAlgo algo, List<Word> words, Map<WordPair, Double> similarity)
+    private static RunResult computeMetrics(LayoutAlgo algo)
     {
-        algo.setData(words, similarity);
-        algo.setConstraints(new BoundingBoxGenerator(25000.0));
+        //TODO
+        List<Word> words = null;
+        Map<WordPair, Double> similarity = null;
 
         //System.out.print("running " + algo + " ...");
         long startTime = System.currentTimeMillis();

@@ -138,8 +138,8 @@ public class DistortionMetric implements QualityMetric
 
     private double distance(Word first, Word second, LayoutAlgo algo)
     {
-        SWCRectangle rect1 = algo.getWordRectangle(first);
-        SWCRectangle rect2 = algo.getWordRectangle(second);
+        SWCRectangle rect1 = algo.getWordPosition(first);
+        SWCRectangle rect2 = algo.getWordPosition(second);
 
         //TODO: maybe it is better to compute min distance between boundaries
         SWCPoint p1 = new SWCPoint(rect1.getCenterX(), rect1.getCenterY());
@@ -150,8 +150,8 @@ public class DistortionMetric implements QualityMetric
 
     private double distance2(Word first, Word second, LayoutAlgo algo)
     {
-        SWCRectangle rect1 = algo.getWordRectangle(first);
-        SWCRectangle rect2 = algo.getWordRectangle(second);
+        SWCRectangle rect1 = algo.getWordPosition(first);
+        SWCRectangle rect2 = algo.getWordPosition(second);
 
         double dist = Double.POSITIVE_INFINITY;
         SWCPoint[] corners1 = getCorners(rect1);

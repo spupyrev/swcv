@@ -10,7 +10,6 @@ import edu.cloudy.layout.packing.ClusterForceDirectedPlacer;
 import edu.cloudy.layout.packing.WordPlacer;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.SWCRectangle;
 
@@ -21,25 +20,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class CycleCoverAlgo implements LayoutAlgo
+public class CycleCoverAlgo extends BaseLayoutAlgo
 {
     private WordGraph graph;
     private List<Edge> edgesInMatching;
     private boolean useGreedy = false;
 
-    private BoundingBoxGenerator bbGenerator;
-
     private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
 
-    @Override
-    public void setConstraints(BoundingBoxGenerator bbGenerator)
+    public CycleCoverAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-        this.bbGenerator = bbGenerator;
-    }
-
-    @Override
-    public void setData(List<Word> words, Map<WordPair, Double> similarity)
-    {
+        super(words, similarity);
         this.graph = new WordGraph(words, similarity);
     }
 
@@ -76,12 +67,10 @@ public class CycleCoverAlgo implements LayoutAlgo
             LayoutAlgo algo = null;
 
             if (c.size() <= CYCLE_SIZE_LIMIT)
-                algo = new SingleCycleAlgo(getCycleWords(c));
+                algo = new SingleCycleAlgo(getCycleWords(c), getCycleWeights(c));
             else
-                algo = new SinglePathAlgo();
+                algo = new SinglePathAlgo(getCycleWords(c), getCycleWeights(c));
 
-            algo.setConstraints(bbGenerator);
-            algo.setData(getCycleWords(c), getCycleWeights(c));
             algo.run();
             cycleAlgos.add(algo);
         }
@@ -218,7 +207,7 @@ public class CycleCoverAlgo implements LayoutAlgo
     }
 
     @Override
-    public SWCRectangle getWordRectangle(Word w)
+    public SWCRectangle getWordPosition(Word w)
     {
         return wordPositions.get(w);
     }

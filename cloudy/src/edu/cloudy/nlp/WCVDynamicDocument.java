@@ -1,16 +1,15 @@
 package edu.cloudy.nlp;
 
+import edu.cloudy.nlp.Word.DocIndex;
+import edu.cloudy.nlp.ranking.RankingAlgo;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import edu.cloudy.nlp.Word.DocIndex;
-import edu.cloudy.nlp.ranking.RankingAlgo;
-
 public class WCVDynamicDocument extends WCVDocument
 {
-
 	private WCVDocument doc1;
 	private WCVDocument doc2;
 

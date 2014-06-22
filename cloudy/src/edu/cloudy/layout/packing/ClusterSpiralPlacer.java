@@ -37,7 +37,7 @@ public class ClusterSpiralPlacer implements WordPlacer
         for (Word w : words)
         {
             Cluster c = new Cluster();
-            c.wordPositions.put(w, bbGenerator.getBoundingBox(w, w.weight));
+            c.wordPositions.put(w, bbGenerator.getBoundingBox(w));
             result.add(c);
         }
 

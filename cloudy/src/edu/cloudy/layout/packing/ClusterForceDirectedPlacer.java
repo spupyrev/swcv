@@ -83,7 +83,7 @@ public class ClusterForceDirectedPlacer implements WordPlacer
             SWCRectangle rect = null;
             for (int i = 0; i < singlePlacers.size(); i++)
             {
-                SWCRectangle tmp = singlePlacers.get(i).getWordRectangle(w);
+                SWCRectangle tmp = singlePlacers.get(i).getWordPosition(w);
                 if (tmp != null)
                 {
                     result.get(i).wordPositions.put(w, tmp);
@@ -96,7 +96,7 @@ public class ClusterForceDirectedPlacer implements WordPlacer
             if (rect == null)
             {
                 Cluster c = new Cluster();
-                c.wordPositions.put(w, bbGenerator.getBoundingBox(w, w.weight));
+                c.wordPositions.put(w, bbGenerator.getBoundingBox(w));
                 result.add(c);
             }
         }

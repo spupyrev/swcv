@@ -1,29 +1,20 @@
 package edu.test;
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import edu.cloudy.layout.InflateAndPushAlgo;
+import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.nlp.WCVDynamicDocument;
+import edu.cloudy.nlp.Word;
+import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ranking.TFRankingAlgo;
+import edu.cloudy.utils.BoundingBoxGenerator;
+import edu.cloudy.utils.SWCRectangle;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-
-import javax.swing.JPanel;
-
-import edu.cloudy.colors.DynamicColorScheme;
-import edu.cloudy.layout.ContextPreservingAlgo;
-import edu.cloudy.layout.InflateAndPushAlgo;
-import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.layout.SinglePathAlgo;
-import edu.cloudy.nlp.WCVDocument;
-import edu.cloudy.nlp.WCVDynamicDocument;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-import edu.cloudy.nlp.ranking.TFRankingAlgo;
-import edu.cloudy.ui.WordCloudPanel;
-import edu.cloudy.utils.BoundingBoxGenerator;
-import edu.cloudy.utils.SWCRectangle;
 
 public class LayoutTest
 {
@@ -40,6 +31,9 @@ public class LayoutTest
 				text1 += scan.nextLine();
 			while (scan2.hasNextLine())
 				text2 += scan2.nextLine();
+			
+            scan.close();
+            scan2.close();
 		}
 		catch (FileNotFoundException e)
 		{
@@ -58,10 +52,10 @@ public class LayoutTest
 
 		for (Word w : doc.getDoc1().getWords())
 		{
-			SWCRectangle rect = algo.getWordRectangle(w);
+			SWCRectangle rect = algo.getWordPosition(w);
 			for (Word w2 : doc.getDoc2().getWords())
 			{
-				SWCRectangle rect2 = algo.getWordRectangle(w2);
+				SWCRectangle rect2 = algo.getWordPosition(w2);
 				if (!w.word.equals(w2.word) && rect.intersects(rect2) )
 				{
 					System.out.println(w.word + " in document " + w.documentIndex.toString() + " intersects with " + w2.word + " in document " + w2.documentIndex.toString());
@@ -74,11 +68,7 @@ public class LayoutTest
 
 	private static LayoutAlgo runLayout(List<Word> words, Map<WordPair, Double> similarity, BoundingBoxGenerator bbg)
 	{
-		LayoutAlgo algo;
-		//algo = new ContextPreservingAlgo();
-		algo = new InflateAndPushAlgo();
-		algo.setConstraints(bbg);
-		algo.setData(words, similarity);
+		LayoutAlgo algo = new InflateAndPushAlgo(words, similarity);
 		algo.run();
 		return algo;
 	}

@@ -2,7 +2,6 @@ package edu.cloudy.layout;
 
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.SWCRectangle;
 
@@ -15,31 +14,14 @@ import java.util.Map;
  * @author spupyrev
  * May 15, 2013
  */
-public class SinglePathAlgo implements LayoutAlgo
+public class SinglePathAlgo extends BaseLayoutAlgo
 {
-    private List<Word> cycle;
-    private Map<WordPair, Double> similarity;
-
     private Map<Word, SWCRectangle> wordPositions;
     private SWCRectangle[] rec;
 
-    private BoundingBoxGenerator bbGenerator;
-
-    public SinglePathAlgo()
+    public SinglePathAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-    }
-
-    @Override
-    public void setConstraints(BoundingBoxGenerator bbGenerator)
-    {
-        this.bbGenerator = bbGenerator;
-    }
-
-    @Override
-    public void setData(List<Word> cycle, Map<WordPair, Double> similarity)
-    {
-        this.cycle = cycle;
-        this.similarity = similarity;
+        super(words, similarity);
     }
 
     @Override
@@ -58,7 +40,7 @@ public class SinglePathAlgo implements LayoutAlgo
         // <- 2
         // up 3
         int prevDir = 3;
-        for (int i = 1; i < cycle.size(); i++)
+        for (int i = 1; i < words.size(); i++)
         {
             int dir = prevDir + 1;
             while (true)
@@ -71,15 +53,13 @@ public class SinglePathAlgo implements LayoutAlgo
                 //do an old (safe) strategy
                 if (dir < 4)
                 {
-                    Logger.log("can't layout the path with length = " + cycle.size());
+                    Logger.log("can't layout the path with length = " + words.size());
 
-                    LayoutAlgo algo = new SingleCycleAlgo(cycle);
-                    algo.setConstraints(bbGenerator);
-                    algo.setData(cycle, similarity);
+                    LayoutAlgo algo = new SingleCycleAlgo(words, similarity);
                     algo.run();
 
-                    for (Word w : cycle)
-                        wordPositions.put(w, algo.getWordRectangle(w));
+                    for (Word w : words)
+                        wordPositions.put(w, algo.getWordPosition(w));
 
                     return;
                 }
@@ -208,13 +188,13 @@ public class SinglePathAlgo implements LayoutAlgo
         int bestIndex = -1;
         double minWeight = Double.MAX_VALUE;
 
-        int n = cycle.size();
+        int n = words.size();
         if (n <= 2)
             return;
         for (int i = 0; i < n; i++)
         {
-            Word next = cycle.get((i + 1) % n);
-            double weight = similarity.get(new WordPair(cycle.get(i), next));
+            Word next = words.get((i + 1) % n);
+            double weight = similarity.get(new WordPair(words.get(i), next));
             if (bestIndex == -1 || weight < minWeight)
             {
                 minWeight = weight;
@@ -225,24 +205,24 @@ public class SinglePathAlgo implements LayoutAlgo
         assert (bestIndex != -1);
         List<Word> path = new ArrayList<Word>();
         for (int i = 0; i < n; i++)
-            path.add(cycle.get((i + bestIndex + 1) % n));
+            path.add(words.get((i + bestIndex + 1) % n));
 
-        cycle = path;
+        words = path;
     }
 
     private void generateBoundingBoxes()
     {
         wordPositions = new HashMap<Word, SWCRectangle>();
-        for (Word w : cycle)
-            wordPositions.put(w, bbGenerator.getBoundingBox(w, w.weight));
+        for (Word w : words)
+            wordPositions.put(w, getBoundingBox(w));
 
-        rec = new SWCRectangle[cycle.size()];
-        for (int i = 0; i < cycle.size(); i++)
-            rec[i] = wordPositions.get(cycle.get(i));
+        rec = new SWCRectangle[words.size()];
+        for (int i = 0; i < words.size(); i++)
+            rec[i] = wordPositions.get(words.get(i));
     }
 
     @Override
-    public SWCRectangle getWordRectangle(Word w)
+    public SWCRectangle getWordPosition(Word w)
     {
         return wordPositions.get(w);
     }

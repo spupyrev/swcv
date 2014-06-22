@@ -60,7 +60,7 @@ public class UniformAreaMetric implements QualityMetric {
 		double avgArea = 0;
 
 		for (Word w : words) {
-			SWCRectangle rect = algo.getWordRectangle(w);
+			SWCRectangle rect = algo.getWordPosition(w);
 			avgArea += rect.getWidth() * rect.getHeight();
 		}
 		avgArea /= words.size();
@@ -120,7 +120,7 @@ public class UniformAreaMetric implements QualityMetric {
 	private double computeUsedAreaOfCell(SWCRectangle cell, List<Word> words, LayoutAlgo algo) {
 		double res = 0;
 		for (Word w : words) {
-			SWCRectangle rect = algo.getWordRectangle(w);
+			SWCRectangle rect = algo.getWordPosition(w);
 			if (!rect.intersects(cell))
 				continue;
 
@@ -139,7 +139,7 @@ public class UniformAreaMetric implements QualityMetric {
 	private double computeWordsInsideCell(SWCRectangle cell, List<Word> words, LayoutAlgo algo) {
 		double res = 0;
 		for (Word w : words) {
-			SWCRectangle rect = algo.getWordRectangle(w);
+			SWCRectangle rect = algo.getWordPosition(w);
 			if (cell.contains(rect.getCenterX(), rect.getCenterY()))
 				res++;
 		}

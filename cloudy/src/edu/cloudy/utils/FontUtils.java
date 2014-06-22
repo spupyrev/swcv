@@ -50,28 +50,37 @@ public class FontUtils
     public static class AWTFontProvider implements FontProvider
     {
         private BufferedImage dummy;
+        private Font font;
 
         public AWTFontProvider()
         {
-            dummy = new BufferedImage(1000, 1000, BufferedImage.TYPE_3BYTE_BGR);
+            dummy = new BufferedImage(1024, 1024, BufferedImage.TYPE_3BYTE_BGR);
         }
 
         //@Override
         public Font getFont()
         {
-            Font f = dummy.getGraphics().getFont();
-            //need a large font to have enough precision
-            return f.deriveFont((float)100.0);
+            if (font == null)
+            {
+                //return new Font("Arial", Font.PLAIN, 80);
+                Font f = dummy.getGraphics().getFont();
+                //need a large font to have enough precision
+                font = f.deriveFont((float)100.0);
+            }
+
+            return font;
         }
 
         @Override
         public SWCRectangle getBoundingBox(String text)
         {
             Font font = getFont();
+
             FontRenderContext frc = ((Graphics2D)dummy.getGraphics()).getFontRenderContext();
 
             GlyphVector gv = font.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), Font.LAYOUT_LEFT_TO_RIGHT);
             Rectangle2D bb = gv.getPixelBounds(frc, 0, 0);
+            //Rectangle2D bb = gv.getVisualBounds();
 
             return new SWCRectangle(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
         }

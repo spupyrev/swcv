@@ -8,7 +8,6 @@ import edu.cloudy.layout.packing.ClusterForceDirectedPlacer;
 import edu.cloudy.layout.packing.WordPlacer;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.SWCRectangle;
 
 import java.util.ArrayList;
@@ -22,26 +21,13 @@ import java.util.Set;
  * @author spupyrev 
  * Aug 29, 2013 
  */
-public class StarForestAlgo implements LayoutAlgo
+public class StarForestAlgo extends BaseLayoutAlgo
 {
-    private List<Word> words;
-    private Map<WordPair, Double> similarity;
-    private BoundingBoxGenerator bbGenerator;
-
     private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
 
-    @Override
-    public void setConstraints(BoundingBoxGenerator bbGenerator)
+    public StarForestAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-        this.bbGenerator = bbGenerator;
-    }
-
-    @Override
-    public void setData(List<Word> words, Map<WordPair, Double> similarity)
-    {
-        this.words = words;
-        this.similarity = similarity;
-
+        super(words, similarity);
     }
 
     @Override
@@ -100,9 +86,7 @@ public class StarForestAlgo implements LayoutAlgo
 
             //run FPTAS on the star
             WordGraph star = createStar(bestStarCenter, usedVertices, g);
-            SingleStarAlgo ssa = new SingleStarAlgo();
-            ssa.setConstraints(bbGenerator);
-            ssa.setData(words, similarity);
+            SingleStarAlgo ssa = new SingleStarAlgo(words, similarity);
             ssa.setGraph(star);
             ssa.run();
 
@@ -141,7 +125,7 @@ public class StarForestAlgo implements LayoutAlgo
     }
 
     @Override
-    public SWCRectangle getWordRectangle(Word w)
+    public SWCRectangle getWordPosition(Word w)
     {
         return wordPositions.get(w);
     }

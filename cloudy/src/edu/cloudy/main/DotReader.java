@@ -5,7 +5,6 @@ import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.ui.WordCloudFrame;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.Logger;
 
 import java.io.File;
@@ -179,9 +178,7 @@ public class DotReader
     private LayoutAlgo runLayout(List<Word> words, Map<WordPair, Double> similarity)
     {
         //LayoutAlgo algo = new StarForestAlgoNew();
-        LayoutAlgo algo = new ContextPreservingAlgo();
-        algo.setData(words, similarity);
-        algo.setConstraints(new BoundingBoxGenerator(25000.0));
+        LayoutAlgo algo = new ContextPreservingAlgo(words, similarity);
 
         long startTime = System.currentTimeMillis();
         algo.run();

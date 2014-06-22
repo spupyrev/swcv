@@ -44,8 +44,8 @@ public class ProximityMetric implements QualityMetric, AdjacentMetric
 
     private boolean close(LayoutAlgo algo, Word first, Word second, List<Word> words)
     {
-        SWCRectangle rect1 = algo.getWordRectangle(first);
-        SWCRectangle rect2 = algo.getWordRectangle(second);
+        SWCRectangle rect1 = algo.getWordPosition(first);
+        SWCRectangle rect2 = algo.getWordPosition(second);
 
         if (rect1 == null || rect2 == null)
             return false;
@@ -79,7 +79,7 @@ public class ProximityMetric implements QualityMetric, AdjacentMetric
             if (w.equals(first) || w.equals(second))
                 continue;
 
-            SWCRectangle tmpRect = algo.getWordRectangle(w);
+            SWCRectangle tmpRect = algo.getWordPosition(w);
 
             // see if our line intersects any of the words
             if (connection.intersects(tmpRect.getX(), tmpRect.getY(), tmpRect.getWidth(), tmpRect.getHeight()))

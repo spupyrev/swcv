@@ -17,7 +17,6 @@ import java.util.Set;
  */
 public class WCVSentimentDocument extends WCVDocument
 {
-    
     private List<String> strChunks;
     private int[] sentiValues;
     private String[] sentences;
@@ -88,13 +87,14 @@ public class WCVSentimentDocument extends WCVDocument
                     break;
                 }
             }
+            
             double totalCount = posCount + negCount + neuCount;
             double posRatio = posCount / totalCount;
             double negRatio = negCount / totalCount;
             double neuRatio = neuCount / totalCount;
             double sentiValue = getMostSignificant(posRatio, negRatio, neuRatio);
-            currentWord.setSentiValue(sentiValue);
-            currentWord.setSentCount(posCount, negCount, neuCount, totalCount);
+            currentWord.setSentimentValue(sentiValue);
+            currentWord.setSentimentCount(posCount, negCount, neuCount, totalCount);
         }
     }
 

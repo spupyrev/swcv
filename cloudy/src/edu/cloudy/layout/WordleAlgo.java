@@ -2,7 +2,6 @@ package edu.cloudy.layout;
 
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.SWCRectangle;
 
 import java.util.ArrayList;
@@ -19,12 +18,8 @@ import java.util.Random;
  * implemenation of Wordle algorithm
  * based on explanation in http://stackoverflow.com/questions/342687/algorithm-to-implement-a-word-cloud-like-wordle 
  */
-public class WordleAlgo implements LayoutAlgo
+public class WordleAlgo extends BaseLayoutAlgo
 {
-    private List<Word> words;
-
-    private BoundingBoxGenerator bbGenerator;
-
     private Map<Word, SWCRectangle> bb = new HashMap<Word, SWCRectangle>();
 
     private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
@@ -36,20 +31,13 @@ public class WordleAlgo implements LayoutAlgo
     private double MAX_WIDTH;
     private double MAX_HEIGHT;
 
-    @Override
-    public void setConstraints(BoundingBoxGenerator bbGenerator)
+    public WordleAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-        this.bbGenerator = bbGenerator;
+        super(words, similarity);
     }
 
     @Override
-    public void setData(List<Word> words, Map<WordPair, Double> similarity)
-    {
-        this.words = words;
-    }
-
-    @Override
-    public SWCRectangle getWordRectangle(Word w)
+    public SWCRectangle getWordPosition(Word w)
     {
         return wordPositions.get(w);
     }
@@ -104,7 +92,7 @@ public class WordleAlgo implements LayoutAlgo
     private void generateBoundingBoxes()
     {
         for (Word w : words)
-            bb.put(w, bbGenerator.getBoundingBox(w, w.weight));
+            bb.put(w, getBoundingBox(w));
     }
 
     /**

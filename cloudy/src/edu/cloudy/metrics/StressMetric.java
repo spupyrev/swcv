@@ -101,8 +101,8 @@ public class StressMetric implements QualityMetric {
 	}
 
 	private double distance(Word first, Word second, LayoutAlgo algo) {
-		SWCRectangle rect1 = algo.getWordRectangle(first);
-		SWCRectangle rect2 = algo.getWordRectangle(second);
+		SWCRectangle rect1 = algo.getWordPosition(first);
+		SWCRectangle rect2 = algo.getWordPosition(second);
 
 		double dist = Double.POSITIVE_INFINITY;
 		SWCPoint[] corners1 = getCorners(rect1);

@@ -27,16 +27,16 @@ public class WordCloud implements Serializable
     private int height;
 
     private WCMetrics metrics;
-    
+
     private String creatorIP;
 
-	private int width2;
+    private int width2;
 
-	private int height2;
+    private int height2;
 
     public WordCloud()
     {
-    	svg2 = "";
+        svg2 = "";
     }
 
     public String getCreatorIP()
@@ -108,7 +108,7 @@ public class WordCloud implements Serializable
     {
         this.svg2 = svg;
     }
-    
+
     public int getWidth()
     {
         return width;
@@ -141,8 +141,10 @@ public class WordCloud implements Serializable
 
     private static final String DATE_FORMAT = "yyyyMMddHHmmssS";
     private static final DefaultDateTimeFormatInfo info = new DefaultDateTimeFormatInfo();
-    private static final DateTimeFormat dtf = new DateTimeFormat(WordCloud.DATE_FORMAT, info) {};
-    
+    private static final DateTimeFormat dtf = new DateTimeFormat(WordCloud.DATE_FORMAT, info)
+    {
+    };
+
     public Date getCreationDateAsDate()
     {
         return dtf.parse(creationDate);
@@ -153,32 +155,34 @@ public class WordCloud implements Serializable
         this.creationDate = dtf.format(creationDate);
     }
 
-	public String getSourceText()
-	{
-		return sourceText;
-	}
+    public String getSourceText()
+    {
+        return sourceText;
+    }
 
-	public void setSourceText(String sourceText)
-	{
-		this.sourceText = sourceText;
-	}
+    public void setSourceText(String sourceText)
+    {
+        this.sourceText = sourceText;
+    }
 
-	public void setWidth2(int width2)
-	{
-		this.width2 = width2;
-	}
+    public void setWidth2(int width2)
+    {
+        this.width2 = width2;
+    }
 
-	public int getWidth2(){
-		return this.width2;
-	}
-	
-	public void setHeight2(int height2)
-	{
-		this.height2 = height2;
-	}
-	
-	public int getHeight2(){
-		return this.height2;
-	}
+    public int getWidth2()
+    {
+        return this.width2;
+    }
+
+    public void setHeight2(int height2)
+    {
+        this.height2 = height2;
+    }
+
+    public int getHeight2()
+    {
+        return this.height2;
+    }
 
 }

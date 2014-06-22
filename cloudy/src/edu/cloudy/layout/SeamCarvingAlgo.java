@@ -4,7 +4,6 @@ import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.SWCPoint;
 import edu.cloudy.utils.SWCRectangle;
 
@@ -21,28 +20,15 @@ import java.util.Set;
  * @author spupyrev
  * May 12, 2013
  */
-public class SeamCarvingAlgo implements LayoutAlgo
+public class SeamCarvingAlgo extends BaseLayoutAlgo
 {
-    private List<Word> words;
-    private Map<WordPair, Double> similarity;
-
-    private BoundingBoxGenerator bbGenerator;
-
-    @Override
-    public void setConstraints(BoundingBoxGenerator bbGenerator)
+    public SeamCarvingAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-        this.bbGenerator = bbGenerator;
+        super(words, similarity);
     }
 
     @Override
-    public void setData(List<Word> words, Map<WordPair, Double> similarity)
-    {
-        this.words = words;
-        this.similarity = similarity;
-    }
-
-    @Override
-    public SWCRectangle getWordRectangle(Word w)
+    public SWCRectangle getWordPosition(Word w)
     {
         return finalWordPosition.get(w);
     }
@@ -67,9 +53,7 @@ public class SeamCarvingAlgo implements LayoutAlgo
     private SWCRectangle[] initialPlacement()
     {
         //find initial placement by mds layout
-        MDSAlgo algo = new MDSAlgo();
-        algo.setConstraints(bbGenerator);
-        algo.setData(words, similarity);
+        MDSAlgo algo = new MDSAlgo(words, similarity);
         algo.run();
 
         //run mds
@@ -87,7 +71,7 @@ public class SeamCarvingAlgo implements LayoutAlgo
             	wordPositions.put(w, new SWCRectangle(10, 1, 2, 1));
             else if (i == 4) wordPositions.put(w, new SWCRectangle(8, 8, 4, 3));*/
 
-            wordPositions[i] = algo.getWordRectangle(w);
+            wordPositions[i] = algo.getWordPosition(w);
             i++;
         }
         return wordPositions;

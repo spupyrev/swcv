@@ -4,7 +4,6 @@ import edu.cloudy.layout.mds.DistanceScaling;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.SWCRectangle;
 
 import java.util.Arrays;
@@ -22,28 +21,15 @@ import java.util.Random;
  * 
  * (the algorithm is not supposed to compact the drawing!)
  */
-public class MDSAlgo implements LayoutAlgo
+public class MDSAlgo extends BaseLayoutAlgo
 {
-    private List<Word> words;
-    private Map<WordPair, Double> similarity;
-
-    private BoundingBoxGenerator bbGenerator;
-
-    @Override
-    public void setConstraints(BoundingBoxGenerator bbGenerator)
+    public MDSAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-        this.bbGenerator = bbGenerator;
+        super(words, similarity);
     }
 
     @Override
-    public void setData(List<Word> words, Map<WordPair, Double> similarity)
-    {
-        this.words = words;
-        this.similarity = similarity;
-    }
-
-    @Override
-    public SWCRectangle getWordRectangle(Word w)
+    public SWCRectangle getWordPosition(Word w)
     {
         return wordPositions.get(w);
     }
@@ -71,7 +57,7 @@ public class MDSAlgo implements LayoutAlgo
 
         // Get the bounding box for each of the words
         for (Word w : words)
-            result.put(w, bbGenerator.getBoundingBox(w, w.weight));
+            result.put(w, getBoundingBox(w));
 
         return result;
     }

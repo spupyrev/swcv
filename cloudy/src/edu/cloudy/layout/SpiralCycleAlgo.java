@@ -2,7 +2,6 @@ package edu.cloudy.layout;
 
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.BoundingBoxGenerator;
 import edu.cloudy.utils.SWCRectangle;
 
 import java.util.ArrayList;
@@ -14,33 +13,17 @@ import java.util.Random;
 /**
  * May 14, 2013
  */
-public class SpiralCycleAlgo implements LayoutAlgo
+public class SpiralCycleAlgo extends BaseLayoutAlgo
 {
-    private List<Word> words;
-
-    private BoundingBoxGenerator bbGenerator;
-
     private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
 
-    public SpiralCycleAlgo(List<Word> wordList)
+    public SpiralCycleAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-        this.words = wordList;
+        super(words, similarity);
     }
 
     @Override
-    public void setConstraints(BoundingBoxGenerator bbGenerator)
-    {
-        this.bbGenerator = bbGenerator;
-    }
-
-    @Override
-    public void setData(List<Word> words, Map<WordPair, Double> similarity)
-    {
-        this.words = words;
-    }
-
-    @Override
-    public SWCRectangle getWordRectangle(Word w)
+    public SWCRectangle getWordPosition(Word w)
     {
         return wordPositions.get(w);
     }
@@ -127,7 +110,7 @@ public class SpiralCycleAlgo implements LayoutAlgo
     private void generateBoundingBoxes()
     {
         for (Word w : words)
-            wordPositions.put(w, bbGenerator.getBoundingBox(w, w.weight));
+            wordPositions.put(w, getBoundingBox(w));
     }
 
     private boolean intersects(Word word)

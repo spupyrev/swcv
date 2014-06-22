@@ -18,6 +18,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
 {
     private static final Logger log = Logger.getLogger(TwitterReader.class.getName());
     private static final String UNWANTED_PATTERN = "\\s*http[s]?://\\S+\\s*";
+    private static final int DEFAULT_NUMBER_OF_TWEETS = 300;
 
     private String tweetsText;
     private List<String> tweetsList;
@@ -67,7 +68,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
 
         Twitter twitter = TwitterReader.getTwitterInstance();
         Query query = new Query(sq.getSearchPhrase());
-        query.setCount(Math.max(100, sq.getSize()));
+        query.setCount(Math.max(DEFAULT_NUMBER_OF_TWEETS, sq.getSize()));
         query.setResultType(sq.getResultType());
         if (sq.getLang() != null)
             query.setLang(sq.getLang());

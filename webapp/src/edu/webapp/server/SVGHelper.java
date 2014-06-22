@@ -67,7 +67,7 @@ public class SVGHelper
 
         for (Word w : words)
         {
-            SWCRectangle rect = algo.getWordRectangle(w);
+            SWCRectangle rect = algo.getWordPosition(w);
             rect = transformRect(rect);
 
             maxX = Math.max(maxX, rect.getMaxX());
@@ -97,7 +97,7 @@ public class SVGHelper
                 //System.out.println(text.getComputedTextLength());
             }
 
-            drawTextInBox(document, svgRoot, w.word, getColor(w), algo.getWordRectangle(w), rect);
+            drawTextInBox(document, svgRoot, w.word, getColor(w), algo.getWordPosition(w), rect);
         }
 
         actualWidth = maxX - minX;
@@ -141,7 +141,7 @@ public class SVGHelper
 
         for (Word w : words)
         {
-            SWCRectangle rect = algo.getWordRectangle(w);
+            SWCRectangle rect = algo.getWordPosition(w);
 
             maxX = Math.max(maxX, rect.getMaxX());
             maxY = Math.max(maxY, rect.getMaxY());

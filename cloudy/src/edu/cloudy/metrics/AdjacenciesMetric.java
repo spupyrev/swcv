@@ -40,8 +40,8 @@ public class AdjacenciesMetric implements QualityMetric, AdjacentMetric
 
 	private boolean close(LayoutAlgo algo, Word first, Word second)
 	{
-		SWCRectangle rect1 = algo.getWordRectangle(first);
-		SWCRectangle rect2 = algo.getWordRectangle(second);
+		SWCRectangle rect1 = algo.getWordPosition(first);
+		SWCRectangle rect2 = algo.getWordPosition(second);
 
 		return close(rect1, rect2);
 	}
