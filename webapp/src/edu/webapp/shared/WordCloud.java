@@ -36,7 +36,6 @@ public class WordCloud implements Serializable
 
     public WordCloud()
     {
-        svg2 = "";
     }
 
     public String getCreatorIP()
@@ -185,4 +184,8 @@ public class WordCloud implements Serializable
         return this.height2;
     }
 
+    public boolean isDynamic()
+    {
+        return width2 != 0;
+    }
 }

@@ -74,6 +74,13 @@ public class DownloadCloudServlet extends HttpServlet implements Servlet
 
                 fileContentByte = convertToPDF(cloud);
             }
+            else if ("source".equals(format))
+            {
+                response.setContentType("text/plain");
+                response.setCharacterEncoding("UTF-8");
+
+                fileContentByte = cloud.getSourceText().getBytes();
+            }
             else
             {
                 System.err.println("wrong cloud format: '" + format + "'");

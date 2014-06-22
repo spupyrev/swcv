@@ -93,7 +93,7 @@ public class WordCloudLatestApp implements EntryPoint
             table.setHTML(i + 1, 0, "<a href='/cloud.html?id=" + cloud.getId() + "'>" + cloud.getId() + "</a>");
             Date dt = cloud.getCreationDateAsDate();
             table.setHTML(i + 1, 1, DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss").format(dt));
-            table.setWidget(i + 1, 2, createSourceField(cloud.getInputText()));
+            table.setWidget(i + 1, 2, createSourceField(cloud));
             cf.setHorizontalAlignment(i + 1, 2, HasHorizontalAlignment.ALIGN_LEFT);
 
             if (debug)
@@ -105,13 +105,20 @@ public class WordCloudLatestApp implements EntryPoint
         return table;
     }
 
-    private Widget createSourceField(String inputText)
+    private Widget createSourceField(WordCloud cloud)
     {
-        inputText = inputText.trim();
+        String inputText = cloud.getInputText().trim();
         if (inputText.startsWith("http://") || inputText.startsWith("https://"))
             return new Anchor(cutString(inputText), inputText);
 
-        return new HTML(cutString(inputText));
+        if (inputText.length() >= 80)
+        {
+            Anchor link = new Anchor(cutString(inputText));
+            link.setHref("/cloud/download?ft=source&id=" + cloud.getId());
+            return link;
+        }
+        
+        return new HTML(inputText);
     }
 
     private String cutString(String inputText)
