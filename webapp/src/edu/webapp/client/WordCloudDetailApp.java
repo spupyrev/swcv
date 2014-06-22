@@ -23,7 +23,6 @@ import edu.webapp.shared.WordCloud;
  */
 public class WordCloudDetailApp implements EntryPoint
 {
-
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting
 	 * service.

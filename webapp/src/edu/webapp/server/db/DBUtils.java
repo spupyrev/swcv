@@ -174,29 +174,37 @@ public class DBUtils
 		return cloud;
 	}
 
-	private static void convertRSToCloud(final WordCloud cloud, ResultSet rs) throws SQLException
-	{
-		cloud.setId(rs.getInt("ID"));
-		cloud.setInputText(rs.getString("INPUT_TEXT"));
-		cloud.setSourceText(rs.getString("SOURCE_TEXT"));
-		cloud.setHeight(rs.getInt("HEIGHT"));
-		cloud.setWidth(rs.getInt("WIDTH"));
-		cloud.setHeight2(rs.getInt("HEIGHT2"));
-		cloud.setWidth2(rs.getInt("WIDTH2"));
-		cloud.setCreationDate(rs.getString("CREATION_DATE"));
-		cloud.setSvg(rs.getString("SVG"));
-		cloud.setSvg2(rs.getString("SVG2"));
-		cloud.setCreatorIP(rs.getString("CREATOR_IP"));
+    private static void convertRSToCloud(final WordCloud cloud, ResultSet rs) throws SQLException
+    {
+        cloud.setId(rs.getInt("ID"));
+        cloud.setInputText(rs.getString("INPUT_TEXT"));
+        cloud.setSourceText(rs.getString("SOURCE_TEXT"));
+        cloud.setHeight(rs.getInt("HEIGHT"));
+        cloud.setWidth(rs.getInt("WIDTH"));
+        cloud.setHeight2(rs.getInt("HEIGHT2"));
+        cloud.setWidth2(rs.getInt("WIDTH2"));
+        cloud.setCreationDate(rs.getString("CREATION_DATE"));
+        cloud.setSvg(rs.getString("SVG"));
+        cloud.setSvg2(rs.getString("SVG2"));
+        cloud.setCreatorIP(rs.getString("CREATOR_IP"));
 
-		cloud.setSettings(new WCSetting());
-		cloud.getSettings().setWordCount(rs.getInt("WORD_COUNT"));
-		cloud.getSettings().setSimilarityAlgorithm(SIMILARITY_ALGORITHM.valueOf(rs.getString("SIMILARITY_ALGO")));
-		cloud.getSettings().setRankingAlgorithm(RANKING_ALGORITHM.valueOf(rs.getString("RANKING_ALGO")));
-		cloud.getSettings().setLayoutAlgorithm(LAYOUT_ALGORITHM.valueOf(rs.getString("LAYOUT_ALGO")));
-		cloud.getSettings().setFont(FONT.valueOf(rs.getString("FONT")));
-		cloud.getSettings().setColorScheme(COLOR_SCHEME.valueOf(rs.getString("COLOR_SCHEME")));
-		cloud.getSettings().setColorDistribute(COLOR_DISTRIBUTE.valueOf(rs.getString("COLOR_DISTR")));
-	}
+        cloud.setSettings(new WCSetting());
+        cloud.getSettings().setWordCount(rs.getInt("WORD_COUNT"));
+        cloud.getSettings().setSimilarityAlgorithm(SIMILARITY_ALGORITHM.valueOf(rs.getString("SIMILARITY_ALGO")));
+        cloud.getSettings().setRankingAlgorithm(RANKING_ALGORITHM.valueOf(rs.getString("RANKING_ALGO")));
+        cloud.getSettings().setLayoutAlgorithm(LAYOUT_ALGORITHM.valueOf(rs.getString("LAYOUT_ALGO")));
+        cloud.getSettings().setFont(FONT.valueOf(rs.getString("FONT")));
+        cloud.getSettings().setColorScheme(COLOR_SCHEME.valueOf(rs.getString("COLOR_SCHEME")));
+        cloud.getSettings().setColorDistribute(COLOR_DISTRIBUTE.valueOf(rs.getString("COLOR_DISTR")));
+    }
+
+    private static void convertRSToCloudLight(final WordCloud cloud, ResultSet rs) throws SQLException
+    {
+        cloud.setId(rs.getInt("ID"));
+        cloud.setInputText(rs.getString("INPUT_TEXT"));
+        cloud.setCreationDate(rs.getString("CREATION_DATE"));
+        cloud.setCreatorIP(rs.getString("CREATOR_IP"));
+    }
 
 	public static List<WordCloud> getLatestClouds(final int limit)
 	{
@@ -207,12 +215,12 @@ public class DBUtils
 			public void execute(Connection c, Statement stmt) throws Exception
 			{
 				stmt.setMaxRows(limit - 1);
-				ResultSet rs = stmt.executeQuery("SELECT * FROM CLOUD ORDER BY ID DESC;");
+				ResultSet rs = stmt.executeQuery("SELECT ID, CREATION_DATE, INPUT_TEXT, CREATOR_IP FROM CLOUD ORDER BY ID DESC;");
 
 				while (rs.next())
 				{
 					WordCloud cloud = new WordCloud();
-					convertRSToCloud(cloud, rs);
+					convertRSToCloudLight(cloud, rs);
 
 					clouds.add(cloud);
 				}
