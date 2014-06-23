@@ -69,7 +69,7 @@ public class WCVisualizer
         //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
 
         //WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/twitter");
-        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/test");
+        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/focs");
         xmlReader.read();
         Iterator<String> texts = xmlReader.getTexts();
 
@@ -224,18 +224,18 @@ public class WCVisualizer
 
     private LayoutAlgo runLayout(List<Word> words, Map<WordPair, Double> similarity)
     {
-        //LayoutAlgo algo = new ContextPreservingAlgo();
+        //LayoutAlgo algo = new ContextPreservingAlgo(words, similarity);
         //LayoutAlgo algo = new InflateAndPushAlgo();
         //LayoutAlgo algo = new MDSAlgo();
         //LayoutAlgo algo = new StarForestAlgo();
         //LayoutAlgo algo = new CycleCoverAlgo();
         //LayoutAlgo algo = new SeamCarvingAlgo();
-        //LayoutAlgo algo = new WordleAlgo();
+        //LayoutAlgo algo = new WordleAlgo(words, similarity);
         LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
 
         long startTime = System.currentTimeMillis();
         algo.run();
-        System.out.printf("text processing done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
+        System.out.printf("layout done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
 
         return algo;
     }
@@ -249,15 +249,15 @@ public class WCVisualizer
 
         long startTime = System.currentTimeMillis();
         algo.run(words, similarity);
-        System.out.printf("clustering done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
-        System.out.println("#clusters: " + algo.getClusterNumber());
+        //System.out.printf("clustering done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
+        //System.out.println("#clusters: " + algo.getClusterNumber());
 
         return algo;
     }
 
     private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo, IClusterAlgo clusterAlgo)
     {
-        new WordCloudFrame(words, similarity, algo, null);
+        new WordCloudFrame(words, similarity, algo, clusterAlgo);
     }
 
 }

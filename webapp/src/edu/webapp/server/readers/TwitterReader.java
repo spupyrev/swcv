@@ -68,7 +68,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
 
         Twitter twitter = TwitterReader.getTwitterInstance();
         Query query = new Query(sq.getSearchPhrase());
-        query.setCount(Math.max(DEFAULT_NUMBER_OF_TWEETS, sq.getSize()));
+        query.setCount(sq.getSize());
         query.setResultType(sq.getResultType());
         if (sq.getLang() != null)
             query.setLang(sq.getLang());
@@ -132,7 +132,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
         private String input;
         private String searchPhrase;
 
-        private int size = 100;
+        private int size = DEFAULT_NUMBER_OF_TWEETS;
         private String resultType = Query.RECENT;
         private String lang;
         private boolean includeRetweets = false;

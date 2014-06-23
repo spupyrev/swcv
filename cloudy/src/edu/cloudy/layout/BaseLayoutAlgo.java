@@ -17,7 +17,7 @@ public abstract class BaseLayoutAlgo implements LayoutAlgo
     protected List<Word> words;
     protected Map<WordPair, Double> similarity;
     protected BoundingBoxGenerator bbGenerator;
-    
+
     public BaseLayoutAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
         this.words = words;

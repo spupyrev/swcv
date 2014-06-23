@@ -8,7 +8,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -108,17 +107,9 @@ public class WordCloudLatestApp implements EntryPoint
     private Widget createSourceField(WordCloud cloud)
     {
         String inputText = cloud.getInputText().trim();
-        if (inputText.startsWith("http://") || inputText.startsWith("https://"))
-            return new Anchor(cutString(inputText), inputText);
-
-        if (inputText.length() >= 80)
-        {
-            Anchor link = new Anchor(cutString(inputText));
-            link.setHref("/cloud/download?ft=source&id=" + cloud.getId());
-            return link;
-        }
-        
-        return new HTML(inputText);
+        Anchor link = new Anchor(cutString(inputText));
+        link.setHref("/cloud/download?ft=source&id=" + cloud.getId());
+        return link;
     }
 
     private String cutString(String inputText)

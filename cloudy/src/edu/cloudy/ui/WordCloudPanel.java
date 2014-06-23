@@ -6,6 +6,8 @@ import edu.cloudy.colors.IColorScheme;
 import edu.cloudy.colors.RandomColorScheme;
 import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.MDSWithFDPackingAlgo;
+import edu.cloudy.layout.PackingCostCalculator;
 import edu.cloudy.metrics.AdjacenciesMetric;
 import edu.cloudy.metrics.ProximityMetric;
 import edu.cloudy.nlp.Word;
@@ -102,6 +104,8 @@ public class WordCloudPanel extends JPanel implements ActionListener
                 drawProximity(g2);
             }
 
+            drawBoundingBox(g2);
+            
             //timer.start();
         }
         else
@@ -265,6 +269,19 @@ public class WordCloudPanel extends JPanel implements ActionListener
         }
     }
 
+    private void drawBoundingBox(Graphics2D g2)
+    {
+        if (algo instanceof MDSWithFDPackingAlgo)
+        {
+            SWCRectangle rect = transformRect(PackingCostCalculator.bbox);
+            Rectangle2D rect2D = createRectangle2D(rect);
+            g2.setColor(new Color(238, 233, 233));
+            g2.setColor(Color.black);
+            g2.draw(rect2D);
+        }
+    }
+
+    
     private SWCRectangle transformRect(SWCRectangle rect)
     {
         SWCRectangle ret = new SWCRectangle();

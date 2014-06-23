@@ -6,6 +6,7 @@ package edu.cloudy.utils;
  */
 public class SWCRectangle
 {
+    //lower-left corner of the rectangle
     private double x;
     private double y;
     private double width;
@@ -105,6 +106,16 @@ public class SWCRectangle
         return y + height / 2.0;
     }
 
+    /*public SWCPoint getPosition()
+    {
+        return new SWCPoint(getX(), getY());
+    }*/
+
+    public SWCPoint getCenter()
+    {
+        return new SWCPoint(getCenterX(), getCenterY());
+    }
+
     public void setRect(double x, double y, double width, double height)
     {
         this.x = x;
@@ -165,6 +176,16 @@ public class SWCRectangle
         height *= factor;
     }
 
+    public void shrink(double w, double h)
+    {
+        double cenX = getCenterX();
+        double cenY = getCenterY();
+        
+        width -= w;
+        height -= h;
+        setCenter(cenX, cenY);
+    }
+
     public SWCRectangle createIntersection(SWCRectangle rect)
     {
         double x1 = Math.max(getMinX(), rect.getMinX());
@@ -189,4 +210,5 @@ public class SWCRectangle
         sb.append("height: " + getHeight() + "\n");
         return sb.toString();
     }
+
 }

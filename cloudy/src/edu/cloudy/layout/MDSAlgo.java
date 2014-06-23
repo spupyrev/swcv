@@ -23,9 +23,17 @@ import java.util.Random;
  */
 public class MDSAlgo extends BaseLayoutAlgo
 {
-    public MDSAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    private boolean useOverlapRemoval = true;
+
+    public MDSAlgo(List<Word> words, Map<WordPair, Double> similarity, boolean useOverlapRemoval)
     {
         super(words, similarity);
+        this.useOverlapRemoval = useOverlapRemoval;
+    }
+
+    public MDSAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    {
+        this(words, similarity, true);
     }
 
     @Override
@@ -35,6 +43,7 @@ public class MDSAlgo extends BaseLayoutAlgo
     }
 
     private static double SCALING = 1.0;
+    //private static double SCALING = 0.5;
 
     private Map<Word, SWCRectangle> wordPositions = null;
 
@@ -48,7 +57,8 @@ public class MDSAlgo extends BaseLayoutAlgo
         computeInitialPlacement();
 
         //force-directed overlap removal
-        new ForceDirectedOverlapRemoval<SWCRectangle>().run(words, wordPositions);
+        if (useOverlapRemoval)
+            new ForceDirectedOverlapRemoval<SWCRectangle>().run(words, wordPositions);
     }
 
     private Map<Word, SWCRectangle> computeBoundingBoxes()
