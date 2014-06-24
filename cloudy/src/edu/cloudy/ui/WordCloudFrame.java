@@ -1,6 +1,9 @@
 package edu.cloudy.ui;
 
 import edu.cloudy.clustering.IClusterAlgo;
+import edu.cloudy.colors.ClusterColorScheme;
+import edu.cloudy.colors.IColorScheme;
+import edu.cloudy.colors.RandomColorScheme;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -46,7 +49,8 @@ public class WordCloudFrame extends JFrame
     {
         setLayout(new BorderLayout());
 
-        WordCloudPanel panel = new WordCloudPanel(words, algo, clusterAlgo, null);
+        IColorScheme colorScheme = (clusterAlgo != null ? new ClusterColorScheme(clusterAlgo, words) : new RandomColorScheme());
+        WordCloudPanel panel = new WordCloudPanel(words, algo, colorScheme);
         add(BorderLayout.CENTER, panel);
         add(BorderLayout.EAST, new MetricsPanel(words, similarity, algo));
 

@@ -31,7 +31,7 @@ import edu.cloudy.nlp.similarity.EuclideanAlgo;
 import edu.cloudy.nlp.similarity.JaccardCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.LexicalSimilarityAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
-import edu.cloudy.ui.WordCloudPanel;
+import edu.cloudy.ui.WordCloudRenderer;
 import edu.cloudy.utils.FontUtils;
 import edu.webapp.server.readers.DocumentExtractor;
 import edu.webapp.server.readers.DynamicReader;
@@ -143,15 +143,13 @@ public class WordCloudGenerator
             IColorScheme wordColorScheme = getColorScheme(wcvDocument, similarity, setting);
 
             // Ask to render into the SVG Graphics2D implementation.
-            WordCloudPanel panel = new WordCloudPanel(wcvDocument.getWords(), layoutAlgo, null, wordColorScheme);
-            panel.setSize(1024, 800);
-            panel.setShowRectangles(setting.isShowRectangles());
-            panel.setOpaque(false);
+            WordCloudRenderer renderer = new WordCloudRenderer(wcvDocument.getWords(), layoutAlgo, wordColorScheme, 1024, 800);
+            renderer.setShowRectangles(setting.isShowRectangles());
 
-            String svg = getSvg(panel);
+            String svg = getSvg(renderer);
 
             Date timestamp = Calendar.getInstance().getTime();
-            cloud = createCloud(setting, input, text, timestamp, svg, "", (int)panel.getActualWidth(), (int)panel.getActualHeight(), 0, 0, ip);
+            cloud = createCloud(setting, input, text, timestamp, svg, "", (int)renderer.getActualWidth(), (int)renderer.getActualHeight(), 0, 0, ip);
 
         }
 
@@ -193,7 +191,7 @@ public class WordCloudGenerator
         return wordColorScheme;
     }
 
-    private static String getSvg(WordCloudPanel panel)
+    private static String getSvg(WordCloudRenderer renderer)
     {
         // get svg
         DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
@@ -203,7 +201,7 @@ public class WordCloudGenerator
         SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
 
         // two Clouds
-        panel.paintComponent(svgGenerator);
+        renderer.render(svgGenerator);
         Writer writer;
         try
         {
@@ -217,12 +215,12 @@ public class WordCloudGenerator
             writer = new StringWriter();
             svgGenerator.stream(writer, true);
             writer.close();
-
         }
         catch (Exception e)
         {
             throw new RuntimeException(e);
         }
+        
         return writer.toString();
     }
 
@@ -249,18 +247,12 @@ public class WordCloudGenerator
         IColorScheme wordColorScheme = getColorScheme(doc.getDoc1(), similarity, setting);
         IColorScheme wordColorScheme2 = getColorScheme(doc.getDoc2(), similarity, setting);
 
-        WordCloudPanel panel1 = new WordCloudPanel(doc.getDoc1().getWords(), layoutAlgo, null, wordColorScheme);
-        panel1.setSize(1024, 800);
+        WordCloudRenderer panel1 = new WordCloudRenderer(doc.getDoc1().getWords(), layoutAlgo, wordColorScheme, 1024, 800);
         panel1.setShowRectangles(setting.isShowRectangles());
-        panel1.setOpaque(false);
-
         svg1 = getSvg(panel1);
 
-        WordCloudPanel panel2 = new WordCloudPanel(doc.getDoc2().getWords(), layoutAlgo, null, wordColorScheme2);
-        panel2.setSize(1024, 800);
+        WordCloudRenderer panel2 = new WordCloudRenderer(doc.getDoc2().getWords(), layoutAlgo, wordColorScheme2, 1024, 800);
         panel2.setShowRectangles(setting.isShowRectangles());
-        panel2.setOpaque(false);
-
         svg2 = getSvg(panel2);
 
         Date timestamp = Calendar.getInstance().getTime();

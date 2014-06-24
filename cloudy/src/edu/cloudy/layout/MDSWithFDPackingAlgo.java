@@ -16,10 +16,10 @@ import java.util.Map;
  */
 public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
 {
-    private static final int MAX_ITERATIONS = 1000;
-    private static final double MAX_STEP = 50;
-    private static final double MIN_STEP = 0.01;
-    private static final double MIN_RELATIVE_CHANGE = 0.0000005;
+    private static final int MAX_ITERATIONS = 500;
+    private static final double MAX_STEP = 500;
+    private static final double MIN_STEP = 1;
+    private static final double MIN_RELATIVE_CHANGE = 0.00005;
 
     private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
 
@@ -94,6 +94,9 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
         }
 
         System.out.println("FD done " + iteration + " iterations");
+        //System.out.println("final energy: " + PackingCostCalculator.cost(x));
+        //System.out.println("last step: " + tryMoveNodes(x, step));
+        
         for (int i = 0; i < x.length; i++)
             wordPositions.put(words.get(i), x[i]);
     }
@@ -111,7 +114,7 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
 
         sumx /= x.length;
         sumy /= x.length;
-        area *= 1.8;
+        area *= 1.75;
 
         double width = Math.sqrt(1.61 * area);
         double height = area / width;
@@ -166,7 +169,7 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
         SWCPoint force = dependencyForce;
         force.add(boundaryForce);
         force.add(repulsiveForce);
-        if (force.length() < 0.001)
+        if (force.length() < 0.1)
             return new SWCPoint();
         force.normalize();
 
@@ -203,15 +206,15 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
     private double costGain(SWCRectangle[] x, int wordIndex, SWCPoint newPosition)
     {
         double MInf = -12345678.0;
-        double rGain = PackingCostCalculator.dependencyCostGain(x, wordIndex, newPosition);
-        if (rGain < MInf)
+        double depGain = PackingCostCalculator.dependencyCostGain(x, wordIndex, newPosition);
+        if (depGain < MInf)
             return MInf;
-        double bundleGain = PackingCostCalculator.boundaryCostGain(x, wordIndex, newPosition);
-        if (bundleGain < MInf)
+        double boundGain = PackingCostCalculator.boundaryCostGain(x, wordIndex, newPosition);
+        if (boundGain < MInf)
             return MInf;
-        double inkGain = PackingCostCalculator.repulsiveCostGain(x, wordIndex, newPosition);
+        double repGain = PackingCostCalculator.repulsiveCostGain(x, wordIndex, newPosition);
 
-        return rGain + inkGain + bundleGain;
+        return depGain + repGain + boundGain;
     }
 
     int stepsWithProgress = 0;

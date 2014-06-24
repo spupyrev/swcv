@@ -10,7 +10,7 @@ import edu.cloudy.utils.SWCRectangle;
 public class PackingCostCalculator
 {
     public static final double REPULSIVE_IMPORTANCE = 10;
-    public static final double BOUNDARY_IMPORTANCE = 1000;
+    public static final double BOUNDARY_IMPORTANCE = 100;
 
     public static SWCRectangle bbox;
 
@@ -41,7 +41,8 @@ public class PackingCostCalculator
                 if (dx < 0 || dy < 0)
                     continue;
 
-                SWCPoint fr = new SWCPoint(dx, dy);
+                double mn = Math.min(dx, dy);
+                SWCPoint fr = new SWCPoint(mn, mn);
                 energy += fr.lengthSquared() * REPULSIVE_IMPORTANCE;
             }
 
@@ -69,12 +70,14 @@ public class PackingCostCalculator
                 double dy = x[i].getHeight() / 2 + x[wordIndex].getHeight() / 2 - Math.abs(x[i].getCenterY() - x[wordIndex].getCenterY());
                 if (dx < 0 || dy < 0)
                     continue;
-
-                double frx = (x[wordIndex].getCenterX() - x[i].getCenterX()) * dx;
-                double fry = (x[wordIndex].getCenterY() - x[i].getCenterY()) * dy;
+                
+                double mn = Math.min(dx, dy);
+                double frx = (x[wordIndex].getCenterX() - x[i].getCenterX());// * mn;
+                double fry = (x[wordIndex].getCenterY() - x[i].getCenterY());// * mn;
 
                 SWCPoint fr = new SWCPoint(frx, fry);
-                //fr.normalize();
+                fr.normalize();
+                fr.scale(mn);
                 force.add(fr);
             }
 

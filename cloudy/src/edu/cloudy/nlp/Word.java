@@ -6,102 +6,110 @@ import java.util.Set;
 
 public class Word implements Comparable<Word>
 {
-	public String word;
-	public String stem;
-	public double weight;
-	public double sentiValue;
-	public enum DocIndex{
-		First,Second,Both
-	}
-	public DocIndex documentIndex;
-	
-	// debug info
-	public int posCount,negCount,neuCount;
-	// debug info
-	public double totalCount;
+    public String word;
+    public String stem;
+    public double weight;
+    public double sentimentValue;
 
-	private Set<Integer> sentences;
-	private Set<Point> coordinate;
+    public enum DocIndex
+    {
+        First, Second, Both
+    }
 
-	public Word(String word, double weight)
-	{
-		this.word = word;
-		this.stem = null;
-		this.weight = weight;
-		this.sentiValue = 0;
-		this.documentIndex = DocIndex.First;
-		this.coordinate = new HashSet<Point>();
-		this.sentences = new HashSet<Integer>();
-	}
+    public DocIndex documentIndex;
 
-	public void addCoordinate(Point id)
-	{
-		coordinate.add(id);
-	}
+    // debug info
+    public int posCount, negCount, neuCount;
+    // debug info
+    public double totalCount;
 
-	public void addCoordinate(Set<Point> id)
-	{
-		coordinate.addAll(id);
-	}
+    private Set<Integer> sentences;
+    private Set<Point> coordinate;
 
-	public void addSentence(int id)
-	{
-		sentences.add(id);
-	}
+    public Word(String word, double weight)
+    {
+        this.word = word;
+        this.stem = null;
+        this.weight = weight;
+        this.sentimentValue = 0;
+        this.documentIndex = DocIndex.First;
+        this.coordinate = new HashSet<Point>();
+        this.sentences = new HashSet<Integer>();
+    }
 
-	public void addSentences(Set<Integer> ids)
-	{
-		sentences.addAll(ids);
-	}
+    public void addCoordinate(Point id)
+    {
+        coordinate.add(id);
+    }
 
-	public Set<Point> getCoordinates()
-	{
-		return coordinate;
-	}
+    public void addCoordinate(Set<Point> id)
+    {
+        coordinate.addAll(id);
+    }
 
-	public Set<Integer> getSentences()
-	{
-		return sentences;
-	}
+    public void addSentence(int id)
+    {
+        sentences.add(id);
+    }
 
-	@Override
-	public int hashCode()
-	{
-		return word.hashCode();
-	}
+    public void addSentences(Set<Integer> ids)
+    {
+        sentences.addAll(ids);
+    }
 
-	@Override
-	public boolean equals(Object o)
-	{
-		if (!(o instanceof Word))
-		{
-			return false;
-		}
+    public Set<Point> getCoordinates()
+    {
+        return coordinate;
+    }
 
-		return word.equals(((Word) o).word);
-	}
+    public Set<Integer> getSentences()
+    {
+        return sentences;
+    }
 
-	@Override
-	public int compareTo(Word o)
-	{
-		return Double.compare(weight, o.weight);
-	}
+    @Override
+    public int hashCode()
+    {
+        return word.hashCode();
+    }
 
-	public void setSentimentValue(double sentiValue)
-	{
-		this.sentiValue = sentiValue;
-	}
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Word))
+        {
+            return false;
+        }
 
-	public double getSentimentValue()
-	{
-		return this.sentiValue;
-	}
+        return word.equals(((Word)o).word);
+    }
 
-	public void setSentimentCount(int posCount, int negCount, int neuCount, double totalCount)
-	{
-		this.posCount = posCount;
-		this.negCount = negCount;
-		this.neuCount = neuCount;
-		this.totalCount = totalCount;
-	}
+    @Override
+    public int compareTo(Word o)
+    {
+        return Double.compare(weight, o.weight);
+    }
+
+    public void setSentimentValue(double sentiValue)
+    {
+        this.sentimentValue = sentiValue;
+    }
+
+    public double getSentimentValue()
+    {
+        return sentimentValue;
+    }
+
+    public void setSentimentCount(int posCount, int negCount, int neuCount, double totalCount)
+    {
+        this.posCount = posCount;
+        this.negCount = negCount;
+        this.neuCount = neuCount;
+        this.totalCount = totalCount;
+    }
+
+    public String toString()
+    {
+        return stem;
+    }
 }

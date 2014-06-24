@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class SWCPoint
 {
-    private static final Random rnd = new Random();
+    private static final Random rnd = new Random(2);
 
     private double x;
     private double y;
