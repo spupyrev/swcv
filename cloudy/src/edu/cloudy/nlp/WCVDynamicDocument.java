@@ -61,12 +61,12 @@ public class WCVDynamicDocument extends WCVDocument
 		HashMap<String, Word> map1 = new HashMap<String, Word>();
 
 		for (Word w : doc1.getWords())
-			map1.put(w.word, w);
+			map1.put(w.stem, w);
 
 		for (Word w : doc2.getWords())
-			if (map1.containsKey(w.word))
+			if (map1.containsKey(w.stem))
 			{
-				map1.get(w.word).documentIndex = DocIndex.Both;
+				map1.get(w.stem).documentIndex = DocIndex.Both;
 				w.documentIndex = DocIndex.Both;
 			}
 			else
