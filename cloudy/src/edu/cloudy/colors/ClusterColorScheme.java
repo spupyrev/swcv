@@ -12,117 +12,133 @@ import java.util.List;
  */
 public class ClusterColorScheme implements IColorScheme
 {
-    private IClusterAlgo clusterAlgo;
-    private List<Word> words;
-    
-    private Color[] seq;
-    private int[] clusterIndex;
+	private IClusterAlgo clusterAlgo;
+	private List<Word> words;
 
-    public ClusterColorScheme(IClusterAlgo clusterAlgo, List<Word> words, String colorScheme)
-    {
-        this.clusterAlgo = clusterAlgo;
-        this.words = words;
-        setColorScheme(colorScheme);
-        sortClusters();
-    }
+	private Color[] seq;
+	private int[] clusterIndex;
 
-    public ClusterColorScheme(IClusterAlgo clusterAlgo, List<Word> words)
-    {
-        this.clusterAlgo = clusterAlgo;
-        this.words = words;
-        seq = colorbrewer_2;
-        sortClusters();
-    }
+	public ClusterColorScheme(IClusterAlgo clusterAlgo, List<Word> words, String colorScheme)
+	{
+		this.clusterAlgo = clusterAlgo;
+		this.words = words;
+		setColorScheme(colorScheme);
+		sortClusters();
+	}
 
-    @Override
-    public Color getColor(Word word)
-    {
-        int c = clusterAlgo.getCluster(word);
-        int res = clusterIndex[c] % seq.length;
-        return seq[res];
-    }
+	public ClusterColorScheme(IClusterAlgo clusterAlgo, List<Word> words)
+	{
+		this.clusterAlgo = clusterAlgo;
+		this.words = words;
+		seq = colorbrewer_2;
+		sortClusters();
+	}
 
-    private void sortClusters()
-    {
-        int K = clusterAlgo.getClusterNumber();
-        int[] cnt = new int[K];
-        for (Word w : words)
-            cnt[clusterAlgo.getCluster(w)]++;
+	@Override
+	public Color getColor(Word word)
+	{
+		int c = clusterAlgo.getCluster(word);
+		int res = clusterIndex[c] % seq.length;
+		return seq[res];
+	}
 
-        clusterIndex = new int[K];
-        for (int i = 0; i < K; i++)
-            clusterIndex[i] = i;
+	private void sortClusters()
+	{
+		int K = clusterAlgo.getClusterNumber();
+		int[] cnt = new int[K];
+		for (Word w : words)
+			cnt[clusterAlgo.getCluster(w)]++;
 
-        for (int i = 0; i < K; i++)
-            for (int j = i + 1; j < K; j++)
-                if (cnt[clusterIndex[i]] < cnt[clusterIndex[j]])
-                {
-                    int tmp = clusterIndex[i];
-                    clusterIndex[i] = clusterIndex[j];
-                    clusterIndex[j] = tmp;
-                }
-        
-        int[] clusterIndexRev = new int[K];
-        for (int i = 0; i < K; i++)
-            clusterIndexRev[clusterIndex[i]] = i;
-        
-        clusterIndex = clusterIndexRev;
-    }
+		clusterIndex = new int[K];
+		for (int i = 0; i < K; i++)
+			clusterIndex[i] = i;
 
-    private void setColorScheme(String colorScheme)
-    {
-        if (colorScheme.equals("GREEN"))
-        {
-            seq = new Color[] { GREEN };
-        }
-        else if (colorScheme.equals("BLUE"))
-        {
-            seq = new Color[] { BLUE };
-        }
-        else if (colorScheme.equals("ORANGE"))
-        {
-            seq = new Color[] { ORANGE };
-        }
-        else if (colorScheme.equals("BREWER_1"))
-        {
-            seq = colorbrewer_1;
-        }
-        else if (colorScheme.equals("BREWER_2"))
-        {
-            seq = colorbrewer_2;
-        }
-        else if (colorScheme.equals("BREWER_3"))
-        {
-            seq = colorbrewer_3;
-        }
-        else if (colorScheme.equals("TRISCHEME_1"))
-        {
-            seq = trischeme_1;
-        }
-        else if (colorScheme.equals("TRISCHEME_2"))
-        {
-            seq = trischeme_2;
-        }
-        else if (colorScheme.equals("TRISCHEME_3"))
-        {
-            seq = trischeme_3;
-        }
-        else if (colorScheme.equals("SIMILAR_1"))
-        {
-            seq = similar_1;
-        }
-        else if (colorScheme.equals("SIMILAR_2"))
-        {
-            seq = similar_2;
-        }
-        else if (colorScheme.equals("SIMILAR_3"))
-        {
-            seq = similar_3;
-        }
-        else if (colorScheme.equals("BEAR_DOWN"))
-        {
-            seq = bear_down;
-        }
-    }
+		for (int i = 0; i < K; i++)
+			for (int j = i + 1; j < K; j++)
+				if (cnt[clusterIndex[i]] < cnt[clusterIndex[j]])
+				{
+					int tmp = clusterIndex[i];
+					clusterIndex[i] = clusterIndex[j];
+					clusterIndex[j] = tmp;
+				}
+
+		int[] clusterIndexRev = new int[K];
+		for (int i = 0; i < K; i++)
+			clusterIndexRev[clusterIndex[i]] = i;
+
+		clusterIndex = clusterIndexRev;
+	}
+
+	private void setColorScheme(String colorScheme)
+	{
+		if (colorScheme.equals("GREEN"))
+		{
+			seq = new Color[] { GREEN };
+		}
+		else if (colorScheme.equals("BLUE"))
+		{
+			seq = new Color[] { BLUE };
+		}
+		else if (colorScheme.equals("ORANGE"))
+		{
+			seq = new Color[] { ORANGE };
+		}
+		else if (colorScheme.equals("BREWER_1"))
+		{
+			seq = colorbrewer_1;
+		}
+		else if (colorScheme.equals("BREWER_2"))
+		{
+			seq = colorbrewer_2;
+		}
+		else if (colorScheme.equals("BREWER_3"))
+		{
+			seq = colorbrewer_3;
+		}
+		else if (colorScheme.equals("TRISCHEME_1"))
+		{
+			seq = trischeme_1;
+		}
+		else if (colorScheme.equals("TRISCHEME_2"))
+		{
+			seq = trischeme_2;
+		}
+		else if (colorScheme.equals("TRISCHEME_3"))
+		{
+			seq = trischeme_3;
+		}
+		else if (colorScheme.equals("SIMILAR_1"))
+		{
+			seq = similar_1;
+		}
+		else if (colorScheme.equals("SIMILAR_2"))
+		{
+			seq = similar_2;
+		}
+		else if (colorScheme.equals("SIMILAR_3"))
+		{
+			seq = similar_3;
+		}
+		else if (colorScheme.equals("BEAR_DOWN"))
+		{
+			seq = bear_down;
+		}
+		else if (colorScheme.equals("SENTIMENT"))
+		{
+			seq = sentiment;
+		}
+		else if (colorScheme.equals("SENTIMENT2"))
+		{
+			seq = sentiment2;
+		}
+		else if (colorScheme.equals("REDBLUEBLACK"))
+		{
+			seq = redblueblack;
+		}
+		else if (colorScheme.equals("BLUEREDBLACK"))
+		{
+			seq = blueredblack;
+		}
+	}
 
 }

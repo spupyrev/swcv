@@ -60,6 +60,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -69,333 +70,344 @@ import java.util.logging.Logger;
 
 public class WordCloudGenerator
 {
-    private static final Logger log = Logger.getLogger(WordCloudGenerator.class.getName());
+	private static final Logger log = Logger.getLogger(WordCloudGenerator.class.getName());
 
-    public static WordCloud updateWordCloud(int id, String input, WCSetting setting, String ip) throws IllegalArgumentException
-    {
-        WordCloud updated = buildWordCloud(input, setting, ip);
-        updated.setId(saveCloud(id, updated));
-        return updated;
-    }
+	private static final int SCR_WIDTH = 1024;
+	private static final int SCR_HEIGHT = 800;
 
-    public static WordCloud createWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
-    {
-        WordCloud newcloud = buildWordCloud(input, setting, ip);
-        newcloud.setId(saveCloud(-1, newcloud));
-        return newcloud;
-    }
+	public static WordCloud updateWordCloud(int id, String input, WCSetting setting, String ip) throws IllegalArgumentException
+	{
+		WordCloud updated = buildWordCloud(input, setting, ip);
+		updated.setId(saveCloud(id, updated));
+		return updated;
+	}
 
-    public static WordCloud buildWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
-    {
-        logging(input, setting);
-        FontUtils.initialize(new SVGFontProvider(setting.getFont().toString()));
+	public static WordCloud createWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
+	{
+		WordCloud newcloud = buildWordCloud(input, setting, ip);
+		newcloud.setId(saveCloud(-1, newcloud));
+		return newcloud;
+	}
 
-        DocumentExtractor extractor = new DocumentExtractor(input);
-        IDocumentReader reader = extractor.getReader();
-        WCVDocument wcvDocument;
-        String text = reader.getText(input);
+	public static WordCloud buildWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
+	{
+		logging(input, setting);
+		FontUtils.initialize(new SVGFontProvider(setting.getFont().toString()));
 
-        WordCloud cloud = null;
+		DocumentExtractor extractor = new DocumentExtractor(input);
+		IDocumentReader reader = extractor.getReader();
+		WCVDocument wcvDocument;
+		String text = reader.getText(input);
 
-        if (reader instanceof DynamicReader)
-        {
-            DynamicReader r = (DynamicReader)reader;
-            cloud = generateWordCloudFromDynamic(input, r.getText1(), r.getText2(), setting, ip);
-        }
-        else
-        {
-            if (reader instanceof ISentimentReader && setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT)
-            {
-                wcvDocument = new WCVSentimentDocument(((ISentimentReader)reader).getStrChunks());
-                text = wcvDocument.getText();
-            }
-            else if (setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT
-                    && input.contains(ContextDelimiter.SENTIMENT_DELIMITER_TEXT))
-            {
-                String[] strs = input.split(ContextDelimiter.SENTIMENT_DELIMITER_REGEX);
-                wcvDocument = new WCVSentimentDocument(Arrays.asList(strs));
-            }
-            else
-            {
-                wcvDocument = new WCVDocument(text);
-            }
+		WordCloud cloud = null;
 
-            // parse text
-            wcvDocument.parse();
+		if (reader instanceof DynamicReader)
+		{
+			DynamicReader r = (DynamicReader) reader;
+			cloud = generateWordCloudFromDynamic(input, r.getText1(), r.getText2(), setting, ip);
+		}
+		else
+		{
+			if (reader instanceof ISentimentReader && setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT)
+			{
+				wcvDocument = new WCVSentimentDocument(((ISentimentReader) reader).getStrChunks());
+				text = wcvDocument.getText();
+			}
+			else if (setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT && input.contains(ContextDelimiter.SENTIMENT_DELIMITER_TEXT))
+			{
+				String[] strs = input.split(ContextDelimiter.SENTIMENT_DELIMITER_REGEX);
+				wcvDocument = new WCVSentimentDocument(Arrays.asList(strs));
+			}
+			else
+			{
+				wcvDocument = new WCVDocument(text);
+			}
 
-            // ranking
-            wcvDocument.weightFilter(setting.getWordCount(), createRanking(setting.getRankingAlgorithm(), wcvDocument));
+			List<WordCloudRenderer> renderers = getRenderers(wcvDocument, setting);
 
-            if (wcvDocument.getWords().isEmpty())
-                return null;
+			if (renderers.size() != 1)
+				throw new RuntimeException("WordCloudGenerator.java: line 130. Wrong number of renderers.");
 
-            // similarity
-            SimilarityAlgo similarityAlgo = createSimilarity(setting.getSimilarityAlgorithm());
-            similarityAlgo.initialize(wcvDocument);
-            similarityAlgo.run();
-            Map<WordPair, Double> similarity = similarityAlgo.getSimilarity();
+			// Ask to render into the SVG Graphics2D implementation.
+			WordCloudRenderer renderer = renderers.get(0);
+			renderer.setShowRectangles(setting.isShowRectangles());
 
-            // algo
-            LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm(), wcvDocument.getWords(), similarity);
-            layoutAlgo.run();
+			String svg = getSvg(renderer);
 
-            // colors
-            IColorScheme wordColorScheme = getColorScheme(wcvDocument, similarity, setting);
+			Date timestamp = Calendar.getInstance().getTime();
+			cloud = createCloud(setting, input, text, timestamp, svg, "", (int) renderer.getActualWidth(), (int) renderer.getActualHeight(), 0, 0, ip);
 
-            // Ask to render into the SVG Graphics2D implementation.
-            WordCloudRenderer renderer = new WordCloudRenderer(wcvDocument.getWords(), layoutAlgo, wordColorScheme, 1024, 800);
-            renderer.setShowRectangles(setting.isShowRectangles());
+		}
 
-            String svg = getSvg(renderer);
+		//metrics
+		//computeMetrics(cloud, wcvDocument.getWords(), similarity, layoutAlgo);
 
-            Date timestamp = Calendar.getInstance().getTime();
-            cloud = createCloud(setting, input, text, timestamp, svg, "", (int)renderer.getActualWidth(), (int)renderer.getActualHeight(), 0, 0, ip);
+		//export
+		//WCExporter.saveCloud(cloud);
+		//WCExporter.saveCloudAsSVG(timestamp + ".svg", cloud, setting);
+		//WCExporter.saveCloudAsHTML(timestamp + ".html", cloud, setting);
 
-        }
+		return cloud;
+	}
 
-        //metrics
-        //computeMetrics(cloud, wcvDocument.getWords(), similarity, layoutAlgo);
+	private static IColorScheme getColorScheme(WCVDocument wcvDocument, Map<WordPair, Double> similarity, WCSetting setting)
+	{
+		IColorScheme wordColorScheme = null;
+		if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.KMEANS))
+		{
+			int K = guessNumberOfClusters(wcvDocument.getWords().size(), setting);
 
-        //export
-        //WCExporter.saveCloud(cloud);
-        //WCExporter.saveCloudAsSVG(timestamp + ".svg", cloud, setting);
-        //WCExporter.saveCloudAsHTML(timestamp + ".html", cloud, setting);
+			IClusterAlgo clusterAlgo = new KMeansPlusPlus(K);
+			clusterAlgo.run(wcvDocument.getWords(), similarity);
 
-        return cloud;
-    }
+			wordColorScheme = new ClusterColorScheme(clusterAlgo, wcvDocument.getWords(), setting.getColorScheme().toString());
+		}
+		else if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.SENTIMENT))
+		{
+			wordColorScheme = new SentimentColorScheme(setting.getColorScheme().toString());
+		}
+		else if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.DYNAMIC))
+		{
+			wordColorScheme = new DynamicColorScheme(setting.getColorScheme().toString());
+		}
+		else
+		{
+			wordColorScheme = new WebColorScheme(setting.getColorScheme().toString(), setting.getColorDistribute().toString(), wcvDocument.getWords().size());
+		}
+		return wordColorScheme;
+	}
 
-    private static IColorScheme getColorScheme(WCVDocument wcvDocument, Map<WordPair, Double> similarity, WCSetting setting)
-    {
-        IColorScheme wordColorScheme = null;
-        if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.KMEANS))
-        {
-            int K = guessNumberOfClusters(wcvDocument.getWords().size(), setting);
+	private static String getSvg(WordCloudRenderer renderer)
+	{
+		// get svg
+		DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
 
-            IClusterAlgo clusterAlgo = new KMeansPlusPlus(K);
-            clusterAlgo.run(wcvDocument.getWords(), similarity);
+		// Create an instance of org.w3c.dom.Document.
+		SVGDocument document = (SVGDocument) domImpl.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
+		SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
 
-            wordColorScheme = new ClusterColorScheme(clusterAlgo, wcvDocument.getWords(), setting.getColorScheme().toString());
-        }
-        else if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.SENTIMENT))
-        {
-            wordColorScheme = new SentimentColorScheme(setting.getColorScheme().toString());
-        }
-        else if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.DYNAMIC))
-        {
-            wordColorScheme = new DynamicColorScheme(setting.getColorScheme().toString());
-        }
-        else
-        {
-            wordColorScheme = new WebColorScheme(setting.getColorScheme().toString(), setting.getColorDistribute().toString(), wcvDocument.getWords().size());
-        }
-        return wordColorScheme;
-    }
+		// two Clouds
+		renderer.render(svgGenerator);
+		Writer writer;
+		try
+		{
 
-    private static String getSvg(WordCloudRenderer renderer)
-    {
-        // get svg
-        DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Transformer transformer = tf.newTransformer();
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			writer = new StringWriter();
+			transformer.transform(new DOMSource(document), new StreamResult(writer));
+			writer.close();
+			writer = new StringWriter();
+			svgGenerator.stream(writer, true);
+			writer.close();
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
 
-        // Create an instance of org.w3c.dom.Document.
-        SVGDocument document = (SVGDocument)domImpl.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
-        SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
+		return writer.toString();
+	}
 
-        // two Clouds
-        renderer.render(svgGenerator);
-        Writer writer;
-        try
-        {
+	private static List<WordCloudRenderer> getRenderers(WCVDocument document, WCSetting setting)
+	{
+		List<WordCloudRenderer> renderers = new ArrayList<WordCloudRenderer>();
 
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            writer = new StringWriter();
-            transformer.transform(new DOMSource(document), new StreamResult(writer));
-            writer.close();
-            writer = new StringWriter();
-            svgGenerator.stream(writer, true);
-            writer.close();
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-        
-        return writer.toString();
-    }
+		document.parse();
 
-    //TODO: why copy-pasting here???
-    private static WordCloud generateWordCloudFromDynamic(String input, String text1, String text2, WCSetting setting, String ip)
-    {
-        WordCloud cloud = null;
-        String svg1, svg2, text;
+		// ranking
+		document.weightFilter(setting.getWordCount(), createRanking(setting.getRankingAlgorithm(), document));
 
-        WCVDynamicDocument doc = new WCVDynamicDocument(text1, text2);
-        doc.parse();
-        doc.weightFilter(setting.getWordCount(), createRanking(setting.getRankingAlgorithm(), doc));
+		if (document.getWords().isEmpty())
+			return null;
 
-        text = doc.getText();
+		// similarity
+		SimilarityAlgo similarityAlgo = createSimilarity(setting.getSimilarityAlgorithm());
+		similarityAlgo.initialize(document);
+		similarityAlgo.run();
+		Map<WordPair, Double> similarity = similarityAlgo.getSimilarity();
 
-        SimilarityAlgo similarityAlgo = createSimilarity(setting.getSimilarityAlgorithm());
-        similarityAlgo.initialize(doc);
-        similarityAlgo.run();
-        Map<WordPair, Double> similarity = similarityAlgo.getSimilarity();
+		// algo
+		LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm(), document.getWords(), similarity);
+		layoutAlgo.run();
 
-        LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm(), doc.getWords(), similarity);
-        layoutAlgo.run();
+		if (document instanceof WCVDynamicDocument)
+		{
+			IColorScheme wordColorScheme1 = getColorScheme(((WCVDynamicDocument) document).getDoc1(), similarity, setting);
+			IColorScheme wordColorScheme2 = getColorScheme(((WCVDynamicDocument) document).getDoc2(), similarity, setting);
 
-        IColorScheme wordColorScheme = getColorScheme(doc.getDoc1(), similarity, setting);
-        IColorScheme wordColorScheme2 = getColorScheme(doc.getDoc2(), similarity, setting);
+			renderers.add(new WordCloudRenderer(((WCVDynamicDocument) document).getDoc1().getWords(), layoutAlgo, wordColorScheme1, SCR_WIDTH, SCR_HEIGHT));
+			renderers.add(new WordCloudRenderer(((WCVDynamicDocument) document).getDoc2().getWords(), layoutAlgo, wordColorScheme2, SCR_WIDTH, SCR_HEIGHT));
+		}
+		else
+		{
+			IColorScheme wordColorScheme = getColorScheme(document, similarity, setting);
+			renderers.add(new WordCloudRenderer(document.getWords(), layoutAlgo, wordColorScheme, SCR_WIDTH, SCR_HEIGHT));
+		}
+		return renderers;
+	}
 
-        WordCloudRenderer panel1 = new WordCloudRenderer(doc.getDoc1().getWords(), layoutAlgo, wordColorScheme, 1024, 800);
-        panel1.setShowRectangles(setting.isShowRectangles());
-        svg1 = getSvg(panel1);
+	private static WordCloud generateWordCloudFromDynamic(String input, String text1, String text2, WCSetting setting, String ip)
+	{
+		WordCloud cloud = null;
+		String svg1, svg2;
 
-        WordCloudRenderer panel2 = new WordCloudRenderer(doc.getDoc2().getWords(), layoutAlgo, wordColorScheme2, 1024, 800);
-        panel2.setShowRectangles(setting.isShowRectangles());
-        svg2 = getSvg(panel2);
+		WCVDynamicDocument doc = new WCVDynamicDocument(text1, text2);
+		List<WordCloudRenderer> renderers = getRenderers(doc, setting);
+		if (renderers.size() != 2)
+			throw new RuntimeException("WordCloudGenerator.java: line 258. Wrong number of renderers.");
 
-        Date timestamp = Calendar.getInstance().getTime();
+		WordCloudRenderer panel1 = renderers.get(0);
+		panel1.setShowRectangles(setting.isShowRectangles());
+		svg1 = getSvg(panel1);
 
-        cloud = createCloud(setting, input, text, timestamp, svg1, svg2, (int)panel1.getActualWidth(), (int)panel1.getActualHeight(), (int)panel2.getActualWidth(), (int)panel2.getActualHeight(), ip);
+		WordCloudRenderer panel2 = renderers.get(1);
+		panel2.setShowRectangles(setting.isShowRectangles());
+		svg2 = getSvg(panel2);
 
-        return cloud;
-    }
+		Date timestamp = Calendar.getInstance().getTime();
 
-    public static int saveCloud(int id, WordCloud cloud)
-    {
-        return WCExporter.saveCloud(id, cloud);
-    }
+		cloud = createCloud(setting, input, doc.getText(), timestamp, svg1, svg2, (int) panel1.getActualWidth(), (int) panel1.getActualHeight(), (int) panel2.getActualWidth(),
+				(int) panel2.getActualHeight(), ip);
 
-    private static WordCloud createCloud(WCSetting setting, String input, String text, Date timestamp, String svg, String svg2, int width, int height, int width2, int height2, String ip)
-    {
-        WordCloud cloud = new WordCloud();
-        if (!input.startsWith("http://") && !input.startsWith("https://") && !input.startsWith("twitter:") && input.length() > 80)
-        {
-            cloud.setInputText(input.substring(0, 77) + "...");
-        }
-        else
-        {
-            cloud.setInputText(input);
-        }
+		return cloud;
+	}
 
-        cloud.setSourceText(text);
-        cloud.setCreationDateAsDate(timestamp);
-        cloud.setSettings(setting);
-        cloud.setSvg(svg);
-        cloud.setSvg2(svg2);
-        cloud.setWidth(width);
-        cloud.setHeight(height);
-        cloud.setWidth2(width2);
-        cloud.setHeight2(height2);
+	public static int saveCloud(int id, WordCloud cloud)
+	{
+		return WCExporter.saveCloud(id, cloud);
+	}
 
-        cloud.setCreatorIP(ip);
-        //cloud.setCreatorIP(getThreadLocalRequest().getRemoteAddr());
-        return cloud;
-    }
+	private static WordCloud createCloud(WCSetting setting, String input, String text, Date timestamp, String svg, String svg2, int width, int height, int width2, int height2, String ip)
+	{
+		WordCloud cloud = new WordCloud();
+		if (!input.startsWith("http://") && !input.startsWith("https://") && !input.startsWith("twitter:") && input.length() > 80)
+		{
+			cloud.setInputText(input.substring(0, 77) + "...");
+		}
+		else
+		{
+			cloud.setInputText(input);
+		}
 
-    private static RankingAlgo createRanking(RANKING_ALGORITHM algo, WCVDocument document)
-    {
-        if (algo.equals(RANKING_ALGORITHM.TF))
-            return new TFRankingAlgo();
+		cloud.setSourceText(text);
+		cloud.setCreationDateAsDate(timestamp);
+		cloud.setSettings(setting);
+		cloud.setSvg(svg);
+		cloud.setSvg2(svg2);
+		cloud.setWidth(width);
+		cloud.setHeight(height);
+		cloud.setWidth2(width2);
+		cloud.setHeight2(height2);
 
-        if (algo.equals(RANKING_ALGORITHM.TF_IDF))
-            return new TFIDFRankingAlgo();
+		cloud.setCreatorIP(ip);
+		//cloud.setCreatorIP(getThreadLocalRequest().getRemoteAddr());
+		return cloud;
+	}
 
-        if (algo.equals(RANKING_ALGORITHM.LEX))
-            return new LexRankingAlgo();
+	private static RankingAlgo createRanking(RANKING_ALGORITHM algo, WCVDocument document)
+	{
+		if (algo.equals(RANKING_ALGORITHM.TF))
+			return new TFRankingAlgo();
 
-        throw new RuntimeException("something is wrong");
-    }
+		if (algo.equals(RANKING_ALGORITHM.TF_IDF))
+			return new TFIDFRankingAlgo();
 
-    private static void logging(String text, WCSetting setting)
-    {
-        log.info("running algorithm " + setting.toString());
-        //log.info("text: " + text);
-    }
+		if (algo.equals(RANKING_ALGORITHM.LEX))
+			return new LexRankingAlgo();
 
-    private static SimilarityAlgo createSimilarity(SIMILARITY_ALGORITHM algo)
-    {
-        if (algo.equals(SIMILARITY_ALGORITHM.COSINE))
-            return new CosineCoOccurenceAlgo();
-        if (algo.equals(SIMILARITY_ALGORITHM.JACCARD))
-            return new JaccardCoOccurenceAlgo();
-        if (algo.equals(SIMILARITY_ALGORITHM.LEXICAL))
-            return new LexicalSimilarityAlgo();
-        if (algo.equals(SIMILARITY_ALGORITHM.MATRIXDIS))
-            return new EuclideanAlgo();
-        if (algo.equals(SIMILARITY_ALGORITHM.DICECOEFFI))
-            return new DiceCoefficientAlgo();
+		throw new RuntimeException("something is wrong");
+	}
 
-        throw new RuntimeException("something is wrong");
-    }
+	private static void logging(String text, WCSetting setting)
+	{
+		log.info("running algorithm " + setting.toString());
+		//log.info("text: " + text);
+	}
 
-    private static LayoutAlgo createLayoutAlgorithm(LAYOUT_ALGORITHM algo, List<Word> words, Map<WordPair, Double> similarity)
-    {
-        if (algo.equals(LAYOUT_ALGORITHM.WORDLE))
-            return new WordleAlgo(words, similarity);
+	private static SimilarityAlgo createSimilarity(SIMILARITY_ALGORITHM algo)
+	{
+		if (algo.equals(SIMILARITY_ALGORITHM.COSINE))
+			return new CosineCoOccurenceAlgo();
+		if (algo.equals(SIMILARITY_ALGORITHM.JACCARD))
+			return new JaccardCoOccurenceAlgo();
+		if (algo.equals(SIMILARITY_ALGORITHM.LEXICAL))
+			return new LexicalSimilarityAlgo();
+		if (algo.equals(SIMILARITY_ALGORITHM.MATRIXDIS))
+			return new EuclideanAlgo();
+		if (algo.equals(SIMILARITY_ALGORITHM.DICECOEFFI))
+			return new DiceCoefficientAlgo();
 
-        if (algo.equals(LAYOUT_ALGORITHM.CPWCV))
-            return new ContextPreservingAlgo(words, similarity);
+		throw new RuntimeException("something is wrong");
+	}
 
-        if (algo.equals(LAYOUT_ALGORITHM.SEAM))
-            return new SeamCarvingAlgo(words, similarity);
+	private static LayoutAlgo createLayoutAlgorithm(LAYOUT_ALGORITHM algo, List<Word> words, Map<WordPair, Double> similarity)
+	{
+		if (algo.equals(LAYOUT_ALGORITHM.WORDLE))
+			return new WordleAlgo(words, similarity);
 
-        if (algo.equals(LAYOUT_ALGORITHM.INFLATE))
-            return new InflateAndPushAlgo(words, similarity);
+		if (algo.equals(LAYOUT_ALGORITHM.CPWCV))
+			return new ContextPreservingAlgo(words, similarity);
 
-        if (algo.equals(LAYOUT_ALGORITHM.STAR))
-            return new StarForestAlgo(words, similarity);
+		if (algo.equals(LAYOUT_ALGORITHM.SEAM))
+			return new SeamCarvingAlgo(words, similarity);
 
-        if (algo.equals(LAYOUT_ALGORITHM.CYCLE))
-            return new CycleCoverAlgo(words, similarity);
+		if (algo.equals(LAYOUT_ALGORITHM.INFLATE))
+			return new InflateAndPushAlgo(words, similarity);
 
-        if (algo.equals(LAYOUT_ALGORITHM.MDS))
-            return new MDSAlgo(words, similarity);
+		if (algo.equals(LAYOUT_ALGORITHM.STAR))
+			return new StarForestAlgo(words, similarity);
 
-        throw new RuntimeException("something is wrong");
-    }
+		if (algo.equals(LAYOUT_ALGORITHM.CYCLE))
+			return new CycleCoverAlgo(words, similarity);
 
-    public String getRandomWikiUrl()
-    {
-        return RandomWikiUrlExtractor.getRandomWikiPage();
-    }
+		if (algo.equals(LAYOUT_ALGORITHM.MDS))
+			return new MDSAlgo(words, similarity);
 
-    public String getRandomTwitterUrl()
-    {
-        return RandomTwitterTrendExtractor.getRandomTrend();
-    }
+		throw new RuntimeException("something is wrong");
+	}
 
-    public String getRandomYoutubeUrl()
-    {
-        return RandomYoutubeUrlExtractor.getRandomUrl();
-    }
+	public String getRandomWikiUrl()
+	{
+		return RandomWikiUrlExtractor.getRandomWikiPage();
+	}
 
-    private static int guessNumberOfClusters(int n, WCSetting setting)
-    {
-        if (setting.getColorScheme().equals(COLOR_SCHEME.BEAR_DOWN))
-            return 2;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.BLUE))
-            return 1;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.ORANGE))
-            return 1;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.GREEN))
-            return 1;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_1))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_2))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_3))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_1))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_2))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_3))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.SENTIMENT))
-            return 5;
-        return Math.max((int)Math.sqrt((double)n / 2), 1);
-    }
+	public String getRandomTwitterUrl()
+	{
+		return RandomTwitterTrendExtractor.getRandomTrend();
+	}
+
+	public String getRandomYoutubeUrl()
+	{
+		return RandomYoutubeUrlExtractor.getRandomUrl();
+	}
+
+	private static int guessNumberOfClusters(int n, WCSetting setting)
+	{
+		if (setting.getColorScheme().equals(COLOR_SCHEME.BEAR_DOWN))
+			return 2;
+		else if (setting.getColorScheme().equals(COLOR_SCHEME.BLUE))
+			return 1;
+		else if (setting.getColorScheme().equals(COLOR_SCHEME.ORANGE))
+			return 1;
+		else if (setting.getColorScheme().equals(COLOR_SCHEME.GREEN))
+			return 1;
+		else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_1))
+			return 4;
+		else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_2))
+			return 4;
+		else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_3))
+			return 4;
+		else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_1))
+			return 4;
+		else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_2))
+			return 4;
+		else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_3))
+			return 4;
+		else if (setting.getColorScheme().equals(COLOR_SCHEME.SENTIMENT))
+			return 5;
+		return Math.max((int) Math.sqrt((double) n / 2), 1);
+	}
 
 }
