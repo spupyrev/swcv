@@ -18,6 +18,27 @@ public interface IColorScheme
             new Color(204, 0, 51),
             new Color(0, 51, 102) };
 
+    static final Color[] orange_sequential = {
+    	new Color(127,39,4),    // 9
+    	new Color(166,54,3),    // 8
+    	new Color(217,72,1),    // 7
+    	new Color(241,105,19),  // 6
+    	new Color(253,141,60) };// orange class 5
+    	
+    static final Color[] blue_sequential = {
+    	new Color(8,48,107),    // 9
+    	new Color(8,81,156),    // 8
+    	new Color(33,113,181),  // 7
+    	new Color(66,146,198),  // 6
+    	new Color(107,174,214)};// blue class 5
+    	
+    static final Color[] green_sequential = {
+    	new Color(0,68,27),     // 9
+    	new Color(0,109,44),    // 8
+    	new Color(35,139,69),   // 7
+    	new Color(65,171,93),   // 6
+    	new Color(116,196,118)};// green class 5
+    	
     static final Color[] colorbrewer_1 = {
             new Color(166, 206, 227),
             new Color(31, 120, 180),

@@ -155,6 +155,21 @@ public class WebColorScheme implements IColorScheme
 			multi_select = blueredblack;
 			mulitcolor = true;
 		}
+		else if (colorScheme.equals("ORANGESEQUENTIAL"))
+		{
+			multi_select = orange_sequential;
+			mulitcolor = true;
+		}
+		else if (colorScheme.equals("BLUESEQUENTIAL"))
+		{
+			multi_select = blue_sequential;
+			mulitcolor = true;
+		}
+		else if (colorScheme.equals("GREENSEQUENTIAL"))
+		{
+			multi_select = green_sequential;
+			mulitcolor = true;
+		}
 	}
 
 }

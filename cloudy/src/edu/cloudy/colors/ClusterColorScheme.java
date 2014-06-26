@@ -139,6 +139,18 @@ public class ClusterColorScheme implements IColorScheme
 		{
 			seq = blueredblack;
 		}
+		else if (colorScheme.equals("ORANGESEQUENTIAL"))
+		{
+			seq = orange_sequential;
+		}
+		else if (colorScheme.equals("BLUESEQUENTIAL"))
+		{
+			seq = blue_sequential;
+		}
+		else if (colorScheme.equals("GREENSEQUENTIAL"))
+		{
+			seq = green_sequential;
+		}
 	}
 
 }

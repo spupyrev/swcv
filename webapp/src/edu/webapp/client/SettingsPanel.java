@@ -268,8 +268,11 @@ public class SettingsPanel
 		box.addStyleName("inconsolataNormal");
 		box.addItem("BEAR DOWN!", WCSetting.COLOR_SCHEME.BEAR_DOWN.toString());
 		box.addItem("Blue", WCSetting.COLOR_SCHEME.BLUE.toString());
+		box.addItem("Sequential Blue", WCSetting.COLOR_SCHEME.BLUESEQUENTIAL.toString());
 		box.addItem("Orange", WCSetting.COLOR_SCHEME.ORANGE.toString());
+		box.addItem("Sequential Orange", WCSetting.COLOR_SCHEME.ORANGESEQUENTIAL.toString());
 		box.addItem("Green", WCSetting.COLOR_SCHEME.GREEN.toString());
+		box.addItem("Sequential Green", WCSetting.COLOR_SCHEME.GREENSEQUENTIAL.toString());
 		box.addItem("ColorBrewer 1", WCSetting.COLOR_SCHEME.BREWER_1.toString());
 		box.addItem("ColorBrewer 2", WCSetting.COLOR_SCHEME.BREWER_2.toString());
 		box.addItem("ColorBrewer 3", WCSetting.COLOR_SCHEME.BREWER_3.toString());
