@@ -1,7 +1,11 @@
-save user option using coockie
+save user option using coockie.
+
+add wikipedia reader.
 
 layout:
 blank space after words.
+
+remove Graphics2D. add html generator.
 
 Contrasting:
 stemming.
@@ -9,7 +13,13 @@ stemming.
 Result Layout:
 different window setting.
 
-html generator.
-
 Fonts:
 clean fonts.
+
+new Sentiment Classfier.
+
+Unprintable characters.
+
+check Hashtags behavior.
+
+automatic language detector.
