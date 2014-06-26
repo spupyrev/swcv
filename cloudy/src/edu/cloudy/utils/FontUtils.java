@@ -62,10 +62,10 @@ public class FontUtils
         {
             if (font == null)
             {
-                //return new Font("Arial", Font.PLAIN, 80);
-                Font f = dummy.getGraphics().getFont();
+                return new Font("Arial", Font.PLAIN, 80);
+                //Font f = dummy.getGraphics().getFont();
                 //need a large font to have enough precision
-                font = f.deriveFont((float)100.0);
+                //font = f.deriveFont((float)100.0);
             }
 
             return font;

@@ -84,7 +84,7 @@ public class WCVisualizer
 
         System.out.println("#words: " + doc.getWords().size());
         //doc.weightFilter(15, new TFIDFRankingAlgo());
-        doc.weightFilter(10, new TFRankingAlgo());
+        doc.weightFilter(30, new TFRankingAlgo());
         //doc.weightFilter(15, new LexRankingAlgo());
 
         return doc;

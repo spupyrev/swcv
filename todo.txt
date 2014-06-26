@@ -1,0 +1,15 @@
+save user option using coockie
+
+layout:
+blank space after words.
+
+Contrasting:
+stemming.
+
+Result Layout:
+different window setting.
+
+html generator.
+
+Fonts:
+clean fonts.
