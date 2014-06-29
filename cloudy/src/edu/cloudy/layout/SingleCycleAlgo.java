@@ -16,8 +16,6 @@ public class SingleCycleAlgo extends BaseLayoutAlgo
 {
     private static boolean LAYOUT_VERTICAL = false;
 
-    private Map<Word, SWCRectangle> wordPositions;
-
     public SingleCycleAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
         super(words, similarity);

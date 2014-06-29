@@ -26,8 +26,6 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
     private List<Edge> edgesInMatching;
     private boolean useGreedy = false;
 
-    private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
-
     public CycleCoverAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
         super(words, similarity);
@@ -61,10 +59,10 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
         int CYCLE_SIZE_LIMIT = 12;
         cycles = breakLongCycles(cycles, CYCLE_SIZE_LIMIT);
 
-        List<LayoutAlgo> cycleAlgos = new ArrayList<LayoutAlgo>();
+        List<BaseLayoutAlgo> cycleAlgos = new ArrayList<BaseLayoutAlgo>();
         for (List<Vertex> c : cycles)
         {
-            LayoutAlgo algo = null;
+            BaseLayoutAlgo algo = null;
 
             if (c.size() <= CYCLE_SIZE_LIMIT)
                 algo = new SingleCycleAlgo(getCycleWords(c), getCycleWeights(c));
@@ -205,13 +203,7 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
             degree.put(v, currentV + 1);
         }
     }
-
-    @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return wordPositions.get(w);
-    }
-
+    
     public double getRealizedWeight()
     {
         double realizedWeight = 0;

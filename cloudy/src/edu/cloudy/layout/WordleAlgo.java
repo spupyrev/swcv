@@ -22,8 +22,6 @@ public class WordleAlgo extends BaseLayoutAlgo
 {
     private Map<Word, SWCRectangle> bb = new HashMap<Word, SWCRectangle>();
 
-    private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
-
     private static boolean ALLOW_VERTICAL_WORDS = false;
 
     private Random rnd = new Random(123);
@@ -34,12 +32,6 @@ public class WordleAlgo extends BaseLayoutAlgo
     public WordleAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
         super(words, similarity);
-    }
-
-    @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return wordPositions.get(w);
     }
 
     @Override

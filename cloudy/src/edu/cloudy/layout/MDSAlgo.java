@@ -36,16 +36,8 @@ public class MDSAlgo extends BaseLayoutAlgo
         this(words, similarity, true);
     }
 
-    @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return wordPositions.get(w);
-    }
-
     //private static double SCALING = 1.0;
     private static double SCALING = 0.5;
-
-    private Map<Word, SWCRectangle> wordPositions = null;
 
     @Override
     public void run()

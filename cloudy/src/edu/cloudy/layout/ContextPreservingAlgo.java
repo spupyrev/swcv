@@ -25,7 +25,6 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
     private double T = 1;
 
     private Word[] lWords;
-    private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
 
     public ContextPreservingAlgo(List<Word> lWords, Map<WordPair, Double> similarity)
     {
@@ -37,12 +36,6 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
     private void init()
     {
         lWords = words.toArray(new Word[words.size()]); 
-    }
-
-    @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return wordPositions.get(w);
     }
 
     @Override

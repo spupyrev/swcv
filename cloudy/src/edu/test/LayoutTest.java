@@ -1,5 +1,6 @@
 package edu.test;
 
+import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.InflateAndPushAlgo;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.nlp.WCVDynamicDocument;
@@ -50,25 +51,11 @@ public class LayoutTest
 		BoundingBoxGenerator bbg = new BoundingBoxGenerator(1.0);
 		LayoutAlgo algo = runLayout(doc.getWords(), similarity, bbg);
 
-		for (Word w : doc.getDoc1().getWords())
-		{
-			SWCRectangle rect = algo.getWordPosition(w);
-			for (Word w2 : doc.getDoc2().getWords())
-			{
-				SWCRectangle rect2 = algo.getWordPosition(w2);
-				if (!w.word.equals(w2.word) && rect.intersects(rect2) )
-				{
-					System.out.println(w.word + " in document " + w.documentIndex.toString() + " intersects with " + w2.word + " in document " + w2.documentIndex.toString());
-					System.out.print(rect);
-					System.out.println(rect2);
-				}
-			}
-		}
 	}
 
 	private static LayoutAlgo runLayout(List<Word> words, Map<WordPair, Double> similarity, BoundingBoxGenerator bbg)
 	{
-		LayoutAlgo algo = new InflateAndPushAlgo(words, similarity);
+		LayoutAlgo algo = new CycleCoverAlgo(words, similarity);
 		algo.run();
 		return algo;
 	}

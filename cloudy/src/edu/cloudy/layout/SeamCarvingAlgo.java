@@ -28,26 +28,18 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
     }
 
     @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return finalWordPosition.get(w);
-    }
-
-    private Map<Word, SWCRectangle> finalWordPosition = null;
-
-    @Override
     public void run()
     {
-        SWCRectangle[] wordPositions = initialPlacement();
+        SWCRectangle[] initialWordPositions = initialPlacement();
 
         //compute the zones
-        Zone[][] zones = createZones(wordPositions);
+        Zone[][] zones = createZones(initialWordPositions);
 
         //run seam carving
-        finalWordPosition = removeSeams(zones, wordPositions);
+        wordPositions = removeSeams(zones, initialWordPositions);
 
-        new ForceDirectedOverlapRemoval<SWCRectangle>().run(words, finalWordPosition);
-        new ForceDirectedUniformity<SWCRectangle>().run(words, finalWordPosition);
+        new ForceDirectedOverlapRemoval<SWCRectangle>().run(words, wordPositions);
+        new ForceDirectedUniformity<SWCRectangle>().run(words, wordPositions);
     }
 
     private SWCRectangle[] initialPlacement()

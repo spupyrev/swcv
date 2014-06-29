@@ -16,7 +16,6 @@ import java.util.Map;
  */
 public class SinglePathAlgo extends BaseLayoutAlgo
 {
-    private Map<Word, SWCRectangle> wordPositions;
     private SWCRectangle[] rec;
 
     public SinglePathAlgo(List<Word> words, Map<WordPair, Double> similarity)
@@ -219,12 +218,6 @@ public class SinglePathAlgo extends BaseLayoutAlgo
         rec = new SWCRectangle[words.size()];
         for (int i = 0; i < words.size(); i++)
             rec[i] = wordPositions.get(words.get(i));
-    }
-
-    @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return wordPositions.get(w);
     }
 
 }

@@ -23,7 +23,6 @@ import java.util.Set;
  */
 public class StarForestAlgo extends BaseLayoutAlgo
 {
-    private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
 
     public StarForestAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
@@ -122,12 +121,6 @@ public class StarForestAlgo extends BaseLayoutAlgo
         }
 
         return new WordGraph(words, weights);
-    }
-
-    @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return wordPositions.get(w);
     }
 
 }

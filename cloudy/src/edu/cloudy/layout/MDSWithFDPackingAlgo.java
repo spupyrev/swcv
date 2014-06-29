@@ -21,17 +21,9 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
     private static final double MIN_STEP = 1;
     private static final double MIN_RELATIVE_CHANGE = 0.00005;
 
-    private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
-
     public MDSWithFDPackingAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
         super(words, similarity);
-    }
-
-    @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return wordPositions.get(w);
     }
 
     @Override

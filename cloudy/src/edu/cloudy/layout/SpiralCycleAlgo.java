@@ -15,17 +15,10 @@ import java.util.Random;
  */
 public class SpiralCycleAlgo extends BaseLayoutAlgo
 {
-    private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
 
     public SpiralCycleAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
         super(words, similarity);
-    }
-
-    @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return wordPositions.get(w);
     }
 
     @Override
@@ -123,10 +116,5 @@ public class SpiralCycleAlgo extends BaseLayoutAlgo
                     return true;
 
         return false;
-    }
-
-    public Map<Word, SWCRectangle> getWordPositions()
-    {
-        return wordPositions;
     }
 }

@@ -19,17 +19,10 @@ import java.util.Map;
  */
 public class InflateAndPushAlgo extends BaseLayoutAlgo
 {
-    private Map<Word, SWCRectangle> wordPositions;
 
     public InflateAndPushAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
         super(words, similarity);
-    }
-
-    @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return wordPositions.get(w);
     }
 
     @Override
