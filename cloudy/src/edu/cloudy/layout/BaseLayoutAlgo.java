@@ -18,14 +18,14 @@ public abstract class BaseLayoutAlgo implements LayoutAlgo
     protected List<Word> words;
     protected Map<WordPair, Double> similarity;
     protected BoundingBoxGenerator bbGenerator;
-    protected Map<Word,SWCRectangle> wordPositions;
+    protected Map<Word, SWCRectangle> wordPositions;
 
     public BaseLayoutAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
         this.words = words;
         this.similarity = similarity;
         bbGenerator = new BoundingBoxGenerator();
-        wordPositions = new HashMap<Word,SWCRectangle>();
+        wordPositions = new HashMap<Word, SWCRectangle>();
     }
 
     @Override
@@ -41,9 +41,6 @@ public abstract class BaseLayoutAlgo implements LayoutAlgo
 
     public SWCRectangle getWordPosition(Word w)
     {
-        SWCRectangle original = wordPositions.get(w);
-        SWCRectangle result = bbGenerator.getBoundingBox(w, w.weight);
-        result.moveTo(original.getX(), original.getY());
-        return result;
+        return wordPositions.get(w);
     }
 }

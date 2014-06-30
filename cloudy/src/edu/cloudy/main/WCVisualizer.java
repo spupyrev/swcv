@@ -3,7 +3,7 @@ package edu.cloudy.main;
 import edu.cloudy.clustering.IClusterAlgo;
 import edu.cloudy.clustering.KMeansPlusPlus;
 import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.layout.MDSWithFDPackingAlgo;
+import edu.cloudy.layout.SeamCarvingAlgo;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -228,10 +228,10 @@ public class WCVisualizer
         //LayoutAlgo algo = new InflateAndPushAlgo();
         //LayoutAlgo algo = new MDSAlgo();
         //LayoutAlgo algo = new StarForestAlgo();
-        //LayoutAlgo algo = new CycleCoverAlgo();
-        //LayoutAlgo algo = new SeamCarvingAlgo();
+        //LayoutAlgo algo = new CycleCoverAlgo(words, similarity);
+        LayoutAlgo algo = new SeamCarvingAlgo(words, similarity);
         //LayoutAlgo algo = new WordleAlgo(words, similarity);
-        LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
+        //LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
 
         long startTime = System.currentTimeMillis();
         algo.run();

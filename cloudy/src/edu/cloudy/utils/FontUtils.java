@@ -62,10 +62,10 @@ public class FontUtils
         {
             if (font == null)
             {
-                return new Font("Arial", Font.PLAIN, 80);
-                //Font f = dummy.getGraphics().getFont();
+                //return new Font("Arial", Font.PLAIN, 80);
+                Font f = dummy.getGraphics().getFont();
                 //need a large font to have enough precision
-                //font = f.deriveFont((float)100.0);
+                font = f.deriveFont((float)100.0);
             }
 
             return font;
@@ -80,7 +80,6 @@ public class FontUtils
 
             GlyphVector gv = font.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), Font.LAYOUT_LEFT_TO_RIGHT);
             Rectangle2D bb = gv.getPixelBounds(frc, 0, 0);
-            //Rectangle2D bb = gv.getVisualBounds();
 
             return new SWCRectangle(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
         }
