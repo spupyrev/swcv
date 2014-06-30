@@ -1,6 +1,16 @@
 package edu.cloudy.ui;
 
+import edu.cloudy.colors.IColorScheme;
+import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.MDSWithFDPackingAlgo;
+import edu.cloudy.layout.PackingCostCalculator;
+import edu.cloudy.metrics.AdjacenciesMetric;
+import edu.cloudy.metrics.ProximityMetric;
+import edu.cloudy.nlp.Word;
+import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.FontUtils;
+import edu.cloudy.utils.GeometryUtils;
+import edu.cloudy.utils.SWCPoint;
 import edu.cloudy.utils.SWCRectangle;
 
 import java.awt.Color;
@@ -20,7 +30,7 @@ import java.util.List;
  * 
  * renders the words into Graphics2D
  */
-public class WordCloudRenderer
+public class WordCloudRendererOld
 {
     private static final double ystretch = 1;
     private static final double offset = 10;
@@ -30,9 +40,15 @@ public class WordCloudRenderer
     private double shiftY;
 
     private boolean showRectangles = true;
+    private boolean showConvexHull = false;
+    private boolean showAdjacencies = false;
+    private boolean showProximity = false;
     private boolean showWords = true;
 
-    private volatile List<UIWord> words;
+    private volatile List<Word> words;
+    private LayoutAlgo algo;
+
+    private IColorScheme colorScheme;
 
     private double actualWidth;
     private double actualHeight;
@@ -40,9 +56,11 @@ public class WordCloudRenderer
     private double screenWidth;
     private double screenHeight;
 
-    public WordCloudRenderer(List<UIWord> words, double screenWidth, double screenHeight)
+    public WordCloudRendererOld(List<Word> words, LayoutAlgo algo, IColorScheme colorScheme, double screenWidth, double screenHeight)
     {
+        this.algo = algo;
         this.words = words;
+        this.colorScheme = colorScheme;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
     }
@@ -55,14 +73,36 @@ public class WordCloudRenderer
         computeShiftAndStretchFactors();
 
         drawRectangles(g2);
+
+        if (showConvexHull)
+        {
+            drawConvexHull(g2);
+        }
+
+        if (showAdjacencies)
+        {
+            drawAdjacencies(g2);
+        }
+
+        if (showProximity)
+        {
+            drawProximity(g2);
+        }
+
+        drawBoundingBox(g2);
     }
 
     private void drawRectangles(Graphics2D g2)
     {
         List<SWCRectangle> allRects = new ArrayList();
-        for (UIWord w : words)
+        for (Word w : words)
         {
-            SWCRectangle positionOnScreen = transformRect(w.getRectangle());
+            //SWCRectangle rect5 = algo.getWordRectangle(w);
+            //SWCRectangle swcRect = bbg.getBoundingBox(w, w.weight);
+            //swcRect.moveTo(rect5.getX(), rect5.getY());
+
+            SWCRectangle positionOnScreen = transformRect(algo.getWordPosition(w));
+
             allRects.add(positionOnScreen);
 
             if (showRectangles)
@@ -76,7 +116,7 @@ public class WordCloudRenderer
 
             if (showWords)
             {
-                drawTextInBox(g2, w.getText(), w.getColor(), positionOnScreen);
+                drawTextInBox(g2, w.word, colorScheme.getColor(w), positionOnScreen);
             }
         }
 
@@ -88,9 +128,13 @@ public class WordCloudRenderer
     {
         List<SWCRectangle> allRects = new ArrayList();
 
-        for (UIWord w : words)
+        for (Word w : words)
         {
-            SWCRectangle rect = w.getRectangle();
+            //SWCRectangle rect5 = algo.getWordRectangle(w);
+            //SWCRectangle rect = bbg.getBoundingBox(w, w.weight);
+            //rect.moveTo(rect5.getX(), rect5.getY());
+
+            SWCRectangle rect = algo.getWordPosition(w);
             allRects.add(rect);
         }
 
@@ -132,6 +176,59 @@ public class WordCloudRenderer
         g2.drawGlyphVector(gv, (float)x, (float)y);
     }
 
+    private void drawConvexHull(Graphics2D g2)
+    {
+        List<SWCPoint> points = new ArrayList<SWCPoint>();
+        for (Word w : words)
+        {
+            SWCRectangle rect = algo.getWordPosition(w);
+            rect = transformRect(rect);
+            points.add(new SWCPoint(rect.getMinX(), rect.getMinY()));
+            points.add(new SWCPoint(rect.getMaxX(), rect.getMinY()));
+            points.add(new SWCPoint(rect.getMinX(), rect.getMaxY()));
+            points.add(new SWCPoint(rect.getMaxX(), rect.getMaxY()));
+        }
+
+        List<SWCPoint> ch = points;
+        ch = GeometryUtils.computeConvexHull(ch);
+        for (int i = 0; i < ch.size(); i++)
+        {
+            SWCPoint p1 = ch.get(i);
+            SWCPoint p2 = ch.get((i + 1) % ch.size());
+
+            g2.setColor(Color.red);
+            g2.drawLine((int)p1.x(), (int)p1.y(), (int)p2.x(), (int)p2.y());
+        }
+    }
+
+    private void drawAdjacencies(Graphics2D g2)
+    {
+        List<WordPair> adjacent = new AdjacenciesMetric().getCloseWords(words, algo);
+
+        for (WordPair wp : adjacent)
+        {
+            SWCRectangle word1 = transformRect(algo.getWordPosition(wp.getFirst()));
+            SWCRectangle word2 = transformRect(algo.getWordPosition(wp.getSecond()));
+
+            g2.drawLine((int)word1.getCenterX(), (int)word1.getCenterY(), (int)word2.getCenterX(), (int)word2.getCenterY());
+        }
+
+    }
+
+    private void drawProximity(Graphics2D g2)
+    {
+        List<WordPair> adjacent = new ProximityMetric().getCloseWords(words, algo);
+
+        for (WordPair wp : adjacent)
+        {
+            SWCRectangle word1 = transformRect(algo.getWordPosition(wp.getFirst()));
+            SWCRectangle word2 = transformRect(algo.getWordPosition(wp.getSecond()));
+
+            g2.drawLine((int)word1.getCenterX(), (int)word1.getCenterY(), (int)word2.getCenterX(), (int)word2.getCenterY());
+        }
+
+    }
+
     @SuppressWarnings("unused")
     private void drawDelaunay(Graphics2D g2, List<SWCRectangle> delaunay)
     {
@@ -144,6 +241,18 @@ public class WordCloudRenderer
 
             g2.setColor(Color.green);
             g2.drawLine((int)rect.getCenterX(), (int)rect.getCenterY(), (int)rect2.getCenterX(), (int)rect2.getCenterY());
+        }
+    }
+
+    private void drawBoundingBox(Graphics2D g2)
+    {
+        if (algo instanceof MDSWithFDPackingAlgo)
+        {
+            SWCRectangle rect = transformRect(PackingCostCalculator.bbox);
+            Rectangle2D rect2D = createRectangle2D(rect);
+            g2.setColor(new Color(238, 233, 233));
+            g2.setColor(Color.black);
+            g2.draw(rect2D);
         }
     }
 
@@ -210,6 +319,21 @@ public class WordCloudRenderer
         this.showRectangles = showRectangles;
     }
 
+    public void setShowAdjacencies(boolean set)
+    {
+        this.showAdjacencies = set;
+    }
+
+    public void setShowProximity(boolean set)
+    {
+        this.showProximity = set;
+    }
+
+    public void setShowConvexHull(boolean showConvexHull)
+    {
+        this.showConvexHull = showConvexHull;
+    }
+
     public void setShowWords(boolean b)
     {
         this.showWords = b;
@@ -218,6 +342,21 @@ public class WordCloudRenderer
     public boolean isShowRectangles()
     {
         return showRectangles;
+    }
+
+    public boolean isShowConvexHull()
+    {
+        return showConvexHull;
+    }
+
+    public boolean isShowAdjacencies()
+    {
+        return showAdjacencies;
+    }
+
+    public boolean isShowProximity()
+    {
+        return showProximity;
     }
 
     public boolean isShowWords()

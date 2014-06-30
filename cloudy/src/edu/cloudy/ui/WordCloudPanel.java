@@ -18,12 +18,12 @@ public class WordCloudPanel extends JPanel implements ActionListener
 {
     private static final long serialVersionUID = -3332798140563946847L;
 
-    private WordCloudRenderer renderer;
+    private WordCloudRendererOld renderer;
     private Timer timer;
 
     public WordCloudPanel(List<Word> words, LayoutAlgo algo, IColorScheme colorScheme)
     {
-        renderer = new WordCloudRenderer(words, algo, colorScheme, 1024, 800);
+        renderer = new WordCloudRendererOld(words, algo, colorScheme, 1024, 800);
         setBackground(Color.WHITE);
         timer = new Timer(100, this);
     }
