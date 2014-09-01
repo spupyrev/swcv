@@ -80,6 +80,8 @@ public class DownloadCloudServlet extends HttpServlet implements Servlet
                 response.setCharacterEncoding("UTF-8");
 
                 fileContentByte = cloud.getSourceText().getBytes();
+                //TODO: temporary fix
+                //fileContentByte = "404".getBytes();
             }
             else
             {

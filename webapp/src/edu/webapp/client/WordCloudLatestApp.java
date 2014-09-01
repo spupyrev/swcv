@@ -8,6 +8,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -92,7 +93,7 @@ public class WordCloudLatestApp implements EntryPoint
             table.setHTML(i + 1, 0, "<a href='/cloud.html?id=" + cloud.getId() + "'>" + cloud.getId() + "</a>");
             Date dt = cloud.getCreationDateAsDate();
             table.setHTML(i + 1, 1, DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss").format(dt));
-            table.setWidget(i + 1, 2, createSourceField(cloud));
+            table.setWidget(i + 1, 2, createSourceField(cloud, debug));
             cf.setHorizontalAlignment(i + 1, 2, HasHorizontalAlignment.ALIGN_LEFT);
 
             if (debug)
@@ -104,18 +105,25 @@ public class WordCloudLatestApp implements EntryPoint
         return table;
     }
 
-    private Widget createSourceField(WordCloud cloud)
+    private Widget createSourceField(WordCloud cloud, boolean debug)
     {
         String inputText = cloud.getInputText().trim();
-        Anchor link = new Anchor(cutString(inputText));
-        link.setHref("/cloud/download?ft=source&id=" + cloud.getId());
-        return link;
+        if (debug)
+        {
+            Anchor link = new Anchor(cutString(inputText));
+            link.setHref("/cloud/download?ft=source&id=" + cloud.getId());
+            return link;
+        }
+        else
+        {
+            return new HTML(cutString(inputText));
+        }
     }
 
     private String cutString(String inputText)
     {
-        if (inputText.length() > 80)
-            return inputText.substring(0, 77) + "...";
+        if (inputText.length() > 75)
+            return inputText.substring(0, 72) + "...";
 
         return inputText;
     }

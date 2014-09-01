@@ -68,11 +68,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class WordCloudGenerator
 {
-    private static final Logger log = Logger.getLogger(WordCloudGenerator.class.getName());
+    //private static final Logger log = Logger.getLogger(WordCloudGenerator.class.getName());
 
     private static final int SCR_WIDTH = 1024;
     private static final int SCR_HEIGHT = 800;
@@ -189,12 +188,12 @@ public class WordCloudGenerator
         SVGDocument document = (SVGDocument)domImpl.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
         SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
 
-        // two Clouds
+        // rendering the cloud
         renderer.render(svgGenerator);
+        
         Writer writer;
         try
         {
-
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
@@ -327,9 +326,8 @@ public class WordCloudGenerator
         cloud.setHeight(height);
         cloud.setWidth2(width2);
         cloud.setHeight2(height2);
-
         cloud.setCreatorIP(ip);
-        //cloud.setCreatorIP(getThreadLocalRequest().getRemoteAddr());
+        
         return cloud;
     }
 
@@ -349,7 +347,7 @@ public class WordCloudGenerator
 
     private static void logging(String text, WCSetting setting)
     {
-        log.info("running algorithm " + setting.toString());
+        //log.info("running algorithm " + setting.toString());
         //log.info("text: " + text);
     }
 
