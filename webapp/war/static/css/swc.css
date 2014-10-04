@@ -89,8 +89,12 @@ body {
 	width: 600px;
 }
 
-.buttonWidth{
+.buttonWidth {
 	width:240px;
+}
+
+.buttonWidth-double {
+	width:500px;
 }
 
 .small {

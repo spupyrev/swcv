@@ -80,11 +80,16 @@ public class WebColorScheme implements IColorScheme
 			select = BLUE;
 			monocolor = true;
 		}
-		else if (colorScheme.equals("ORANGE"))
-		{
-			select = ORANGE;
-			monocolor = true;
-		}
+        else if (colorScheme.equals("ORANGE"))
+        {
+            select = ORANGE;
+            monocolor = true;
+        }
+        else if (colorScheme.equals("BLACK"))
+        {
+            select = BLACK;
+            monocolor = true;
+        }
 		else if (colorScheme.equals("BREWER_1"))
 		{
 			seq_select = colorbrewer_1;

@@ -76,7 +76,7 @@ public class WordleAlgo extends BaseLayoutAlgo
         for (SWCRectangle r : bb.values())
             area += r.getHeight() * r.getWidth();
 
-        double aspectRatio = (1.0 + Math.sqrt(5.0)) / 2;
+        //double aspectRatio = (1.0 + Math.sqrt(5.0)) / 2;
         MAX_HEIGHT = Math.sqrt(2.5 * area / aspectRatio);
         MAX_WIDTH = MAX_HEIGHT * aspectRatio;
     }

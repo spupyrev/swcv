@@ -13,7 +13,7 @@ import java.util.List;
  * @author spupyrev
  * Jan 14, 2014
  */
-public class DBUtils2
+public class AlterTableUtils
 {
     public static void main(String[] args)
     {
@@ -35,7 +35,7 @@ public class DBUtils2
             public void execute(Connection c, Statement stmt) throws Exception
             {
                 //stmt.execute("ALTER TABLE maps_task ALTER COLUMN contiguous_algorithm varchar(64)");
-                stmt.execute("ALTER TABLE maps_task ADD COLUMN vis_type varchar(64) NOT NULL DEFAULT gmap");
+                stmt.execute("ALTER TABLE CLOUD ADD COLUMN ASPECT_RATIO varchar(50) NOT NULL DEFAULT AR169");
                 //ResultSet rs = stmt.executeQuery("SELECT COUNT(*) As total FROM maps_task");
                 tmp.add(0);
             }
@@ -53,7 +53,7 @@ public class DBUtils2
             Class.forName("org.sqlite.JDBC");
             try
             {
-                String path = CommonUtils.getAbsoluteFileName("") + "../../db/gmap.db";
+                String path = CommonUtils.getAbsoluteFileName("") + "../../db/clouds.db";
                 c = DriverManager.getConnection("jdbc:sqlite:" + path);
             }
             catch (SQLException e)

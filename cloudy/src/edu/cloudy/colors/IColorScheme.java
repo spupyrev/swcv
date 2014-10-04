@@ -12,7 +12,8 @@ public interface IColorScheme
 {
     static final Color ORANGE = new Color(230, 85, 13);
     static final Color BLUE = new Color(49, 130, 189);
-    static final Color GREEN = new Color(49, 163, 84);;
+    static final Color GREEN = new Color(49, 163, 84);
+    static final Color BLACK = new Color(0, 0, 0);
 
     static final Color[] bear_down = {
             new Color(204, 0, 51),
@@ -78,7 +79,7 @@ public interface IColorScheme
             new Color(159, 238, 0),
             new Color(166, 0, 0) };
     static final Color[] trischeme_2 = {
-            new Color(0, 255, 255),
+            new Color(0, 235, 235),
             new Color(255, 170, 0),
             new Color(255, 0, 0),
             new Color(0, 99, 99) };

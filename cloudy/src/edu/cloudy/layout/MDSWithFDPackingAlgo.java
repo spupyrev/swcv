@@ -4,6 +4,7 @@ import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
+import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.SWCPoint;
 import edu.cloudy.utils.SWCRectangle;
 
@@ -64,7 +65,7 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
         PackingCostCalculator.bbox = computeBoundingBox(x);
         PackingCostCalculator.depXGraph = computeDependencyGraph(x, true);
         PackingCostCalculator.depYGraph = computeDependencyGraph(x, false);
-        PackingCostCalculator.depYGraph = new int[0][2];
+        //PackingCostCalculator.depYGraph = new int[0][2];
 
         int iteration = 0;
         while (iteration++ < MAX_ITERATIONS)
@@ -76,7 +77,7 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
             boolean coordinatesChanged = tryMoveNodes(x, step);
             if (!coordinatesChanged)
             {
-                System.out.println("no changes in coordinates");
+                Logger.println("no changes in coordinates");
                 break;
             }
 
@@ -84,17 +85,17 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
             energy = PackingCostCalculator.cost(x);
             step = updateMaxStep(step, oldEnergy, energy);
 
-            System.out.println("energy after " + iteration + " iteration: " + energy);
-            System.out.println("max step: " + step);
+            Logger.println("energy after " + iteration + " iteration: " + energy);
+            Logger.println("max step: " + step);
 
             if (step < MIN_STEP || converged(step, oldX, x))
             {
-                System.out.println("step: " + step);
+                Logger.println("step: " + step);
                 break;
             }
         }
 
-        System.out.println("FD done " + iteration + " iterations");
+        Logger.println("FD done " + iteration + " iterations");
         //System.out.println("final energy: " + PackingCostCalculator.cost(x));
         //System.out.println("last step: " + tryMoveNodes(x, step));
 
@@ -117,7 +118,7 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
         sumy /= x.length;
         area *= 2.25;
 
-        double width = Math.sqrt(1.61 * area);
+        double width = Math.sqrt(aspectRatio * area);
         double height = area / width;
 
         SWCRectangle bb = new SWCRectangle(sumx - width / 2, sumy - height / 2, width, height);

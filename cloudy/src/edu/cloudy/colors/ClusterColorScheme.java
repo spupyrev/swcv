@@ -79,10 +79,14 @@ public class ClusterColorScheme implements IColorScheme
 		{
 			seq = new Color[] { BLUE };
 		}
-		else if (colorScheme.equals("ORANGE"))
-		{
-			seq = new Color[] { ORANGE };
-		}
+        else if (colorScheme.equals("ORANGE"))
+        {
+            seq = new Color[] { ORANGE };
+        }
+        else if (colorScheme.equals("BLACK"))
+        {
+            seq = new Color[] { BLACK };
+        }
 		else if (colorScheme.equals("BREWER_1"))
 		{
 			seq = colorbrewer_1;

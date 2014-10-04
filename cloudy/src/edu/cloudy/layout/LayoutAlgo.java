@@ -8,6 +8,8 @@ public interface LayoutAlgo
 {
     public void setBoundingBoxGenerator(BoundingBoxGenerator bbGenerator);
 
+    public void setAspectRatio(double aspectRatio);
+
     public void run();
 
     public SWCRectangle getWordPosition(Word w);

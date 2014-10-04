@@ -11,7 +11,7 @@ import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.InflateAndPushAlgo;
 import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.layout.MDSAlgo;
+import edu.cloudy.layout.MDSWithFDPackingAlgo;
 import edu.cloudy.layout.SeamCarvingAlgo;
 import edu.cloudy.layout.StarForestAlgo;
 import edu.cloudy.layout.WordleAlgo;
@@ -26,7 +26,6 @@ import edu.cloudy.nlp.ranking.RankingAlgo;
 import edu.cloudy.nlp.ranking.TFIDFRankingAlgo;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
-import edu.cloudy.nlp.similarity.DiceCoefficientAlgo;
 import edu.cloudy.nlp.similarity.EuclideanAlgo;
 import edu.cloudy.nlp.similarity.JaccardCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.LexicalSimilarityAlgo;
@@ -109,12 +108,12 @@ public class WordCloudGenerator
         }
         else
         {
-            if (reader instanceof ISentimentReader && setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT)
+            if (reader instanceof ISentimentReader && setting.getClusterAlgorithm() == WCSetting.CLUSTER_ALGORITHM.SENTIMENT)
             {
                 wcvDocument = new WCVSentimentDocument(((ISentimentReader)reader).getStrChunks());
                 text = wcvDocument.getText();
             }
-            else if (setting.getColorDistribute() == WCSetting.COLOR_DISTRIBUTE.SENTIMENT
+            else if (setting.getClusterAlgorithm() == WCSetting.CLUSTER_ALGORITHM.SENTIMENT
                     && input.contains(ContextDelimiter.SENTIMENT_DELIMITER_TEXT))
             {
                 String[] strs = input.split(ContextDelimiter.SENTIMENT_DELIMITER_REGEX);
@@ -128,11 +127,11 @@ public class WordCloudGenerator
             List<WordCloudRenderer> renderers = getRenderers(wcvDocument, setting);
 
             if (renderers.size() != 1)
-                throw new RuntimeException("WordCloudGenerator.java: line 130. Wrong number of renderers.");
+                throw new RuntimeException("Wrong number of renderers");
 
             // Ask to render into the SVG Graphics2D implementation.
             WordCloudRenderer renderer = renderers.get(0);
-            renderer.setShowRectangles(setting.isShowRectangles());
+            renderer.setShowRectangles(false);
 
             String svg = getSvg(renderer);
 
@@ -141,21 +140,13 @@ public class WordCloudGenerator
 
         }
 
-        //metrics
-        //computeMetrics(cloud, wcvDocument.getWords(), similarity, layoutAlgo);
-
-        //export
-        //WCExporter.saveCloud(cloud);
-        //WCExporter.saveCloudAsSVG(timestamp + ".svg", cloud, setting);
-        //WCExporter.saveCloudAsHTML(timestamp + ".html", cloud, setting);
-
         return cloud;
     }
 
     private static IColorScheme getColorScheme(WCVDocument wcvDocument, Map<WordPair, Double> similarity, WCSetting setting)
     {
         IColorScheme wordColorScheme = null;
-        if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.KMEANS))
+        if (setting.getClusterAlgorithm().equals(WCSetting.CLUSTER_ALGORITHM.KMEANS))
         {
             int K = guessNumberOfClusters(wcvDocument.getWords().size(), setting);
 
@@ -164,17 +155,17 @@ public class WordCloudGenerator
 
             wordColorScheme = new ClusterColorScheme(clusterAlgo, wcvDocument.getWords(), setting.getColorScheme().toString());
         }
-        else if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.SENTIMENT))
+        else if (setting.getClusterAlgorithm().equals(WCSetting.CLUSTER_ALGORITHM.SENTIMENT))
         {
             wordColorScheme = new SentimentColorScheme(setting.getColorScheme().toString());
         }
-        else if (setting.getColorDistribute().equals(WCSetting.COLOR_DISTRIBUTE.DYNAMIC))
+        else if (setting.getClusterAlgorithm().equals(WCSetting.CLUSTER_ALGORITHM.DYNAMIC))
         {
             wordColorScheme = new DynamicColorScheme(setting.getColorScheme().toString());
         }
         else
         {
-            wordColorScheme = new WebColorScheme(setting.getColorScheme().toString(), setting.getColorDistribute().toString(), wcvDocument.getWords().size());
+            wordColorScheme = new WebColorScheme(setting.getColorScheme().toString(), setting.getClusterAlgorithm().toString(), wcvDocument.getWords().size());
         }
         return wordColorScheme;
     }
@@ -190,7 +181,7 @@ public class WordCloudGenerator
 
         // rendering the cloud
         renderer.render(svgGenerator);
-        
+
         Writer writer;
         try
         {
@@ -232,6 +223,7 @@ public class WordCloudGenerator
 
         // algo
         LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm(), document.getWords(), similarity);
+        layoutAlgo.setAspectRatio(setting.getAspectRatioDouble());
         layoutAlgo.run();
 
         if (document instanceof WCVDynamicDocument)
@@ -286,11 +278,11 @@ public class WordCloudGenerator
             throw new RuntimeException("Wrong number of renderers");
 
         WordCloudRenderer panel1 = renderers.get(0);
-        panel1.setShowRectangles(setting.isShowRectangles());
+        panel1.setShowRectangles(false);
         svg1 = getSvg(panel1);
 
         WordCloudRenderer panel2 = renderers.get(1);
-        panel2.setShowRectangles(setting.isShowRectangles());
+        panel2.setShowRectangles(false);
         svg2 = getSvg(panel2);
 
         Date timestamp = Calendar.getInstance().getTime();
@@ -327,7 +319,7 @@ public class WordCloudGenerator
         cloud.setWidth2(width2);
         cloud.setHeight2(height2);
         cloud.setCreatorIP(ip);
-        
+
         return cloud;
     }
 
@@ -361,8 +353,6 @@ public class WordCloudGenerator
             return new LexicalSimilarityAlgo();
         if (algo.equals(SIMILARITY_ALGORITHM.MATRIXDIS))
             return new EuclideanAlgo();
-        if (algo.equals(SIMILARITY_ALGORITHM.DICECOEFFI))
-            return new DiceCoefficientAlgo();
 
         throw new RuntimeException("something is wrong");
     }
@@ -388,7 +378,7 @@ public class WordCloudGenerator
             return new CycleCoverAlgo(words, similarity);
 
         if (algo.equals(LAYOUT_ALGORITHM.MDS))
-            return new MDSAlgo(words, similarity);
+            return new MDSWithFDPackingAlgo(words, similarity);
 
         throw new RuntimeException("something is wrong");
     }
@@ -412,6 +402,8 @@ public class WordCloudGenerator
     {
         if (setting.getColorScheme().equals(COLOR_SCHEME.BEAR_DOWN))
             return 2;
+        else if (setting.getColorScheme().equals(COLOR_SCHEME.BLACK))
+            return 1;
         else if (setting.getColorScheme().equals(COLOR_SCHEME.BLUE))
             return 1;
         else if (setting.getColorScheme().equals(COLOR_SCHEME.ORANGE))

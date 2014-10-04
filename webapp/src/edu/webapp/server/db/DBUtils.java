@@ -1,15 +1,14 @@
 package edu.webapp.server.db;
 
 import edu.cloudy.utils.CommonUtils;
-import edu.webapp.shared.DBCloudNotFoundException;
-import edu.webapp.shared.WCSetting;
-import edu.webapp.shared.WCSetting.COLOR_DISTRIBUTE;
+import edu.webapp.shared.*;
+import edu.webapp.shared.WCSetting.ASPECT_RATIO;
+import edu.webapp.shared.WCSetting.CLUSTER_ALGORITHM;
 import edu.webapp.shared.WCSetting.COLOR_SCHEME;
 import edu.webapp.shared.WCSetting.FONT;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
-import edu.webapp.shared.WordCloud;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -46,13 +45,13 @@ public class DBUtils
 	{
 		executeDBAction(new IDBAction()
 		{
-
 			public void execute(Connection c, Statement stmt) throws Exception
 			{
-				String[] fields = new String[] { "WIDTH", "HEIGHT", "SVG", "SVG2", "CREATOR_IP", "WORD_COUNT", "SIMILARITY_ALGO", "RANKING_ALGO", "LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR" };
-				Object[] values = new Object[] { cloud.getWidth(), cloud.getHeight(), cloud.getSvg(), cloud.getSvg2(), cloud.getCreatorIP(), cloud.getSettings().getWordCount(),
-					cloud.getSettings().getSimilarityAlgorithm().toString(), cloud.getSettings().getRankingAlgorithm().toString(), cloud.getSettings().getLayoutAlgorithm().toString(),
-					cloud.getSettings().getFont().toString(), cloud.getSettings().getColorScheme().toString(), cloud.getSettings().getColorDistribute().toString() };
+				String[] fields = new String[] { "WIDTH", "HEIGHT", "SVG", "SVG2", "CREATOR_IP", "WORD_COUNT", "SIMILARITY_ALGO", "RANKING_ALGO", "LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR", "ASPECT_RATIO" };
+				WCSetting settings = cloud.getSettings();
+                Object[] values = new Object[] { cloud.getWidth(), cloud.getHeight(), cloud.getSvg(), cloud.getSvg2(), cloud.getCreatorIP(), settings.getWordCount(),
+					settings.getSimilarityAlgorithm().toString(), settings.getRankingAlgorithm().toString(), settings.getLayoutAlgorithm().toString(),
+					settings.getFont().toString(), settings.getColorScheme().toString(), settings.getClusterAlgorithm().toString(), settings.getAspectRatio().toString() };
 
 				StringBuffer sql = new StringBuffer();
 				sql.append("UPDATE CLOUD SET ");
@@ -99,12 +98,13 @@ public class DBUtils
 			public void execute(Connection c, Statement stmt) throws Exception
 			{
 				String[] fields = new String[] { "ID", "INPUT_TEXT", "SOURCE_TEXT", "CREATION_DATE", "WIDTH", "HEIGHT", "WIDTH2", "HEIGHT2", "SVG", "SVG2", "CREATOR_IP", "WORD_COUNT",
-					"SIMILARITY_ALGO", "RANKING_ALGO", "LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR" };
+					"SIMILARITY_ALGO", "RANKING_ALGO", "LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR", "ASPECT_RATIO" };
 
-				Object[] values = new Object[] { cloud.getId(), cloud.getInputText(), cloud.getSourceText(), cloud.getCreationDate(), cloud.getWidth(), cloud.getHeight(), cloud.getWidth2(),
-					cloud.getHeight2(), cloud.getSvg(), cloud.getSvg2(), cloud.getCreatorIP(), cloud.getSettings().getWordCount(), cloud.getSettings().getSimilarityAlgorithm().toString(),
-					cloud.getSettings().getRankingAlgorithm().toString(), cloud.getSettings().getLayoutAlgorithm().toString(), cloud.getSettings().getFont().toString(),
-					cloud.getSettings().getColorScheme().toString(), cloud.getSettings().getColorDistribute().toString() };
+				WCSetting settings = cloud.getSettings();
+                Object[] values = new Object[] { cloud.getId(), cloud.getInputText(), cloud.getSourceText(), cloud.getCreationDate(), cloud.getWidth(), cloud.getHeight(), cloud.getWidth2(),
+					cloud.getHeight2(), cloud.getSvg(), cloud.getSvg2(), cloud.getCreatorIP(), settings.getWordCount(), settings.getSimilarityAlgorithm().toString(),
+					settings.getRankingAlgorithm().toString(), settings.getLayoutAlgorithm().toString(), settings.getFont().toString(),
+					settings.getColorScheme().toString(), settings.getClusterAlgorithm().toString(), settings.getAspectRatio().toString() };
 
 				StringBuffer sql = new StringBuffer();
 				sql.append("INSERT INTO CLOUD (");
@@ -195,7 +195,8 @@ public class DBUtils
         cloud.getSettings().setLayoutAlgorithm(LAYOUT_ALGORITHM.valueOf(rs.getString("LAYOUT_ALGO")));
         cloud.getSettings().setFont(FONT.valueOf(rs.getString("FONT")));
         cloud.getSettings().setColorScheme(COLOR_SCHEME.valueOf(rs.getString("COLOR_SCHEME")));
-        cloud.getSettings().setColorDistribute(COLOR_DISTRIBUTE.valueOf(rs.getString("COLOR_DISTR")));
+        cloud.getSettings().setClusterAlgorithm(CLUSTER_ALGORITHM.valueOf(rs.getString("COLOR_DISTR")));
+        cloud.getSettings().setAspectRatio(ASPECT_RATIO.valueOf(rs.getString("ASPECT_RATIO")));
     }
 
     private static void convertRSToCloudLight(final WordCloud cloud, ResultSet rs) throws SQLException
@@ -240,7 +241,7 @@ public class DBUtils
 				stmt = c.createStatement();
 				String[] fields = new String[] { "ID INT PRIMARY KEY     NOT NULL", "INPUT_TEXT TEXT    NOT NULL", "SOURCE_TEXT TEXT NOT NULL", "CREATION_DATE CHAR(50) NOT NULL",
 					"WIDTH INT NOT NULL", "HEIGHT INT NOT NULL", "WIDTH2 INT NOT NULL", "HEIGHT2 INT NOT NULL", "SVG TEXT NOT NULL", "SVG2 TEXT NOT NULL", "CREATOR_IP CHAR(50)",
-					"WORD_COUNT INT NOT NULL", "SIMILARITY_ALGO CHAR(50)", "RANKING_ALGO CHAR(50)", "LAYOUT_ALGO CHAR(50)", "FONT CHAR(50)", "COLOR_SCHEME CHAR(50)", "COLOR_DISTR CHAR(50)" };
+					"WORD_COUNT INT NOT NULL", "SIMILARITY_ALGO CHAR(50)", "RANKING_ALGO CHAR(50)", "LAYOUT_ALGO CHAR(50)", "FONT CHAR(50)", "COLOR_SCHEME CHAR(50)", "COLOR_DISTR CHAR(50)", "ASPECT_RATIO CHAR(50)" };
 
 				StringBuffer sql = new StringBuffer();
 				sql.append("CREATE TABLE CLOUD (");
