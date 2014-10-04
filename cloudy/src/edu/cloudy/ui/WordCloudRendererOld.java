@@ -253,6 +253,25 @@ public class WordCloudRendererOld
             g2.setColor(new Color(238, 233, 233));
             g2.setColor(Color.black);
             g2.draw(rect2D);
+
+            int[][] depX = PackingCostCalculator.depXGraph;
+            for (int i = 0; i < depX.length; i++)
+            {
+                SWCRectangle r1 = transformRect(algo.getWordPosition(words.get(depX[i][0])));
+                SWCRectangle r2 = transformRect(algo.getWordPosition(words.get(depX[i][1])));
+
+                g2.setColor(Color.black);
+                g2.drawLine((int)r1.getCenterX(), (int)r1.getCenterY(), (int)r2.getCenterX(), (int)r2.getCenterY());
+            }
+            int[][] depY = PackingCostCalculator.depYGraph;
+            for (int i = 0; i < depY.length; i++)
+            {
+                SWCRectangle r1 = transformRect(algo.getWordPosition(words.get(depY[i][0])));
+                SWCRectangle r2 = transformRect(algo.getWordPosition(words.get(depY[i][1])));
+
+                g2.setColor(Color.black);
+                g2.drawLine((int)r1.getCenterX(), (int)r1.getCenterY(), (int)r2.getCenterX(), (int)r2.getCenterY());
+            }
         }
     }
 

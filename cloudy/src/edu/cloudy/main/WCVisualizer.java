@@ -3,7 +3,7 @@ package edu.cloudy.main;
 import edu.cloudy.clustering.IClusterAlgo;
 import edu.cloudy.clustering.KMeansPlusPlus;
 import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.layout.SeamCarvingAlgo;
+import edu.cloudy.layout.MDSWithFDPackingAlgo;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -69,7 +69,7 @@ public class WCVisualizer
         //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
 
         //WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/twitter");
-        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/focs");
+        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/papers");
         xmlReader.read();
         Iterator<String> texts = xmlReader.getTexts();
 
@@ -84,7 +84,7 @@ public class WCVisualizer
 
         System.out.println("#words: " + doc.getWords().size());
         //doc.weightFilter(15, new TFIDFRankingAlgo());
-        doc.weightFilter(30, new TFRankingAlgo());
+        doc.weightFilter(100, new TFRankingAlgo());
         //doc.weightFilter(15, new LexRankingAlgo());
 
         return doc;
@@ -226,12 +226,12 @@ public class WCVisualizer
     {
         //LayoutAlgo algo = new ContextPreservingAlgo(words, similarity);
         //LayoutAlgo algo = new InflateAndPushAlgo();
-        //LayoutAlgo algo = new MDSAlgo();
+        //LayoutAlgo algo = new MDSAlgo(words, similarity);
         //LayoutAlgo algo = new StarForestAlgo();
         //LayoutAlgo algo = new CycleCoverAlgo(words, similarity);
-        LayoutAlgo algo = new SeamCarvingAlgo(words, similarity);
+        //LayoutAlgo algo = new SeamCarvingAlgo(words, similarity);
         //LayoutAlgo algo = new WordleAlgo(words, similarity);
-        //LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
+        LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
 
         long startTime = System.currentTimeMillis();
         algo.run();
@@ -247,7 +247,7 @@ public class WCVisualizer
         //IClusterAlgo algo = new KMeans(K);
         IClusterAlgo algo = new KMeansPlusPlus(K);
 
-        long startTime = System.currentTimeMillis();
+        //long startTime = System.currentTimeMillis();
         algo.run(words, similarity);
         //System.out.printf("clustering done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
         //System.out.println("#clusters: " + algo.getClusterNumber());

@@ -118,10 +118,10 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
     {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(false);
-        cb.setOAuthConsumerKey("OxGHWmfAzhCtRjq4l161Gg");
-        cb.setOAuthConsumerSecret("uMDzxLd4L8dJ08MTNs6RP3SCEgqjgSoQUqttCAO31I");
-        cb.setOAuthAccessToken("2352327474-soCM0anV3VW1unwUxlem0ypQ6Ysdu0RprLlLaPz");
-        cb.setOAuthAccessTokenSecret("ZIGCCIsyWq6RLg8qBZzRrEmoqmANc6UaGeYJ45QYBIRc4");
+        cb.setOAuthConsumerKey(TwitterCredentials.CONSUMER_KEY);
+        cb.setOAuthConsumerSecret(TwitterCredentials.CONSUMER_SECRET);
+        cb.setOAuthAccessToken(TwitterCredentials.ACCESS_TOKEN);
+        cb.setOAuthAccessTokenSecret(TwitterCredentials.ACCESS_TOKEN_SECRET);
         cb.setUseSSL(true);
         TwitterFactory tf = new TwitterFactory(cb.build());
         return tf.getInstance();

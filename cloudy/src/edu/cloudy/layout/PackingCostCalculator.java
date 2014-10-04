@@ -11,8 +11,12 @@ public class PackingCostCalculator
 {
     public static final double REPULSIVE_IMPORTANCE = 10;
     public static final double BOUNDARY_IMPORTANCE = 100;
+    public static final double DEPENDENCY_IMPORTANCE = 1;
+    public static final double CENTER_IMPORTANCE = 0.01;
 
     public static SWCRectangle bbox;
+    public static int[][] depXGraph;
+    public static int[][] depYGraph;
 
     public static double cost(SWCRectangle[] x)
     {
@@ -26,6 +30,9 @@ public class PackingCostCalculator
 
         //repulsive
         cost += repulsiveCost(x);
+
+        //center
+        cost += centerCost(x);
 
         return cost;
     }
@@ -70,7 +77,7 @@ public class PackingCostCalculator
                 double dy = x[i].getHeight() / 2 + x[wordIndex].getHeight() / 2 - Math.abs(x[i].getCenterY() - x[wordIndex].getCenterY());
                 if (dx < 0 || dy < 0)
                     continue;
-                
+
                 double mn = Math.min(dx, dy);
                 double frx = (x[wordIndex].getCenterX() - x[i].getCenterX());// * mn;
                 double fry = (x[wordIndex].getCenterY() - x[i].getCenterY());// * mn;
@@ -116,13 +123,54 @@ public class PackingCostCalculator
     {
         SWCRectangle rect = new SWCRectangle(bbox);
         rect.shrink(x[wordIndex].getWidth(), x[wordIndex].getHeight());
-        
+
         SWCPoint closestPoint = findProjectionOnRectanglePoint(rect, x[wordIndex].getCenter());
 
         SWCPoint force = new SWCPoint(closestPoint.x() - x[wordIndex].getCenterX(), closestPoint.y() - x[wordIndex].getCenterY());
         //force.normalize();
-        
+
         force.scale(BOUNDARY_IMPORTANCE);
+
+        return force;
+    }
+
+    private static double centerCost(SWCRectangle[] x)
+    {
+        double energy = 0;
+        for (int i = 0; i < x.length; i++)
+        {
+            SWCRectangle rect = new SWCRectangle(bbox);
+            rect.shrink(x[i].getWidth(), x[i].getHeight());
+            SWCPoint closestPoint = bbox.getCenter();
+
+            double fr = closestPoint.distanceSquared(x[i].getCenter());
+            energy += fr * CENTER_IMPORTANCE;
+        }
+
+        return energy;
+    }
+
+    public static double centerCostGain(SWCRectangle[] x, int wordIndex, SWCPoint newPosition)
+    {
+        double oldCost = centerCost(x);
+        SWCPoint oldPosition = x[wordIndex].getCenter();
+        x[wordIndex].setCenter(newPosition.x(), newPosition.y());
+
+        double newCost = centerCost(x);
+        x[wordIndex].setCenter(oldPosition.x(), oldPosition.y());
+        return oldCost - newCost;
+    }
+
+    public static SWCPoint centerForce(SWCRectangle[] x, int wordIndex)
+    {
+        SWCRectangle rect = new SWCRectangle(bbox);
+        rect.shrink(x[wordIndex].getWidth(), x[wordIndex].getHeight());
+
+        SWCPoint closestPoint = bbox.getCenter();
+
+        SWCPoint force = new SWCPoint(closestPoint.x() - x[wordIndex].getCenterX(), closestPoint.y() - x[wordIndex].getCenterY());
+
+        force.scale(CENTER_IMPORTANCE);
 
         return force;
     }
@@ -150,20 +198,89 @@ public class PackingCostCalculator
 
     private static double dependencyCost(SWCRectangle[] x)
     {
-        // TODO Auto-generated method stub
-        return 0;
+        double energy = 0;
+        for (int i = 0; i < depXGraph.length; i++)
+        {
+            int i1 = depXGraph[i][0];
+            int i2 = depXGraph[i][1];
+
+            double dx = x[i1].getCenterX() - x[i2].getCenterX();
+
+            if (dx > 0)
+            {
+                energy += dx * dx * DEPENDENCY_IMPORTANCE;
+            }
+        }
+
+        for (int i = 0; i < depYGraph.length; i++)
+        {
+            int i1 = depYGraph[i][0];
+            int i2 = depYGraph[i][1];
+
+            double dy = x[i1].getCenterY() - x[i2].getCenterY();
+
+            if (dy > 0)
+            {
+                energy += dy * dy * DEPENDENCY_IMPORTANCE;
+            }
+        }
+
+        return energy;
     }
 
     public static double dependencyCostGain(SWCRectangle[] x, int wordIndex, SWCPoint newPosition)
     {
-        // TODO Auto-generated method stub
-        return 0;
+        double oldCost = dependencyCost(x);
+        SWCPoint oldPosition = x[wordIndex].getCenter();
+        x[wordIndex].setCenter(newPosition.x(), newPosition.y());
+
+        double newCost = dependencyCost(x);
+        x[wordIndex].setCenter(oldPosition.x(), oldPosition.y());
+        return oldCost - newCost;
     }
 
     public static SWCPoint dependencyForce(SWCRectangle[] x, int wordIndex)
     {
-        // TODO Auto-generated method stub
-        return new SWCPoint();
+        SWCPoint force = new SWCPoint();
+        for (int i = 0; i < depXGraph.length; i++)
+        {
+            int i1 = depXGraph[i][0];
+            int i2 = depXGraph[i][1];
+            if (wordIndex != i1 && wordIndex != i2)
+                continue;
+
+            double dx = x[i1].getCenterX() - x[i2].getCenterX();
+
+            if (dx > 0)
+            {
+                if (wordIndex == i1)
+                    force.add(new SWCPoint(dx, 0));
+                else
+                    force.add(new SWCPoint(-dx, 0));
+            }
+        }
+        
+        for (int i = 0; i < depYGraph.length; i++)
+        {
+            int i1 = depYGraph[i][0];
+            int i2 = depYGraph[i][1];
+            if (wordIndex != i1 && wordIndex != i2)
+                continue;
+
+            double dy = x[i1].getCenterY() - x[i2].getCenterY();
+
+            if (dy > 0)
+            {
+                if (wordIndex == i1)
+                    force.add(new SWCPoint(0, dy));
+                else
+                    force.add(new SWCPoint(0, -dy));
+            }
+        }
+
+        force.scale(DEPENDENCY_IMPORTANCE);
+
+        return force;
     }
 
 }

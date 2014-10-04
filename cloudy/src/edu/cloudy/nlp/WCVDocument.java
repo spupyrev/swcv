@@ -73,6 +73,8 @@ public class WCVDocument
 	 */
 	public void parse()
 	{
+	    text = TextUtils.splitSentences(text);
+	            
 		Tokenizer tokenizer = buildTokenizer();
 		String[] sentences = buildSentences();
 		Set<String> stopwords = buildStopwords();
