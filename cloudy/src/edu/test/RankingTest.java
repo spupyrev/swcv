@@ -2,19 +2,15 @@ package edu.test;
 
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.ranking.TFIDFRankingAlgo;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.WikipediaXMLReader;
-import edu.stanford.nlp.io.StringOutputStream;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@SuppressWarnings("all")
 public class RankingTest
 {
 

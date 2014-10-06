@@ -227,7 +227,7 @@ public class WordCloudApp implements EntryPoint
                 else
                 {
                     //possibly empty text
-                    DialogBox errorBox = AppUtils.createMessageBox("Text must contain at least one word", shadow);
+                    DialogBox errorBox = AppUtils.createMessageBox("<h3>Your text must contain at least 10 words</h3>", shadow);
                     errorBox.center();
                     errorBox.show();
                 }

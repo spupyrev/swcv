@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+@SuppressWarnings("all")
 public class MatchingTest
 {
     private static Random rnd = new Random(123);

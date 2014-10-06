@@ -23,7 +23,6 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
     private String tweetsText;
     private List<String> tweetsList;
 
-    @Override
     public boolean isConnected(String input)
     {
         if (!input.startsWith("twitter:"))
@@ -47,7 +46,6 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
         }
     }
 
-    @Override
     public String getText(String input)
     {
         return tweetsText;

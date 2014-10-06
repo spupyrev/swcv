@@ -70,10 +70,10 @@ import java.util.Map;
 
 public class WordCloudGenerator
 {
-    //private static final Logger log = Logger.getLogger(WordCloudGenerator.class.getName());
-
     private static final int SCR_WIDTH = 1024;
     private static final int SCR_HEIGHT = 800;
+
+    private static final int MINIMUM_NUMBER_OF_WORDS = 10;
 
     public static WordCloud updateWordCloud(int id, String input, WCSetting setting, String ip) throws IllegalArgumentException
     {
@@ -84,9 +84,11 @@ public class WordCloudGenerator
 
     public static WordCloud createWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
     {
-        WordCloud newcloud = buildWordCloud(input, setting, ip);
-        newcloud.setId(saveCloud(-1, newcloud));
-        return newcloud;
+        WordCloud newCloud = buildWordCloud(input, setting, ip);
+        if (newCloud == null)
+            return null;
+        newCloud.setId(saveCloud(-1, newCloud));
+        return newCloud;
     }
 
     public static WordCloud buildWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
@@ -126,6 +128,8 @@ public class WordCloudGenerator
 
             List<WordCloudRenderer> renderers = getRenderers(wcvDocument, setting);
 
+            if (renderers == null)
+                return null;
             if (renderers.size() != 1)
                 throw new RuntimeException("Wrong number of renderers");
 
@@ -137,7 +141,6 @@ public class WordCloudGenerator
 
             Date timestamp = Calendar.getInstance().getTime();
             cloud = createCloud(setting, input, text, timestamp, svg, "", (int)renderer.getActualWidth(), (int)renderer.getActualHeight(), 0, 0, ip);
-
         }
 
         return cloud;
@@ -212,7 +215,7 @@ public class WordCloudGenerator
         // ranking
         document.weightFilter(setting.getWordCount(), createRanking(setting.getRankingAlgorithm(), document));
 
-        if (document.getWords().isEmpty())
+        if (document.getWords().size() < MINIMUM_NUMBER_OF_WORDS)
             return null;
 
         // similarity
@@ -274,6 +277,9 @@ public class WordCloudGenerator
 
         WCVDynamicDocument doc = new WCVDynamicDocument(text1, text2);
         List<WordCloudRenderer> renderers = getRenderers(doc, setting);
+        if (renderers == null)
+            return null;
+
         if (renderers.size() != 2)
             throw new RuntimeException("Wrong number of renderers");
 

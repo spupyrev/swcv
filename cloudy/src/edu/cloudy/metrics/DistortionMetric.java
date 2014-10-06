@@ -15,7 +15,6 @@ import java.util.Map;
  */
 public class DistortionMetric implements QualityMetric
 {
-
     @Override
     public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
     {
@@ -136,6 +135,7 @@ public class DistortionMetric implements QualityMetric
         return matrix;
     }
 
+    @SuppressWarnings("unused")
     private double distance(Word first, Word second, LayoutAlgo algo)
     {
         SWCRectangle rect1 = algo.getWordPosition(first);

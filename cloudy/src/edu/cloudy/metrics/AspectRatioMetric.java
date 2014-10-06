@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class AspectRatioMetric implements QualityMetric
 {
-    private static final double GOLDEN_RATIO = (1.0 + Math.sqrt(5)) / 2.0;
+    //private static final double GOLDEN_RATIO = (1.0 + Math.sqrt(5)) / 2.0;
 
     @Override
     public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
@@ -27,7 +27,7 @@ public class AspectRatioMetric implements QualityMetric
         double mx = Math.max(bb.getWidth(), bb.getHeight());
         double ratio = mx / mn;
 
-        double diff = Math.abs(ratio - GOLDEN_RATIO);
+        //double diff = Math.abs(ratio - GOLDEN_RATIO);
         return ratio;
     }
 }

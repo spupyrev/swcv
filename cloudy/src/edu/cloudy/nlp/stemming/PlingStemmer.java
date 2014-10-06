@@ -1,11 +1,6 @@
 package edu.cloudy.nlp.stemming;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Set;
-
-import edu.cloudy.nlp.stemming.FinalMap;
-import edu.cloudy.nlp.stemming.FinalSet;
 
 /** 
 This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
@@ -53,8 +48,9 @@ the YAGO-NAGA team (see http://mpii.de/yago-naga).
   Java Tools</A>.
 */
 public class PlingStemmer extends AbstractStemmer{
+    private static final long serialVersionUID = 1L;
 
-  /** Tells whether a word form is plural. This method just checks whether the
+/** Tells whether a word form is plural. This method just checks whether the
    * stem method alters the word */
   public  boolean isPlural(String s) {
     return(!s.equals(stem(s)));

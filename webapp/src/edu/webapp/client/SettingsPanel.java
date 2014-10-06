@@ -98,8 +98,6 @@ public class SettingsPanel
         box.setValue(false);
         box.addClickHandler(new ClickHandler()
         {
-
-            @Override
             public void onClick(ClickEvent event)
             {
                 setNonEnglishText(box.getValue());

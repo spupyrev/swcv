@@ -72,7 +72,7 @@ public class ClusterSpiralPlacer implements WordPlacer
 
                 int spiralPosition = 0;
 
-                SWCRectangle rect = c.wordPositions.values().iterator().next();
+                //SWCRectangle rect = c.wordPositions.values().iterator().next();
                 while (c.overlap(placedClusters))
                 {
                     spiralOut(c, spiralPosition, scale);

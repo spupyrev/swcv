@@ -12,7 +12,6 @@ import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
 import edu.cloudy.ui.WordCloudFrame;
 import edu.cloudy.utils.Logger;
-import edu.cloudy.utils.SWCPoint;
 import edu.cloudy.utils.WikipediaXMLReader;
 import edu.test.YoutubeCommentsReaderTest;
 
@@ -90,6 +89,7 @@ public class WCVisualizer
         return doc;
     }
 
+    @SuppressWarnings("unused")
     private WCVDocument readPDFDocument()
     {
         /*PDFReader reader = new PDFReader("file:///E:/Research/Arizona/wordle/tex-apprx/clouds.pdf");
@@ -104,6 +104,7 @@ public class WCVisualizer
         return null;
     }
 
+    @SuppressWarnings("unused")
     private WCVDocument readURL()
     {
         String url = "http://gama.cs.arizona.edu";
@@ -145,6 +146,7 @@ public class WCVisualizer
         return doc;
     }
 
+    @SuppressWarnings("unused")
     private WCVDocument readYoutube()
     {
         WCVDocument wdoc = new WCVDocument(YoutubeCommentsReaderTest.getComments("5guMumPFBag"));
@@ -199,27 +201,6 @@ public class WCVisualizer
         	WordPair wp = topPairs.get(i);
         	System.out.println(wp.getFirst().word + " " + wp.getSecond().word + "  " + similarity.get(wp));
         }*/
-    }
-
-    private void extractSimilaritiesTest(WCVDocument wordifier, List<Word> words, Map<WordPair, Double> similarity)
-    {
-        for (Word w : wordifier.getWords())
-            words.add(w);
-
-        SWCPoint[] p = new SWCPoint[words.size()];
-        for (int i = 0; i < words.size(); i++)
-        {
-            p[i] = SWCPoint.random();
-        }
-
-        for (int i = 0; i < words.size(); i++)
-        {
-            for (int j = i + 1; j < words.size(); j++)
-            {
-                double len = p[i].distance(p[j]);
-                similarity.put(new WordPair(words.get(i), words.get(j)), 1.0 - len);
-            }
-        }
     }
 
     private LayoutAlgo runLayout(List<Word> words, Map<WordPair, Double> similarity)

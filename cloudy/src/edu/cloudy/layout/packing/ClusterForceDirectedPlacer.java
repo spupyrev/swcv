@@ -22,7 +22,7 @@ import java.util.Map;
 public class ClusterForceDirectedPlacer implements WordPlacer
 {
     private static final double EPS = 1e-6;
-    private static final double KA = 15;
+    //private static final double KA = 15;
     private static final double KR = 500;
     private static final double TOTAL_ITERATIONS = 500;
     private double T = 1;

@@ -1,6 +1,5 @@
 package edu.test;
 
-import edu.cloudy.main.ALENEXPaperEvalulator;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;

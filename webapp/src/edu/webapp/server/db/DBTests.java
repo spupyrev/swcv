@@ -80,6 +80,7 @@ public class DBTests
 		}
 	}
 
+    @SuppressWarnings("unused")
 	private static void testCount()
 	{
 		System.out.println("size: " + DBUtils.getCloudCount());

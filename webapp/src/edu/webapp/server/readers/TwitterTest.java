@@ -45,6 +45,7 @@ public class TwitterTest
         System.out.println(sq.getSearchPhrase());
     }
 
+    @SuppressWarnings("unused")
     private static void printTweets(List<String> tweets)
     {
         StringBuffer sb = new StringBuffer();
@@ -54,6 +55,7 @@ public class TwitterTest
         System.out.println(sb.toString());
     }
 
+    @SuppressWarnings("unused")
     private static void printTrendLocations() throws TwitterException
     {
         Twitter twitter = TwitterReader.getTwitterInstance();
@@ -66,6 +68,7 @@ public class TwitterTest
         }
     }
 
+    @SuppressWarnings("unused")
     private static List<String> searchTweets(String searchString, int count) throws TwitterException
     {
         List<String> resTweets = new ArrayList();

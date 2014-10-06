@@ -22,7 +22,7 @@ public class WordleAlgo extends BaseLayoutAlgo
 {
     private Map<Word, SWCRectangle> bb = new HashMap<Word, SWCRectangle>();
 
-    private static boolean ALLOW_VERTICAL_WORDS = false;
+    //private static boolean ALLOW_VERTICAL_WORDS = false;
 
     private Random rnd = new Random(123);
 
@@ -120,7 +120,7 @@ public class WordleAlgo extends BaseLayoutAlgo
      */
     private boolean makeInitialPosition(Word word)
     {
-        double angle = generateAngle();
+        //double angle = generateAngle();
 
         // get width & height of word
         SWCRectangle rect = bb.get(word);
@@ -171,11 +171,11 @@ public class WordleAlgo extends BaseLayoutAlgo
     /**
      * Generates a word angle
      */
-    private double generateAngle()
+    /*private double generateAngle()
     {
         if (ALLOW_VERTICAL_WORDS && rnd.nextDouble() < 0.5)
             return -Math.PI / 2;
 
         return 0;
-    }
+    }*/
 }

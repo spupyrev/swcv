@@ -322,6 +322,7 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
         }
     }
 
+    @SuppressWarnings("unused")
     private void checkZoneConsistency(Zone[][] zones, SWCRectangle[] wordPositions)
     {
         int n = zones.length;
@@ -651,19 +652,9 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
             return indexI;
         }
 
-        public void setIndexI(int indexI)
-        {
-            this.indexI = indexI;
-        }
-
         public int getIndexJ()
         {
             return indexJ;
-        }
-
-        public void setIndexJ(int indexJ)
-        {
-            this.indexJ = indexJ;
         }
     }
 }

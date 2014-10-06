@@ -35,6 +35,7 @@ public class DBSpeedTests
         }
     }
 
+    @SuppressWarnings("unused")
     private static void testAddCloud(WordCloud wc) throws DBCloudNotFoundException
     {
         WordCloud res = new WordCloud();
@@ -55,6 +56,7 @@ public class DBSpeedTests
         assert (res.getCreationDate() == wcNew.getCreationDate());
     }
     
+    @SuppressWarnings("unused")
     private static WordCloud createRandomWordCloud()
     {
         WordCloud wc = new WordCloud();
@@ -74,11 +76,6 @@ public class DBSpeedTests
     {
         List<WordCloud> clouds = DBUtils.getLatestClouds(25);
         System.out.println("size: " + clouds.size());
-    }
-
-    private static void testCount()
-    {
-        System.out.println("size: " + DBUtils.getCloudCount());
     }
 
 }

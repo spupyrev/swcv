@@ -21,7 +21,7 @@ public class AdjacenciesMetric implements QualityMetric, AdjacentMetric
 	@Override
 	public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
 	{
-		SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
+		//SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
 
 		double res = 0;
 		for (WordPair wp : similarity.keySet())

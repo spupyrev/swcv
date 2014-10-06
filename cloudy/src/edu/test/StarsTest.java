@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+@SuppressWarnings("all")
 public class StarsTest
 {
     private static Random rnd = new Random(123);

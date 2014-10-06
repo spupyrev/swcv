@@ -51,6 +51,8 @@ public class WordCloudMenuBar extends JMenuBar
         //SaveAs png
         Action exportPNGAction = new AbstractAction("save as png")
         {
+            private static final long serialVersionUID = 1L;
+
             public void actionPerformed(ActionEvent e)
             {
                 String selectedFile = chooseOpenSaveFile(getParent(), new PNGFileFilter());
@@ -72,6 +74,8 @@ public class WordCloudMenuBar extends JMenuBar
         //SaveAs svg
         Action exportSVGAction = new AbstractAction("save as svg")
         {
+            private static final long serialVersionUID = 1L;
+
             public void actionPerformed(ActionEvent e)
             {
                 String selectedFile = chooseOpenSaveFile(getParent(), new SVGFileFilter());
@@ -97,6 +101,8 @@ public class WordCloudMenuBar extends JMenuBar
         exitMenuItem.setMnemonic('x');
         exitMenuItem.setAction(new AbstractAction("Exit")
         {
+            private static final long serialVersionUID = 1L;
+
             public void actionPerformed(ActionEvent e)
             {
                 System.exit(0);
@@ -116,6 +122,8 @@ public class WordCloudMenuBar extends JMenuBar
         final String showEdgesActionName = "hide borders";
         final Action showEdgesAction = new AbstractAction(showEdgesActionName)
         {
+            private static final long serialVersionUID = 1L;
+
             public void actionPerformed(ActionEvent e)
             {
                 Object value = getValue(showEdgesActionName);
@@ -141,6 +149,8 @@ public class WordCloudMenuBar extends JMenuBar
         final String showWordsActionName = "hide words";
         final Action showWordsAction = new AbstractAction(showWordsActionName)
         {
+            private static final long serialVersionUID = 1L;
+
             public void actionPerformed(ActionEvent e)
             {
                 Object value = getValue(showWordsActionName);
@@ -168,6 +178,8 @@ public class WordCloudMenuBar extends JMenuBar
         final String showAdjacenciesName = "hide adjacencies";
         final Action showAdjacenciesAction = new AbstractAction(showAdjacenciesName)
         {
+            private static final long serialVersionUID = 1L;
+
             public void actionPerformed(ActionEvent e)
             {
                 Object value = getValue(showAdjacenciesName);
@@ -195,6 +207,8 @@ public class WordCloudMenuBar extends JMenuBar
         final String showProximityName = "hide proximity";
         final Action showProximityAction = new AbstractAction(showProximityName)
         {
+            private static final long serialVersionUID = 1L;
+
             public void actionPerformed(ActionEvent e)
             {
                 Object value = getValue(showProximityName);
@@ -222,6 +236,8 @@ public class WordCloudMenuBar extends JMenuBar
         final String showConvexHull = "show convex hull";
         final Action showConvexHullAction = new AbstractAction(showConvexHull)
         {
+            private static final long serialVersionUID = 1L;
+
             public void actionPerformed(ActionEvent e)
             {
                 Object value = getValue(showConvexHull);
