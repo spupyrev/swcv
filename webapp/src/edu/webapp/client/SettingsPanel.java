@@ -13,11 +13,12 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.webapp.shared.WCFont;
+import edu.webapp.shared.WCFontCollection;
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WCSetting.ASPECT_RATIO;
 import edu.webapp.shared.WCSetting.CLUSTER_ALGORITHM;
 import edu.webapp.shared.WCSetting.COLOR_SCHEME;
-import edu.webapp.shared.WCSetting.FONT;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
@@ -34,10 +35,10 @@ public class SettingsPanel
     private WCSetting setting;
     private boolean enabled;
 
-    private Widget clusterWidget;
-    private Widget colorSchemeWidget;
-    private Widget rankingWidget;
-    private Widget fontWidget;
+    private ListBox clusterWidget;
+    private ListBox colorSchemeWidget;
+    private ListBox rankingWidget;
+    private ListBox fontWidget;
 
     public SettingsPanel(WCSetting setting, boolean enabled)
     {
@@ -47,6 +48,7 @@ public class SettingsPanel
 
     public CaptionPanel create()
     {
+        
         FlexTable layout = new FlexTable();
 
         CellFormatter cf = layout.getCellFormatter();
@@ -109,48 +111,45 @@ public class SettingsPanel
 
     private void setNonEnglishText(boolean checked)
     {
-        ListBox fontsbox = (ListBox)fontWidget;
-        ListBox ranksbox = (ListBox)rankingWidget;
-        RANKING_ALGORITHM rankval = WCSetting.RANKING_ALGORITHM.valueOf(ranksbox.getValue(ranksbox.getSelectedIndex()));
+        RANKING_ALGORITHM rankval = WCSetting.RANKING_ALGORITHM.valueOf(rankingWidget.getValue(rankingWidget.getSelectedIndex()));
         if (checked)
         { // non en setting
             List<Integer> enFonts = getEnOnlyFonts();
             if (rankval == WCSetting.RANKING_ALGORITHM.TF_IDF)
             {
-                ranksbox.setSelectedIndex(0);
-                setting.setFont(WCSetting.FONT.Archer);
+                rankingWidget.setSelectedIndex(0);
+                setting.setFont(WCFontCollection.getByName("Archer"));
             }
-            if (enFonts.contains(fontsbox.getSelectedIndex()))
+
+            if (enFonts.contains(fontWidget.getSelectedIndex()))
             {
-                fontsbox.setSelectedIndex(1);
-                setting.setFont(WCSetting.FONT.ComicSansMS);
+                fontWidget.setSelectedIndex(1);
+                setting.setFont(WCFontCollection.getByName("ComicSansMS"));
             }
-            for (int i = 0; i < fontsbox.getItemCount(); ++i)
+
+            for (int i = 0; i < fontWidget.getItemCount(); ++i)
                 if (enFonts.contains(i))
-                    setDisabled(fontsbox, i);
-            setDisabled(ranksbox, findIndex(ranksbox, WCSetting.RANKING_ALGORITHM.TF_IDF.toString()));
+                    setDisabled(fontWidget, i);
+
+            setDisabled(rankingWidget, findIndex(rankingWidget, WCSetting.RANKING_ALGORITHM.TF_IDF.toString()));
         }
         else
         { // en setting
-            for (int i = 0; i < fontsbox.getItemCount(); ++i)
-                removeDisabled(fontsbox, i);
-            for (int i = 0; i < ranksbox.getItemCount(); ++i)
-                removeDisabled(ranksbox, i);
+            for (int i = 0; i < fontWidget.getItemCount(); ++i)
+                removeDisabled(fontWidget, i);
+            for (int i = 0; i < rankingWidget.getItemCount(); ++i)
+                removeDisabled(rankingWidget, i);
         }
     }
 
     private List<Integer> getEnOnlyFonts()
     {
         List<Integer> indices = new ArrayList<Integer>();
-        indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Archer.toString()));
-        indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Eraser.toString()));
-        indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Inconsolata.toString()));
-        indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Kingthings_Gothique.toString()));
-        indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.MaiandraGD.toString()));
-        indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Pacifico.toString()));
-        indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Stentiga.toString()));
-        indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Teen.toString()));
-        indices.add(findIndex((ListBox)fontWidget, WCSetting.FONT.Wetpet.toString()));
+
+        for (WCFont font : WCFontCollection.list())
+            if (font.isEnglishOnly())
+                indices.add(findIndex(fontWidget, font.getName()));
+
         return indices;
     }
 
@@ -158,11 +157,10 @@ public class SettingsPanel
     {
         Label label = new Label(text);
         label.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-        //label.set
         return label;
     }
 
-    private Widget createClusterListBox()
+    private ListBox createClusterListBox()
     {
         final ListBox box = new ListBox();
         box.addItem("KMeans++", WCSetting.CLUSTER_ALGORITHM.KMEANS.toString());
@@ -188,65 +186,64 @@ public class SettingsPanel
 
     private void colorSchemeAndDistrCheck()
     {
-        ListBox distbox = (ListBox)clusterWidget;
-        CLUSTER_ALGORITHM distValue = WCSetting.CLUSTER_ALGORITHM.valueOf(distbox.getValue(distbox.getSelectedIndex()));
-        ListBox schmbox = (ListBox)colorSchemeWidget;
+        CLUSTER_ALGORITHM distValue = WCSetting.CLUSTER_ALGORITHM.valueOf(clusterWidget.getValue(clusterWidget.getSelectedIndex()));
         List<Integer> sentiIndices = getSentiIndices();
         List<Integer> dynamicIndices = getDynamicIndices();
+
         if (distValue == WCSetting.CLUSTER_ALGORITHM.SENTIMENT)
         {
-            if (!sentiIndices.contains(schmbox.getSelectedIndex()))
+            if (!sentiIndices.contains(colorSchemeWidget.getSelectedIndex()))
             {
-                schmbox.setSelectedIndex(sentiIndices.get(0));
+                colorSchemeWidget.setSelectedIndex(sentiIndices.get(0));
                 setting.setColorScheme(COLOR_SCHEME.SENTIMENT);
             }
             for (Integer i : sentiIndices)
-                removeDisabled(schmbox, i);
-            for (int i = 0; i < schmbox.getItemCount(); ++i)
+                removeDisabled(colorSchemeWidget, i);
+            for (int i = 0; i < colorSchemeWidget.getItemCount(); ++i)
                 if (!sentiIndices.contains(i))
-                    setDisabled(schmbox, i);
+                    setDisabled(colorSchemeWidget, i);
         }
         else if (distValue == WCSetting.CLUSTER_ALGORITHM.DYNAMIC)
         {
-            if (!dynamicIndices.contains(schmbox.getSelectedIndex()))
+            if (!dynamicIndices.contains(colorSchemeWidget.getSelectedIndex()))
             {
-                schmbox.setSelectedIndex(dynamicIndices.get(0));
+                colorSchemeWidget.setSelectedIndex(dynamicIndices.get(0));
                 setting.setColorScheme(COLOR_SCHEME.REDBLUEBLACK);
             }
             for (Integer i : dynamicIndices)
-                removeDisabled(schmbox, i);
-            for (int i = 0; i < schmbox.getItemCount(); ++i)
+                removeDisabled(colorSchemeWidget, i);
+            for (int i = 0; i < colorSchemeWidget.getItemCount(); ++i)
                 if (!dynamicIndices.contains(i))
-                    setDisabled(schmbox, i);
+                    setDisabled(colorSchemeWidget, i);
         }
         else
         {
-            if (sentiIndices.contains(schmbox.getSelectedIndex()))
+            if (sentiIndices.contains(colorSchemeWidget.getSelectedIndex()))
             {
-                schmbox.setSelectedIndex(0);
+                colorSchemeWidget.setSelectedIndex(0);
                 setting.setColorScheme(COLOR_SCHEME.BEAR_DOWN);
             }
             for (Integer i : sentiIndices)
-                setDisabled(schmbox, i);
-            for (int i = 0; i < schmbox.getItemCount(); ++i)
+                setDisabled(colorSchemeWidget, i);
+            for (int i = 0; i < colorSchemeWidget.getItemCount(); ++i)
                 if (!sentiIndices.contains(i))
-                    removeDisabled(schmbox, i);
+                    removeDisabled(colorSchemeWidget, i);
         }
     }
 
     private List<Integer> getDynamicIndices()
     {
         List<Integer> indices = new ArrayList<Integer>();
-        indices.add(findIndex((ListBox)colorSchemeWidget, WCSetting.COLOR_SCHEME.REDBLUEBLACK.toString()));
-        indices.add(findIndex((ListBox)colorSchemeWidget, WCSetting.COLOR_SCHEME.BLUEREDBLACK.toString()));
+        indices.add(findIndex(colorSchemeWidget, WCSetting.COLOR_SCHEME.REDBLUEBLACK.toString()));
+        indices.add(findIndex(colorSchemeWidget, WCSetting.COLOR_SCHEME.BLUEREDBLACK.toString()));
         return indices;
     }
 
     private List<Integer> getSentiIndices()
     {
         List<Integer> indices = new ArrayList<Integer>();
-        indices.add(findIndex((ListBox)colorSchemeWidget, WCSetting.COLOR_SCHEME.SENTIMENT.toString()));
-        indices.add(findIndex((ListBox)colorSchemeWidget, WCSetting.COLOR_SCHEME.SENTIMENT2.toString()));
+        indices.add(findIndex(colorSchemeWidget, WCSetting.COLOR_SCHEME.SENTIMENT.toString()));
+        indices.add(findIndex(colorSchemeWidget, WCSetting.COLOR_SCHEME.SENTIMENT2.toString()));
         return indices;
     }
 
@@ -260,7 +257,7 @@ public class SettingsPanel
         b.getElement().getElementsByTagName("option").getItem(index).setAttribute("disabled", "disabled");
     }
 
-    private Widget createColorListBox()
+    private ListBox createColorListBox()
     {
         final ListBox box = new ListBox();
         box.addItem("BEAR DOWN", WCSetting.COLOR_SCHEME.BEAR_DOWN.toString());
@@ -417,18 +414,8 @@ public class SettingsPanel
     private ListBox createFontListBox()
     {
         final ListBox box = new ListBox();
-        box.addItem("Archer - UofA Official Font", WCSetting.FONT.Archer.toString());
-        box.addItem("Comic Sans MS", WCSetting.FONT.ComicSansMS.toString());
-        box.addItem("Crimson - Serif", WCSetting.FONT.Crimson.toString());
-        box.addItem("Eraser - Hand Drawn", WCSetting.FONT.Eraser.toString());
-        box.addItem("Inconsolata - Monospace", WCSetting.FONT.Inconsolata.toString());
-        box.addItem("Kingthings_Gothique - Blackletter", WCSetting.FONT.Kingthings_Gothique.toString());
-        box.addItem("Maiandra GD", WCSetting.FONT.MaiandraGD.toString());
-        box.addItem("Pacifico - Script", WCSetting.FONT.Pacifico.toString());
-        box.addItem("Stentiga - Sans Serif", WCSetting.FONT.Stentiga.toString());
-        box.addItem("Teen - Sans Serif", WCSetting.FONT.Teen.toString());
-        box.addItem("Monofur - Monospace", WCSetting.FONT.Monofur.toString());
-        box.addItem("Wetpet - Funny font", WCSetting.FONT.Wetpet.toString());
+        for (WCFont font : WCFontCollection.list())
+            box.addItem(font.getDescription(), font.getName());
 
         box.setSelectedIndex(findIndex(box, setting.getFont().toString()));
 
@@ -436,7 +423,7 @@ public class SettingsPanel
         {
             public void onChange(ChangeEvent event)
             {
-                FONT value = WCSetting.FONT.valueOf(box.getValue(box.getSelectedIndex()));
+                WCFont value = WCFontCollection.getByName(box.getValue(box.getSelectedIndex()));
                 setting.setFont(value);
             }
         });
@@ -445,7 +432,7 @@ public class SettingsPanel
         return box;
     }
 
-    private Widget createRankingListBox()
+    private ListBox createRankingListBox()
     {
         final ListBox box = new ListBox();
         box.addItem("Frequency", WCSetting.RANKING_ALGORITHM.TF.toString());

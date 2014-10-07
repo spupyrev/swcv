@@ -5,7 +5,6 @@ import edu.webapp.shared.*;
 import edu.webapp.shared.WCSetting.ASPECT_RATIO;
 import edu.webapp.shared.WCSetting.CLUSTER_ALGORITHM;
 import edu.webapp.shared.WCSetting.COLOR_SCHEME;
-import edu.webapp.shared.WCSetting.FONT;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
@@ -51,7 +50,7 @@ public class DBUtils
 				WCSetting settings = cloud.getSettings();
                 Object[] values = new Object[] { cloud.getWidth(), cloud.getHeight(), cloud.getSvg(), cloud.getSvg2(), cloud.getCreatorIP(), settings.getWordCount(),
 					settings.getSimilarityAlgorithm().toString(), settings.getRankingAlgorithm().toString(), settings.getLayoutAlgorithm().toString(),
-					settings.getFont().toString(), settings.getColorScheme().toString(), settings.getClusterAlgorithm().toString(), settings.getAspectRatio().toString() };
+					settings.getFont().getName(), settings.getColorScheme().toString(), settings.getClusterAlgorithm().toString(), settings.getAspectRatio().toString() };
 
 				StringBuffer sql = new StringBuffer();
 				sql.append("UPDATE CLOUD SET ");
@@ -103,7 +102,7 @@ public class DBUtils
 				WCSetting settings = cloud.getSettings();
                 Object[] values = new Object[] { cloud.getId(), cloud.getInputText(), cloud.getSourceText(), cloud.getCreationDate(), cloud.getWidth(), cloud.getHeight(), cloud.getWidth2(),
 					cloud.getHeight2(), cloud.getSvg(), cloud.getSvg2(), cloud.getCreatorIP(), settings.getWordCount(), settings.getSimilarityAlgorithm().toString(),
-					settings.getRankingAlgorithm().toString(), settings.getLayoutAlgorithm().toString(), settings.getFont().toString(),
+					settings.getRankingAlgorithm().toString(), settings.getLayoutAlgorithm().toString(), settings.getFont().getName(),
 					settings.getColorScheme().toString(), settings.getClusterAlgorithm().toString(), settings.getAspectRatio().toString() };
 
 				StringBuffer sql = new StringBuffer();
@@ -193,7 +192,7 @@ public class DBUtils
         cloud.getSettings().setSimilarityAlgorithm(SIMILARITY_ALGORITHM.valueOf(rs.getString("SIMILARITY_ALGO")));
         cloud.getSettings().setRankingAlgorithm(RANKING_ALGORITHM.valueOf(rs.getString("RANKING_ALGO")));
         cloud.getSettings().setLayoutAlgorithm(LAYOUT_ALGORITHM.valueOf(rs.getString("LAYOUT_ALGO")));
-        cloud.getSettings().setFont(FONT.valueOf(rs.getString("FONT")));
+        cloud.getSettings().setFont(WCFontCollection.getByName(rs.getString("FONT")));
         cloud.getSettings().setColorScheme(COLOR_SCHEME.valueOf(rs.getString("COLOR_SCHEME")));
         cloud.getSettings().setClusterAlgorithm(CLUSTER_ALGORITHM.valueOf(rs.getString("COLOR_DISTR")));
         cloud.getSettings().setAspectRatio(ASPECT_RATIO.valueOf(rs.getString("ASPECT_RATIO")));

@@ -1,5 +1,7 @@
 package edu.webapp.shared;
 
+import com.google.gwt.user.client.Window;
+
 import java.io.Serializable;
 import java.util.Random;
 
@@ -40,12 +42,6 @@ public class WCSetting implements Serializable
         TF, TF_IDF, LEX
     }
 
-    public enum FONT
-    {
-        //Archer, ComicSansMS, Crimson, Dearest, Eraser, Harting, Inconsolata, Kingthings_Gothique, MaiandraGD, Pacifico, Porcelai, Report1942, Stentiga, Teen, Monofur, Waker, Wetpet
-        Archer, ComicSansMS, Crimson, Eraser, Inconsolata, Kingthings_Gothique, MaiandraGD, Pacifico, Stentiga, Teen, Monofur, Wetpet
-    }
-
     public enum ASPECT_RATIO
     {
         AR11, AR43, AR169, AR219
@@ -56,7 +52,7 @@ public class WCSetting implements Serializable
     private LAYOUT_ALGORITHM layoutAlgorithm = LAYOUT_ALGORITHM.CPWCV;
     private SIMILARITY_ALGORITHM similarityAlgorithm = SIMILARITY_ALGORITHM.COSINE;
     private RANKING_ALGORITHM rankingAlgorithm = RANKING_ALGORITHM.TF;
-    private FONT font = FONT.Archer;
+    private WCFont font = WCFontCollection.getDefault();
     private ASPECT_RATIO aspectRatio = ASPECT_RATIO.AR169;
 
     private int wordCount = 50;
@@ -83,8 +79,8 @@ public class WCSetting implements Serializable
         pick = dice.nextInt(RANKING_ALGORITHM.values().length);
         setRankingAlgorithm(RANKING_ALGORITHM.values()[pick]);
 
-        pick = dice.nextInt(FONT.values().length);
-        setFont(FONT.values()[pick]);
+        setFont(WCFontCollection.getRandom());
+        Window.alert(font.getName());
 
         pick = dice.nextInt(ASPECT_RATIO.values().length);
         setAspectRatio(ASPECT_RATIO.values()[pick]);
@@ -150,12 +146,12 @@ public class WCSetting implements Serializable
         this.rankingAlgorithm = rankingAlgorithm;
     }
 
-    public FONT getFont()
+    public WCFont getFont()
     {
         return font;
     }
 
-    public void setFont(FONT font)
+    public void setFont(WCFont font)
     {
         this.font = font;
     }
@@ -193,7 +189,7 @@ public class WCSetting implements Serializable
         sb.append("ranking:    " + rankingAlgorithm + "\n");
         sb.append("colorTheme: " + colorScheme + "\n");
         sb.append("colorDistr: " + clusterAlgorithm + "\n");
-        sb.append("font: " + font + "\n");
+        sb.append("font: " + font.getName() + "\n");
         sb.append("aspectRatio: " + aspectRatio + "\n");
         return sb.toString();
     }

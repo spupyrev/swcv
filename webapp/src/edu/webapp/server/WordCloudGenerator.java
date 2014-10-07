@@ -94,7 +94,7 @@ public class WordCloudGenerator
     public static WordCloud buildWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
     {
         logging(input, setting);
-        FontUtils.initialize(new SVGFontProvider(setting.getFont().toString()));
+        FontUtils.initialize(new SVGFontProvider(setting.getFont()));
 
         DocumentExtractor extractor = new DocumentExtractor(input);
         IDocumentReader reader = extractor.getReader();
@@ -345,8 +345,7 @@ public class WordCloudGenerator
 
     private static void logging(String text, WCSetting setting)
     {
-        //log.info("running algorithm " + setting.toString());
-        //log.info("text: " + text);
+        System.out.println("running algorithm " + setting.toString());
     }
 
     private static SimilarityAlgo createSimilarity(SIMILARITY_ALGORITHM algo)

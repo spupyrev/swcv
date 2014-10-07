@@ -3,15 +3,14 @@ package edu.webapp.server;
 import edu.cloudy.utils.CommonUtils;
 import edu.cloudy.utils.FontUtils.AWTFontProvider;
 import edu.cloudy.utils.SWCRectangle;
+import edu.webapp.shared.WCFont;
 
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * @author spupyrev
@@ -19,12 +18,12 @@ import java.io.IOException;
  */
 public class SVGFontProvider extends AWTFontProvider
 {
-    private String fontName;
+    private WCFont wcFont;
     private Font font;
 
-    public SVGFontProvider(String fontName)
+    public SVGFontProvider(WCFont wcFont)
     {
-        this.fontName = fontName + ".ttf";
+        this.wcFont = wcFont;
     }
 
     public Font getFont()
@@ -41,19 +40,31 @@ public class SVGFontProvider extends AWTFontProvider
 
         try
         {
-            chosen = Font.createFont(Font.TRUETYPE_FONT, new File(CommonUtils.getAbsoluteFileName("fonts/" + fontName))).deriveFont(100.0F);
+            //is it installed in the system?
+            chosen = new Font(wcFont.getName(), Font.PLAIN, 80);
         }
-        catch (FontFormatException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }
 
         if (chosen == null)
         {
+
+            try
+            {
+                //is it in the folder?
+                chosen = Font.createFont(Font.TRUETYPE_FONT, new File(CommonUtils.getAbsoluteFileName("fonts/" + wcFont.getName() + ".ttf"))).deriveFont(80.0F);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        if (chosen == null)
+        {
+            //using default font
             chosen = new BufferedImage(1000, 1000, BufferedImage.TYPE_3BYTE_BGR).getGraphics().getFont();
         }
         return chosen;
