@@ -1,9 +1,9 @@
 package edu.cloudy.metrics;
 
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.SWCRectangle;
 
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;

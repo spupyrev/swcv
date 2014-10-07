@@ -6,11 +6,14 @@ import edu.cloudy.utils.SWCRectangle;
 import edu.webapp.shared.WCFont;
 
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author spupyrev
@@ -18,6 +21,8 @@ import java.io.File;
  */
 public class SVGFontProvider extends AWTFontProvider
 {
+    private static Set<String> installedFonts;
+
     private WCFont wcFont;
     private Font font;
 
@@ -38,23 +43,16 @@ public class SVGFontProvider extends AWTFontProvider
     {
         Font chosen = null;
 
-        try
+        if (isFontIstalled(wcFont.getName()))
         {
-            //is it installed in the system?
-            chosen = new Font(wcFont.getName(), Font.PLAIN, 80);
+            chosen = new Font(wcFont.getName(), Font.PLAIN, 100);
         }
-        catch (Exception e)
+        else
         {
-            e.printStackTrace();
-        }
-
-        if (chosen == null)
-        {
-
             try
             {
                 //is it in the folder?
-                chosen = Font.createFont(Font.TRUETYPE_FONT, new File(CommonUtils.getAbsoluteFileName("fonts/" + wcFont.getName() + ".ttf"))).deriveFont(80.0F);
+                chosen = Font.createFont(Font.TRUETYPE_FONT, new File(CommonUtils.getAbsoluteFileName("fonts/" + wcFont.getName() + ".ttf"))).deriveFont(100.0F);
             }
             catch (Exception e)
             {
@@ -68,6 +66,20 @@ public class SVGFontProvider extends AWTFontProvider
             chosen = new BufferedImage(1000, 1000, BufferedImage.TYPE_3BYTE_BGR).getGraphics().getFont();
         }
         return chosen;
+    }
+
+    private boolean isFontIstalled(String name)
+    {
+        if (installedFonts == null)
+        {
+            installedFonts = new HashSet<String>();
+            GraphicsEnvironment g = null;
+            g = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            for (String fontName : g.getAvailableFontFamilyNames())
+                installedFonts.add(fontName);
+        }
+
+        return installedFonts.contains(name);
     }
 
     public SWCRectangle getBoundingBox(String text)

@@ -1,4 +1,4 @@
-package edu.cloudy.utils;
+package edu.cloudy.geom;
 
 /**
  * @author spupyrev

@@ -3,7 +3,7 @@ package edu.cloudy.main;
 import edu.cloudy.clustering.IClusterAlgo;
 import edu.cloudy.clustering.KMeansPlusPlus;
 import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.layout.MDSWithFDPackingAlgo;
+import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -12,21 +12,22 @@ import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
 import edu.cloudy.ui.WordCloudFrame;
 import edu.cloudy.utils.Logger;
-import edu.cloudy.utils.WikipediaXMLReader;
 import edu.test.YoutubeCommentsReaderTest;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * @author spupyrev 
@@ -39,10 +40,18 @@ public class WCVisualizer
     public static void main(String argc[])
     {
         Logger.doLogging = false;
-        new WCVisualizer().run();
+
+        try
+        {
+            new WCVisualizer().run();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void run()
+    private void run() throws FileNotFoundException
     {
         // 1. read a document
         WCVDocument document = readDocument();
@@ -63,27 +72,23 @@ public class WCVisualizer
         //visualize(words, similarity, algo, null);
     }
 
-    private WCVDocument readDocument()
+    private WCVDocument readDocument() throws FileNotFoundException
     {
         //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
-
-        //WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/twitter");
-        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/papers");
-        xmlReader.read();
-        Iterator<String> texts = xmlReader.getTexts();
-
-        WCVDocument doc = null;
-        while (texts.hasNext())
+        Scanner scanner = new Scanner(new File("data/UTF-8-test.txt"));
+        StringBuilder sb = new StringBuilder();
+        while (scanner.hasNextLine())
         {
-            doc = new WCVDocument(texts.next());
-            doc.parse();
-
-            //alldocs.add(doc);
+            sb.append(scanner.nextLine());
         }
+        scanner.close();
+
+        WCVDocument doc = new WCVDocument(sb.toString());
+        doc.parse();
 
         System.out.println("#words: " + doc.getWords().size());
         //doc.weightFilter(15, new TFIDFRankingAlgo());
-        doc.weightFilter(100, new TFRankingAlgo());
+        doc.weightFilter(50, new TFRankingAlgo());
         //doc.weightFilter(15, new LexRankingAlgo());
 
         return doc;
@@ -211,8 +216,8 @@ public class WCVisualizer
         //LayoutAlgo algo = new StarForestAlgo();
         //LayoutAlgo algo = new CycleCoverAlgo(words, similarity);
         //LayoutAlgo algo = new SeamCarvingAlgo(words, similarity);
-        //LayoutAlgo algo = new WordleAlgo(words, similarity);
-        LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
+        LayoutAlgo algo = new WordleAlgo(words, similarity);
+        //LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
 
         long startTime = System.currentTimeMillis();
         algo.run();

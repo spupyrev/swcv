@@ -1,13 +1,13 @@
 package edu.test;
 
+import edu.cloudy.geom.BoundingBoxGenerator;
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.nlp.WCVDynamicDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
-import edu.cloudy.utils.BoundingBoxGenerator;
-import edu.cloudy.utils.SWCRectangle;
 
 import java.io.File;
 import java.io.FileNotFoundException;

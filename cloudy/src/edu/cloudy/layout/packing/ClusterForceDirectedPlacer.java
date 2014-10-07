@@ -1,14 +1,14 @@
 package edu.cloudy.layout.packing;
 
+import edu.cloudy.geom.BoundingBoxGenerator;
+import edu.cloudy.geom.SWCPoint;
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutUtils;
 import edu.cloudy.layout.mds.DistanceScaling;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.BoundingBoxGenerator;
-import edu.cloudy.utils.SWCPoint;
-import edu.cloudy.utils.SWCRectangle;
 
 import java.util.ArrayList;
 import java.util.HashMap;

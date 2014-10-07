@@ -1,6 +1,9 @@
 package edu.cloudy.ui;
 
 import edu.cloudy.colors.IColorScheme;
+import edu.cloudy.geom.GeometryUtils;
+import edu.cloudy.geom.SWCPoint;
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.MDSWithFDPackingAlgo;
 import edu.cloudy.layout.PackingCostCalculator;
@@ -9,9 +12,6 @@ import edu.cloudy.metrics.ProximityMetric;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.FontUtils;
-import edu.cloudy.utils.GeometryUtils;
-import edu.cloudy.utils.SWCPoint;
-import edu.cloudy.utils.SWCRectangle;
 
 import java.awt.Color;
 import java.awt.Font;

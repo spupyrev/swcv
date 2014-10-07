@@ -1,7 +1,7 @@
 package edu.cloudy.layout.overlaps;
 
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.utils.SWCRectangle;
 
 import java.util.List;
 import java.util.Map;

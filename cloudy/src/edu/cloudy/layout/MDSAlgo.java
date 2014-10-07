@@ -1,10 +1,10 @@
 package edu.cloudy.layout;
 
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.mds.DistanceScaling;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.SWCRectangle;
 
 import java.util.Arrays;
 import java.util.HashMap;

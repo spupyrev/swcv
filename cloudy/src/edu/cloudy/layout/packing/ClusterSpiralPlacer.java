@@ -1,9 +1,9 @@
 package edu.cloudy.layout.packing;
 
+import edu.cloudy.geom.BoundingBoxGenerator;
+import edu.cloudy.geom.SWCPoint;
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.utils.BoundingBoxGenerator;
-import edu.cloudy.utils.SWCPoint;
-import edu.cloudy.utils.SWCRectangle;
 
 import java.util.ArrayList;
 import java.util.Collections;

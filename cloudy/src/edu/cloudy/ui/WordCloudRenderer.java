@@ -1,7 +1,7 @@
 package edu.cloudy.ui;
 
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.utils.FontUtils;
-import edu.cloudy.utils.SWCRectangle;
 
 import java.awt.Color;
 import java.awt.Font;

@@ -78,7 +78,7 @@ public class WordCloudDetailApp implements EntryPoint
                 settingArea.setCaptionText("options");
                 RootPanel.get("cloud-setting").add(settingArea);
 
-                setSaveAsLinks(cloud);
+                addSaveAsLinks(cloud);
             }
 
             public void onFailure(Throwable caught)
@@ -88,18 +88,19 @@ public class WordCloudDetailApp implements EntryPoint
                 errorBox.show();
             }
         });
-        createCreateWordCloudButton();
+        
+        createUpdateWordCloudButton();
         createRandomWordCloudButton();
     }
 
-    private void createCreateWordCloudButton()
+    private void createUpdateWordCloudButton()
     {
         Button sendButton = Button.wrap(Document.get().getElementById("btn_create_new_wc"));
         sendButton.addClickHandler(new ClickHandler()
         {
             public void onClick(ClickEvent event)
             {
-                createWordCloud(false);
+                updateWordCloud(false);
             }
         });
     }
@@ -111,12 +112,12 @@ public class WordCloudDetailApp implements EntryPoint
         {
             public void onClick(ClickEvent event)
             {
-                createWordCloud(true);
+                updateWordCloud(true);
             }
         });
     }
 
-    private void createWordCloud(boolean useRandomSetting)
+    private void updateWordCloud(boolean useRandomSetting)
     {
         final DialogBox shadow = AppUtils.createShadow();
         shadow.center();
@@ -166,7 +167,7 @@ public class WordCloudDetailApp implements EntryPoint
         return panel;
     }
 
-    private void setSaveAsLinks(WordCloud cloud)
+    private void addSaveAsLinks(WordCloud cloud)
     {
         Anchor link = Anchor.wrap(Document.get().getElementById("save-as-svg"));
         link.setHref("/cloud/download?ft=svg&id=" + cloud.getId());

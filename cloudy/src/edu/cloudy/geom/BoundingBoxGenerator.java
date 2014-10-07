@@ -1,6 +1,7 @@
-package edu.cloudy.utils;
+package edu.cloudy.geom;
 
 import edu.cloudy.nlp.Word;
+import edu.cloudy.utils.FontUtils;
 
 public class BoundingBoxGenerator
 {

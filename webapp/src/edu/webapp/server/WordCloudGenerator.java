@@ -345,7 +345,7 @@ public class WordCloudGenerator
 
     private static void logging(String text, WCSetting setting)
     {
-        System.out.println("running algorithm " + setting.toString());
+        //System.out.println("running algorithm " + setting.toString());
     }
 
     private static SimilarityAlgo createSimilarity(SIMILARITY_ALGORITHM algo)

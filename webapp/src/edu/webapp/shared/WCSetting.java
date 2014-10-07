@@ -1,7 +1,5 @@
 package edu.webapp.shared;
 
-import com.google.gwt.user.client.Window;
-
 import java.io.Serializable;
 import java.util.Random;
 
@@ -80,7 +78,6 @@ public class WCSetting implements Serializable
         setRankingAlgorithm(RANKING_ALGORITHM.values()[pick]);
 
         setFont(WCFontCollection.getRandom());
-        Window.alert(font.getName());
 
         pick = dice.nextInt(ASPECT_RATIO.values().length);
         setAspectRatio(ASPECT_RATIO.values()[pick]);

@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.cloudy.geom.SWCPoint;
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.utils.SWCPoint;
-import edu.cloudy.utils.SWCRectangle;
 
 public class Cluster
 {

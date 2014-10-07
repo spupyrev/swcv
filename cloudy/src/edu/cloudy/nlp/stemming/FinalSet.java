@@ -2,6 +2,8 @@ package edu.cloudy.nlp.stemming;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
 
 /** 
 This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
@@ -62,6 +64,10 @@ public class FinalSet<T extends Comparable> extends AbstractList<T> implements S
   /** Returns the number of elements in this FinalSet */
   public int size() {
     return(data.length);
+  }
+  
+  public Spliterator<T> spliterator() {
+      return Spliterators.spliterator(this, Spliterator.DISTINCT);
   }
   
   /** Test routine */

@@ -1,5 +1,7 @@
 package edu.cloudy.utils;
 
+import edu.cloudy.geom.SWCRectangle;
+
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
@@ -62,7 +64,8 @@ public class FontUtils
         {
             if (font == null)
             {
-                //return new Font("Arial", Font.PLAIN, 80);
+                //return new Font("Verdana", Font.PLAIN, 100);
+                
                 Font f = dummy.getGraphics().getFont();
                 //need a large font to have enough precision
                 font = f.deriveFont((float)100.0);

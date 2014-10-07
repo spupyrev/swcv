@@ -1,6 +1,6 @@
 package edu.cloudy.ui;
 
-import edu.cloudy.utils.SWCRectangle;
+import edu.cloudy.geom.SWCRectangle;
 
 import java.awt.Color;
 

@@ -1,5 +1,6 @@
 package edu.cloudy.layout;
 
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.graph.Edge;
 import edu.cloudy.graph.Vertex;
 import edu.cloudy.graph.WordGraph;
@@ -8,7 +9,6 @@ import edu.cloudy.layout.packing.ClusterForceDirectedPlacer;
 import edu.cloudy.layout.packing.WordPlacer;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.SWCRectangle;
 
 import java.util.ArrayList;
 import java.util.HashMap;

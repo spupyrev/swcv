@@ -11,6 +11,6 @@ import edu.webapp.shared.WordCloud;
 public interface WordCloudDetailServiceAsync
 {
     void getWordCloud(int id, AsyncCallback<WordCloud> callback);
-    
-    void updateWordCloud(int id,String input, WCSetting setting, AsyncCallback<WordCloud> callback) throws IllegalArgumentException;
+
+    void updateWordCloud(int id, String input, WCSetting setting, AsyncCallback<WordCloud> callback) throws IllegalArgumentException;
 }

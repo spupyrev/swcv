@@ -407,6 +407,7 @@ public class SettingsPanel
         });
 
         box.setEnabled(enabled);
+        box.setTitle("Number of words to include in the word cloud");
 
         return box;
     }
@@ -417,7 +418,7 @@ public class SettingsPanel
         for (WCFont font : WCFontCollection.list())
             box.addItem(font.getDescription(), font.getName());
 
-        box.setSelectedIndex(findIndex(box, setting.getFont().toString()));
+        box.setSelectedIndex(findIndex(box, setting.getFont().getName()));
 
         box.addChangeHandler(new ChangeHandler()
         {

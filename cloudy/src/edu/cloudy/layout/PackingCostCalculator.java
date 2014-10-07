@@ -1,7 +1,7 @@
 package edu.cloudy.layout;
 
-import edu.cloudy.utils.SWCPoint;
-import edu.cloudy.utils.SWCRectangle;
+import edu.cloudy.geom.SWCPoint;
+import edu.cloudy.geom.SWCRectangle;
 
 /**
  * @author spupyrev
