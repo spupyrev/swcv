@@ -21,7 +21,6 @@ public class WCFontCollection implements Serializable
         fonts.add(new WCFont("Comic Sans MS", "Comic Sans MS", false));
         fonts.add(new WCFont("Courier New", "Courier", false));
         fonts.add(new WCFont("Impact", "Impact", false));
-        fonts.add(new WCFont("Tahoma", "Tahoma", false));
         fonts.add(new WCFont("Times New Roman", "Times New Roman", false));
         
         fonts.add(new WCFont("Archer", "Archer - UofA Official Font", true));

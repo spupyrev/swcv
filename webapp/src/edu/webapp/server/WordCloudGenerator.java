@@ -7,6 +7,7 @@ import edu.cloudy.colors.DynamicColorScheme;
 import edu.cloudy.colors.IColorScheme;
 import edu.cloudy.colors.SentimentColorScheme;
 import edu.cloudy.colors.WebColorScheme;
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.InflateAndPushAlgo;
@@ -33,7 +34,6 @@ import edu.cloudy.nlp.similarity.SimilarityAlgo;
 import edu.cloudy.ui.UIWord;
 import edu.cloudy.ui.WordCloudRenderer;
 import edu.cloudy.utils.FontUtils;
-import edu.cloudy.utils.SWCRectangle;
 import edu.webapp.server.readers.DocumentExtractor;
 import edu.webapp.server.readers.DynamicReader;
 import edu.webapp.server.readers.IDocumentReader;
@@ -52,12 +52,6 @@ import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.svg.SVGDocument;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -188,12 +182,6 @@ public class WordCloudGenerator
         Writer writer;
         try
         {
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            writer = new StringWriter();
-            transformer.transform(new DOMSource(document), new StreamResult(writer));
-            writer.close();
             writer = new StringWriter();
             svgGenerator.stream(writer, true);
             writer.close();

@@ -126,25 +126,11 @@ public class WordCloudRenderer
         Font deriveFont = font.deriveFont(at);
         g2.setFont(deriveFont);
         g2.setColor(color);
-
+        
         //draw the label
-        GlyphVector gv = deriveFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), Font.LAYOUT_LEFT_TO_RIGHT);
-        g2.drawGlyphVector(gv, (float)x, (float)y);
-    }
-
-    @SuppressWarnings("unused")
-    private void drawDelaunay(Graphics2D g2, List<SWCRectangle> delaunay)
-    {
-        for (int i = 0; i < delaunay.size(); i += 2)
-        {
-            SWCRectangle rect = delaunay.get(i);
-            SWCRectangle rect2 = delaunay.get(i + 1);
-            rect = transformRect(rect);
-            rect2 = transformRect(rect2);
-
-            g2.setColor(Color.green);
-            g2.drawLine((int)rect.getCenterX(), (int)rect.getCenterY(), (int)rect2.getCenterX(), (int)rect2.getCenterY());
-        }
+        //GlyphVector gv = deriveFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), Font.LAYOUT_LEFT_TO_RIGHT);
+        //g2.drawGlyphVector(gv, (float)x, (float)y);
+        g2.drawString(text, (float)x, (float)y);
     }
 
     private SWCRectangle transformRect(SWCRectangle rect)

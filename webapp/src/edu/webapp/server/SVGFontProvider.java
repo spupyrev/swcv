@@ -1,8 +1,8 @@
 package edu.webapp.server;
 
+import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.utils.CommonUtils;
 import edu.cloudy.utils.FontUtils.AWTFontProvider;
-import edu.cloudy.utils.SWCRectangle;
 import edu.webapp.shared.WCFont;
 
 import java.awt.Font;

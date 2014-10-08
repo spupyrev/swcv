@@ -14,13 +14,8 @@ import edu.cloudy.ui.WordCloudFrame;
 import edu.cloudy.utils.Logger;
 import edu.test.YoutubeCommentsReaderTest;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -75,7 +70,7 @@ public class WCVisualizer
     private WCVDocument readDocument() throws FileNotFoundException
     {
         //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
-        Scanner scanner = new Scanner(new File("data/UTF-8-test.txt"));
+        Scanner scanner = new Scanner(new File("data/papers"));
         StringBuilder sb = new StringBuilder();
         while (scanner.hasNextLine())
         {
@@ -88,7 +83,7 @@ public class WCVisualizer
 
         System.out.println("#words: " + doc.getWords().size());
         //doc.weightFilter(15, new TFIDFRankingAlgo());
-        doc.weightFilter(50, new TFRankingAlgo());
+        doc.weightFilter(10, new TFRankingAlgo());
         //doc.weightFilter(15, new LexRankingAlgo());
 
         return doc;
@@ -110,48 +105,6 @@ public class WCVisualizer
     }
 
     @SuppressWarnings("unused")
-    private WCVDocument readURL()
-    {
-        String url = "http://gama.cs.arizona.edu";
-        Document document;
-        try
-        {
-            document = Jsoup.connect(url).get();
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
-
-        List<Element> tn;
-        tn = document.select("div");
-        for (Element t : tn)
-            t.append(".");
-
-        tn = document.select("span");
-        for (Element t : tn)
-            t.append(".");
-
-        tn = document.select("br");
-        for (Element t : tn)
-            t.append(".");
-
-        tn = document.select("li");
-        for (Element t : tn)
-            t.append(".");
-
-        String text = document.text();
-        WCVDocument doc = new WCVDocument(text);
-        System.out.println(text);
-        doc.parse();
-
-        System.out.println("#words: " + doc.getWords().size());
-        doc.weightFilter(50, new TFRankingAlgo());
-
-        return doc;
-    }
-
-    @SuppressWarnings("unused")
     private WCVDocument readYoutube()
     {
         WCVDocument wdoc = new WCVDocument(YoutubeCommentsReaderTest.getComments("5guMumPFBag"));
@@ -165,11 +118,6 @@ public class WCVisualizer
 
     private void extractSimilarities(WCVDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity)
     {
-        //SimilarityAlgo[] coOccurenceAlgo111 = {new LexicalSimilarityAlgo(),new CosineCoOccurenceAlgo(), new JaccardCoOccurenceAlgo()};
-        //SimilarityAlgo coOccurenceAlgo = new LexicalSimilarityAlgo();
-        //SimilarityAlgo coOccurenceAlgo = new DiceCoefficientAlgo();
-
-        //SimilarityAlgo coOccurenceAlgo = new JaccardCoOccurenceAlgo();
         SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();
         coOccurenceAlgo.initialize(wordifier);
         coOccurenceAlgo.run();
@@ -244,6 +192,12 @@ public class WCVisualizer
     private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo, IClusterAlgo clusterAlgo)
     {
         new WordCloudFrame(words, similarity, algo, clusterAlgo);
+
+        renderSVG("test.svg", words, algo);
+    }
+
+    private void renderSVG(String filename, List<Word> words, LayoutAlgo algo)
+    {
     }
 
 }

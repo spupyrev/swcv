@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,10 +51,27 @@ public class WordCloudFrame extends JFrame
         setLayout(new BorderLayout());
 
         IColorScheme colorScheme = (clusterAlgo != null ? new ClusterColorScheme(clusterAlgo, words) : new RandomColorScheme());
-        WordCloudPanel panel = new WordCloudPanel(words, algo, colorScheme);
+        WordCloudPanel panel = new WordCloudPanel(prepareUIWords(words, algo, colorScheme));
         add(BorderLayout.CENTER, panel);
         add(BorderLayout.EAST, new MetricsPanel(words, similarity, algo));
 
         setJMenuBar(new WordCloudMenuBar(panel));
     }
+    
+    private List<UIWord> prepareUIWords(List<Word> words, LayoutAlgo layoutAlgo, IColorScheme colorScheme)
+    {
+        List<UIWord> res = new ArrayList<UIWord>();
+        for (Word w : words)
+        {
+            UIWord uiWord = new UIWord();
+            uiWord.setText(w.word);
+            uiWord.setColor(colorScheme.getColor(w));
+            uiWord.setRectangle(layoutAlgo.getWordPosition(w));
+
+            res.add(uiWord);
+        }
+
+        return res;
+    }
+    
 }

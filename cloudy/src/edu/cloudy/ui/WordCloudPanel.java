@@ -1,9 +1,5 @@
 package edu.cloudy.ui;
 
-import edu.cloudy.colors.IColorScheme;
-import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.nlp.Word;
-
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -18,12 +14,12 @@ public class WordCloudPanel extends JPanel implements ActionListener
 {
     private static final long serialVersionUID = -3332798140563946847L;
 
-    private WordCloudRendererOld renderer;
+    private WordCloudRenderer renderer;
     private Timer timer;
 
-    public WordCloudPanel(List<Word> words, LayoutAlgo algo, IColorScheme colorScheme)
+    public WordCloudPanel(List<UIWord> words)
     {
-        renderer = new WordCloudRendererOld(words, algo, colorScheme, 1024, 800);
+        renderer = new WordCloudRenderer(words, 1024, 800);
         setBackground(Color.WHITE);
         timer = new Timer(100, this);
     }
@@ -37,7 +33,7 @@ public class WordCloudPanel extends JPanel implements ActionListener
 
         if (!timer.isRunning())
         {
-            renderer.render(g2);;
+            renderer.render(g2);
             //timer.start();
         }
     }
@@ -56,17 +52,14 @@ public class WordCloudPanel extends JPanel implements ActionListener
 
     public void setShowAdjacencies(boolean set)
     {
-        renderer.setShowAdjacencies(set);
     }
 
     public void setShowProximity(boolean set)
     {
-        renderer.setShowProximity(set);
     }
 
     public void setShowConvexHull(boolean showConvexHull)
     {
-        renderer.setShowConvexHull(showConvexHull);
     }
 
     public void setShowWords(boolean b)
@@ -81,17 +74,17 @@ public class WordCloudPanel extends JPanel implements ActionListener
 
     public boolean isShowConvexHull()
     {
-        return renderer.isShowConvexHull();
+        return false;
     }
 
     public boolean isShowAdjacencies()
     {
-        return renderer.isShowAdjacencies();
+        return false;
     }
 
     public boolean isShowProximity()
     {
-        return renderer.isShowProximity();
+        return false;
     }
 
     public boolean isShowWords()
