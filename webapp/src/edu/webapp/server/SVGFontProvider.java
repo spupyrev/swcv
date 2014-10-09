@@ -2,6 +2,7 @@ package edu.webapp.server;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.utils.CommonUtils;
+import edu.cloudy.utils.FontUtils;
 import edu.cloudy.utils.FontUtils.AWTFontProvider;
 import edu.webapp.shared.WCFont;
 
@@ -45,14 +46,15 @@ public class SVGFontProvider extends AWTFontProvider
 
         if (isFontIstalled(wcFont.getName()))
         {
-            chosen = new Font(wcFont.getName(), Font.PLAIN, 100);
+            chosen = new Font(wcFont.getName(), Font.PLAIN, (int)FontUtils.DEFAULT_FONT_SIZE);
         }
         else
         {
             try
             {
                 //is it in the folder?
-                chosen = Font.createFont(Font.TRUETYPE_FONT, new File(CommonUtils.getAbsoluteFileName("fonts/" + wcFont.getName() + ".ttf"))).deriveFont(100.0F);
+                File fontFile = new File(CommonUtils.getAbsoluteFileName("fonts/" + wcFont.getName() + ".ttf"));
+                chosen = Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(FontUtils.DEFAULT_FONT_SIZE);
             }
             catch (Exception e)
             {
@@ -63,7 +65,7 @@ public class SVGFontProvider extends AWTFontProvider
         if (chosen == null)
         {
             //using default font
-            chosen = new BufferedImage(1000, 1000, BufferedImage.TYPE_3BYTE_BGR).getGraphics().getFont();
+            chosen = new BufferedImage(1024, 1024, BufferedImage.TYPE_3BYTE_BGR).getGraphics().getFont();
         }
         return chosen;
     }

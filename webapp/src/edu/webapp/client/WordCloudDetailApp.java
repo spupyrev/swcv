@@ -57,7 +57,7 @@ public class WordCloudDetailApp implements EntryPoint
         {
             public void onSuccess(WordCloud cloud)
             {
-                SimplePanel panel = createPanel(cloud);
+                SimplePanel panel = createPanel(cloud.getSvg(), cloud.getWidth() + 20, cloud.getHeight() + 20);
                 RootPanel rPanel = RootPanel.get("cloud-div");
                 rPanel.add(panel);
                 rPanel.setPixelSize(cloud.getWidth() + 20, cloud.getHeight() + 20);
@@ -65,7 +65,7 @@ public class WordCloudDetailApp implements EntryPoint
 
                 if (cloud.isDynamic())
                 {
-                    SimplePanel panel2 = createPanel2(cloud);
+                    SimplePanel panel2 = createPanel(cloud.getSvg2(), cloud.getWidth2() + 20, cloud.getHeight2() + 20);
                     RootPanel rPanel2 = RootPanel.get("cloud-div2");
                     rPanel2.add(panel2);
                     rPanel2.setPixelSize(cloud.getWidth2() + 20, cloud.getHeight2() + 20);
@@ -149,21 +149,15 @@ public class WordCloudDetailApp implements EntryPoint
         });
     }
 
-    private SimplePanel createPanel(WordCloud cloud)
+    private SimplePanel createPanel(String svg, int width, int height)
     {
         SimplePanel panel = new SimplePanel();
-        panel.setPixelSize(cloud.getWidth() + 20, cloud.getHeight() + 20);
+        panel.setPixelSize(width, height);
         panel.addStyleName("center");
-        panel.add(new HTML(cloud.getSvg()));
-        return panel;
-    }
-
-    private SimplePanel createPanel2(WordCloud cloud)
-    {
-        SimplePanel panel = new SimplePanel();
-        panel.setPixelSize(cloud.getWidth2() + 20, cloud.getHeight2() + 20);
-        panel.addStyleName("center");
-        panel.add(new HTML(cloud.getSvg2()));
+        HTML html = new HTML(svg);
+        html.setWidth("100%");
+        html.setHeight("100%");
+        panel.add(html);
         return panel;
     }
 

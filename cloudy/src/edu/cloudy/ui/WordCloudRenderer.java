@@ -126,7 +126,7 @@ public class WordCloudRenderer
         Font deriveFont = font.deriveFont(at);
         g2.setFont(deriveFont);
         g2.setColor(color);
-        
+
         //draw the label
         //GlyphVector gv = deriveFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), Font.LAYOUT_LEFT_TO_RIGHT);
         //g2.drawGlyphVector(gv, (float)x, (float)y);

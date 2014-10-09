@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,14 +132,7 @@ public class WCVisualizer
             topPairs.add(wp);
         }
 
-        Collections.sort(topPairs, new Comparator<WordPair>()
-        {
-            @Override
-            public int compare(WordPair o1, WordPair o2)
-            {
-                return similarity.get(o2).compareTo(similarity.get(o1));
-            }
-        });
+        Collections.sort(topPairs, (o1, o2) -> similarity.get(o2).compareTo(similarity.get(o1))); 
 
         /*System.out.println("top words:");
         for (int i = 0; i < words.size(); i++) {

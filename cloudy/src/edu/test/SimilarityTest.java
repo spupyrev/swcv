@@ -13,7 +13,6 @@ import edu.cloudy.utils.WikipediaXMLReader;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -81,14 +80,7 @@ public class SimilarityTest
                 topPairs.add(wp);
             }
 
-            Collections.sort(topPairs, new Comparator<WordPair>()
-            {
-                @Override
-                public int compare(WordPair o1, WordPair o2)
-                {
-                    return similarity.get(o2).compareTo(similarity.get(o1));
-                }
-            });
+            Collections.sort(topPairs, (o1, o2) -> similarity.get(o2).compareTo(similarity.get(o1)));
 
             System.out.println("top pairs of " + coOccurenceAlgo.getClass().getName() + ":");
             for (int i = 0; i < topPairs.size(); i++)

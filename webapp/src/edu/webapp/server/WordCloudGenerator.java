@@ -41,6 +41,7 @@ import edu.webapp.server.readers.ISentimentReader;
 import edu.webapp.server.utils.RandomTwitterTrendExtractor;
 import edu.webapp.server.utils.RandomWikiUrlExtractor;
 import edu.webapp.server.utils.RandomYoutubeUrlExtractor;
+import edu.webapp.shared.WCFont;
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WCSetting.COLOR_SCHEME;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
@@ -49,9 +50,11 @@ import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
 import edu.webapp.shared.WordCloud;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.Document;
+import org.w3c.dom.svg.SVGSVGElement;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -131,7 +134,7 @@ public class WordCloudGenerator
             WordCloudRenderer renderer = renderers.get(0);
             renderer.setShowRectangles(false);
 
-            String svg = getSvg(renderer);
+            String svg = getSvg(renderer, setting.getFont());
 
             Date timestamp = Calendar.getInstance().getTime();
             cloud = createCloud(setting, input, text, timestamp, svg, "", (int)renderer.getActualWidth(), (int)renderer.getActualHeight(), 0, 0, ip);
@@ -167,23 +170,29 @@ public class WordCloudGenerator
         return wordColorScheme;
     }
 
-    private static String getSvg(WordCloudRenderer renderer)
+    private static String getSvg(WordCloudRenderer renderer, WCFont wcFont)
     {
-        // get svg
-        DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
-
         // Create an instance of org.w3c.dom.Document.
-        SVGDocument document = (SVGDocument)domImpl.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
-        SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
+        DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
+        Document document = domImpl.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
+
+        // Configure the SVGGraphics2D
+        SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
+        ctx.setStyleHandler(new TextStyleHandler());
+        SVGGraphics2D svgGenerator = new SVGGraphics2D(ctx, false);
 
         // rendering the cloud
         renderer.render(svgGenerator);
+
+        //adding font css
+        SVGSVGElement root = (SVGSVGElement)svgGenerator.getRoot();
+        TextStyleHandler.appendFontCSS(root, wcFont);
 
         Writer writer;
         try
         {
             writer = new StringWriter();
-            svgGenerator.stream(writer, true);
+            svgGenerator.stream(root, writer);
             writer.close();
         }
         catch (Exception e)
@@ -271,17 +280,17 @@ public class WordCloudGenerator
         if (renderers.size() != 2)
             throw new RuntimeException("Wrong number of renderers");
 
-        WordCloudRenderer panel1 = renderers.get(0);
-        panel1.setShowRectangles(false);
-        svg1 = getSvg(panel1);
+        WordCloudRenderer renderer1 = renderers.get(0);
+        renderer1.setShowRectangles(false);
+        svg1 = getSvg(renderer1, setting.getFont());
 
-        WordCloudRenderer panel2 = renderers.get(1);
-        panel2.setShowRectangles(false);
-        svg2 = getSvg(panel2);
+        WordCloudRenderer renderer2 = renderers.get(1);
+        renderer2.setShowRectangles(false);
+        svg2 = getSvg(renderer2, setting.getFont());
 
         Date timestamp = Calendar.getInstance().getTime();
 
-        cloud = createCloud(setting, input, doc.getText(), timestamp, svg1, svg2, (int)panel1.getActualWidth(), (int)panel1.getActualHeight(), (int)panel2.getActualWidth(), (int)panel2.getActualHeight(), ip);
+        cloud = createCloud(setting, input, doc.getText(), timestamp, svg1, svg2, (int)renderer1.getActualWidth(), (int)renderer1.getActualHeight(), (int)renderer2.getActualWidth(), (int)renderer2.getActualHeight(), ip);
 
         return cloud;
     }

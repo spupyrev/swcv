@@ -15,6 +15,8 @@ import java.awt.image.BufferedImage;
  */
 public class FontUtils
 {
+    public static final float DEFAULT_FONT_SIZE = 80;
+    
     private static FontProvider provider = null;
 
     private static FontProvider getProvider()
@@ -64,11 +66,11 @@ public class FontUtils
         {
             if (font == null)
             {
-                //return new Font("Verdana", Font.PLAIN, 100);
+                //return new Font("Verdana", Font.PLAIN, DEFAULT_FONT_SIZE);
                 
                 Font f = dummy.getGraphics().getFont();
                 //need a large font to have enough precision
-                font = f.deriveFont((float)100.0);
+                font = f.deriveFont(DEFAULT_FONT_SIZE);
             }
 
             return font;

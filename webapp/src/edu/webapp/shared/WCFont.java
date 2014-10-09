@@ -13,15 +13,18 @@ public class WCFont implements Serializable
     private String name;
     private String description;
     private boolean englishOnly;
+    // Is it installed in the system by default?
+    private boolean webSafe;
 
     public WCFont()
     {
     }
 
-    public WCFont(String name, String description, boolean englishOnly)
+    public WCFont(String name, String description, boolean webSafe, boolean englishOnly)
     {
         this.name = name;
         this.description = description;
+        this.webSafe = webSafe;
         this.englishOnly = englishOnly;
     }
 
@@ -38,5 +41,10 @@ public class WCFont implements Serializable
     public boolean isEnglishOnly()
     {
         return englishOnly;
+    }
+    
+    public boolean isWebSafe()
+    {
+        return webSafe;
     }
 }

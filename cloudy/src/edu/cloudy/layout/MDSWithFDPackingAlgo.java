@@ -9,7 +9,6 @@ import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.Logger;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
         }
 
         runFDAdjustments();
-        
+
         new ForceDirectedOverlapRemoval<SWCRectangle>().run(words, wordPositions);
         new ForceDirectedUniformity<SWCRectangle>().run(words, wordPositions);
     }
@@ -134,15 +133,11 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
             order[i] = i;
         }
 
-        Arrays.sort(order, new Comparator<Integer>()
+        Arrays.sort(order, (Integer o1, Integer o2) ->
         {
-            @Override
-            public int compare(Integer o1, Integer o2)
-            {
-                Double x1 = (isX ? Double.valueOf(x[o1].getCenterX()) : Double.valueOf(x[o1].getCenterY()));
-                Double x2 = (isX ? Double.valueOf(x[o2].getCenterX()) : Double.valueOf(x[o2].getCenterY()));
-                return x1.compareTo(x2);
-            }
+            Double x1 = (isX ? Double.valueOf(x[o1].getCenterX()) : Double.valueOf(x[o1].getCenterY()));
+            Double x2 = (isX ? Double.valueOf(x[o2].getCenterX()) : Double.valueOf(x[o2].getCenterY()));
+            return x1.compareTo(x2);
         });
 
         int cnt = (x.length - 1);

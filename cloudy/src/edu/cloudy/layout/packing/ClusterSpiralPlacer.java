@@ -7,7 +7,6 @@ import edu.cloudy.nlp.Word;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,13 +46,7 @@ public class ClusterSpiralPlacer implements WordPlacer
     public void run()
     {
         // make the largest cluster come first
-        Collections.sort(clusters, new Comparator<Cluster>()
-        {
-            public int compare(Cluster c1, Cluster c2)
-            {
-                return c2.wordPositions.size() - c1.wordPositions.size();
-            }
-        });
+        Collections.sort(clusters, (c1, c2) -> c2.wordPositions.size() - c1.wordPositions.size());
 
         boolean isFirstCluster = true;
         double scale = 1000;
