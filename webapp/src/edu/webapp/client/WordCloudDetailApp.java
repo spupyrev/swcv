@@ -57,26 +57,11 @@ public class WordCloudDetailApp implements EntryPoint
         {
             public void onSuccess(WordCloud cloud)
             {
-                SimplePanel panel = createPanel(cloud.getSvg(), cloud.getWidth() + 20, cloud.getHeight() + 20);
-                RootPanel rPanel = RootPanel.get("cloud-div");
-                rPanel.add(panel);
-                rPanel.setPixelSize(cloud.getWidth() + 20, cloud.getHeight() + 20);
-                rPanel.addStyleName("center");
-
-                if (cloud.isDynamic())
-                {
-                    SimplePanel panel2 = createPanel(cloud.getSvg2(), cloud.getWidth2() + 20, cloud.getHeight2() + 20);
-                    RootPanel rPanel2 = RootPanel.get("cloud-div2");
-                    rPanel2.add(panel2);
-                    rPanel2.setPixelSize(cloud.getWidth2() + 20, cloud.getHeight2() + 20);
-                    rPanel2.addStyleName("center");
-                }
-
                 setting = cloud.getSettings();
                 inputText = cloud.getSourceText();
-                CaptionPanel settingArea = new SettingsPanel(setting, true).create();
-                settingArea.setCaptionText("options");
-                RootPanel.get("cloud-setting").add(settingArea);
+                
+                initializeContentPanel(cloud);
+                initializeSettingPanel(cloud);
 
                 addSaveAsLinks(cloud);
             }
@@ -91,6 +76,36 @@ public class WordCloudDetailApp implements EntryPoint
         
         createUpdateWordCloudButton();
         createRandomWordCloudButton();
+    }
+
+    private void initializeContentPanel(WordCloud cloud)
+    {
+        SimplePanel panel = createPanel(cloud.getSvg(), cloud.getWidth() + 20, cloud.getHeight() + 20);
+        RootPanel rPanel = RootPanel.get("cloud-div");
+        rPanel.clear();
+        rPanel.add(panel);
+        rPanel.setPixelSize(cloud.getWidth() + 20, cloud.getHeight() + 20);
+        rPanel.addStyleName("center");
+
+        if (cloud.isDynamic())
+        {
+            SimplePanel panel2 = createPanel(cloud.getSvg2(), cloud.getWidth2() + 20, cloud.getHeight2() + 20);
+            RootPanel rPanel2 = RootPanel.get("cloud-div2");
+            rPanel2.clear();
+            rPanel2.add(panel2);
+            rPanel2.setPixelSize(cloud.getWidth2() + 20, cloud.getHeight2() + 20);
+            rPanel2.addStyleName("center");
+        }
+    }
+
+    private void initializeSettingPanel(WordCloud cloud)
+    {
+        CaptionPanel settingArea = new SettingsPanel(setting, true).create();
+        settingArea.setCaptionText("options");
+        
+        RootPanel rPanel = RootPanel.get("cloud-setting");
+        rPanel.clear();
+        rPanel.add(settingArea);
     }
 
     private void createUpdateWordCloudButton()
@@ -132,11 +147,14 @@ public class WordCloudDetailApp implements EntryPoint
 
         service.updateWordCloud(id, inputText, setting, new AsyncCallback<WordCloud>()
         {
-            public void onSuccess(WordCloud result)
+            public void onSuccess(WordCloud cloud)
             {
                 loadingBox.hide();
                 shadow.hide();
-                Window.Location.assign("/cloud.html?id=" + result.getId());
+                
+                initializeContentPanel(cloud);
+                initializeSettingPanel(cloud);
+                //Window.Location.assign("/cloud.html?id=" + result.getId());
             }
 
             public void onFailure(Throwable caught)
