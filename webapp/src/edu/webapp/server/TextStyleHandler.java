@@ -20,6 +20,8 @@ import java.util.Map;
  */
 public class TextStyleHandler extends DefaultStyleHandler
 {
+    private int id = 0;
+    
     @Override
     public void setStyle(Element element, Map styleMap, SVGGeneratorContext generatorContext)
     {
@@ -28,7 +30,11 @@ public class TextStyleHandler extends DefaultStyleHandler
         if ("text".equals(element.getNodeName()))
         {
             element.setAttribute("class", "svg_word");
-            ((Element)element.getParentNode()).setAttribute("class", "svg_g");
+            Element parentG = (Element)element.getParentNode();
+            parentG.setAttribute("class", "svg_g");
+            parentG.setAttribute("onmousedown", "selectElement(evt)");
+            parentG.setAttribute("oncontextmenu", "showContextMenu(evt, this)");
+            parentG.setAttribute("id", "g_" + id++);
         }
     }
 

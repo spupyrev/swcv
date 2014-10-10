@@ -189,3 +189,15 @@ svg {
     opacity: 0.5;
     cursor: move;
   }
+
+.custom-context-menu {
+    z-index:1000;
+    position: absolute;
+    border: 1px solid #003366;
+    padding: 3px;
+    cursor: pointer;
+
+	background:#fff; color:#003366;
+	-moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;
+	-moz-box-shadow:0 0 5px #999; -webkit-box-shadow:0 0 5px #999; box-shadow:0 0 5px #999;
+}

@@ -10,6 +10,7 @@
 		<link type="text/css" rel="stylesheet" href="static/css/swc.css">
 		<link type="text/css" rel="stylesheet" href="static/css/bootstrap.css">
 
+		<script type="text/javascript" src="static/js/drag_words.js"></script>
 		<script type="text/javascript" src="cloud/cloud.nocache.js"></script>
 		<script type="text/javascript" src="static/js/ga.js"></script>
 	</head>
@@ -44,6 +45,8 @@
 
 	<div id="cloud-div"></div>
 	<div id="cloud-div2"></div>
+
+	<div id="custom-context-menu" class="custom-context-menu hide" onmouseout="hideContextMenu()" onclick="removeWord(this)">delete</div>
 
 	<br>
 	<div class="buttonWidth-double center">
