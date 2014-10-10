@@ -3,6 +3,7 @@ package edu.webapp.client;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import edu.webapp.shared.DBStatistics;
 import edu.webapp.shared.WordCloud;
 
 import java.util.List;
@@ -14,4 +15,6 @@ import java.util.List;
 public interface WordCloudLatestService extends RemoteService
 {
     List<WordCloud> getLatestWordClouds(int limit);
+
+    DBStatistics getStatistics();
 }

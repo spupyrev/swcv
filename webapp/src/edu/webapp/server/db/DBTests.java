@@ -17,11 +17,15 @@ public class DBTests
 	{
 		try
 		{
-			DBUtils.createDB();
-			testAddCloud();
-			testListClouds();
-			testUpdateClouds();
-			testListClouds();
+			//DBUtils.createDB();
+			//testAddCloud();
+			//testListClouds();
+			//testUpdateClouds();
+			//testListClouds();
+		    
+            testCount();
+            testCountLastMonth();
+            testCountLastWeek();
 		}
 		catch (Exception e)
 		{
@@ -29,6 +33,7 @@ public class DBTests
 		}
 	}
 
+    @SuppressWarnings("unused")
 	private static void testUpdateClouds()
 	{
 		WordCloud cloud = new WordCloud();
@@ -44,6 +49,7 @@ public class DBTests
 		DBUtils.updateCloud(cloud);
 	}
 
+    @SuppressWarnings("unused")
 	private static void testAddCloud() throws DBCloudNotFoundException
 	{
 		WordCloud wc = new WordCloud();
@@ -66,6 +72,7 @@ public class DBTests
 		assert (wc.getCreationDate() == wcNew.getCreationDate());
 	}
 
+    @SuppressWarnings("unused")
 	private static void testListClouds()
 	{
 		List<WordCloud> clouds = DBUtils.getLatestClouds(25);
@@ -80,10 +87,18 @@ public class DBTests
 		}
 	}
 
-    @SuppressWarnings("unused")
-	private static void testCount()
-	{
-		System.out.println("size: " + DBUtils.getCloudCount());
-	}
+    private static void testCount()
+    {
+        System.out.println("size: " + DBUtils.getCloudCount());
+    }
 
+    private static void testCountLastMonth()
+    {
+        System.out.println("size last month: " + DBUtils.getCloudCountLastMonth());
+    }
+
+    private static void testCountLastWeek()
+    {
+        System.out.println("size last week: " + DBUtils.getCloudCountLastWeek());
+    }
 }

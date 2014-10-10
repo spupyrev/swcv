@@ -6,7 +6,6 @@ import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
@@ -14,9 +13,9 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.webapp.shared.DBStatistics;
 import edu.webapp.shared.WordCloud;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +24,7 @@ import java.util.List;
  */
 public class WordCloudLatestApp implements EntryPoint
 {
+    private static final int NUMBER_OF_LATEST_CLOUDS = 50;
     /**
      * Create a remote service proxy to talk to the server-side Greeting
      * service.
@@ -36,32 +36,60 @@ public class WordCloudLatestApp implements EntryPoint
      */
     public void onModuleLoad()
     {
-        final String debug = Window.Location.getParameter("debug");
-        listService.getLatestWordClouds(50, new AsyncCallback<List<WordCloud>>()
+        final String debugParameter = Window.Location.getParameter("debug");
+        final boolean debug = "true".equalsIgnoreCase(debugParameter);
+
+        if (debug)
+        {
+            listService.getStatistics(new AsyncCallback<DBStatistics>()
+            {
+                public void onSuccess(DBStatistics result)
+                {
+                    RootPanel.get("statTable").add(createStatTable(result));
+                }
+
+                public void onFailure(Throwable caught)
+                {
+                    AppUtils.onFailure(caught);
+                }
+            });
+        }
+
+        listService.getLatestWordClouds(NUMBER_OF_LATEST_CLOUDS, new AsyncCallback<List<WordCloud>>()
         {
             public void onSuccess(List<WordCloud> clouds)
             {
-                try
-                {
-                    Grid table = createTable(clouds, "true".equalsIgnoreCase(debug));
-                    RootPanel.get("latestTable").add(table);
-                }
-                catch (Exception e)
-                {
-                    throw new RuntimeException(e);
-                }
+                Grid table = createTable(clouds, debug);
+                RootPanel.get("latestTable").add(table);
             }
 
             public void onFailure(Throwable caught)
             {
-                DialogBox errorBox = AppUtils.createErrorBox(caught, null);
-                errorBox.center();
-                errorBox.show();
+                AppUtils.onFailure(caught);
             }
         });
     }
 
-    private Grid createTable(List<WordCloud> clouds, boolean debug) throws ParseException
+    private Grid createStatTable(DBStatistics result)
+    {
+        Grid table = new Grid(3, 2);
+        table.addStyleName("stat");
+
+        table.setHTML(0, 0, "the number of clouds <b>in total</b>");
+        table.setHTML(1, 0, "the number of clouds constructed <b>last month</b>");
+        table.setHTML(2, 0, "the number of clouds constructed <b>last week</b>");
+
+        table.setHTML(0, 1, "" + result.getTotal());
+        table.setHTML(1, 1, "" + result.getLastMonth());
+        table.setHTML(2, 1, "" + result.getLastWeek());
+
+        CellFormatter cf = table.getCellFormatter();
+        cf.setWidth(0, 0, "50%");
+        cf.setWidth(0, 1, "50%");
+        return table;
+    }
+
+    private Grid createTable(List<WordCloud> clouds, boolean debug)
     {
         Grid table = new Grid(clouds.size() + 1, debug ? 4 : 3);
         table.addStyleName("latest");

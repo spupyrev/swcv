@@ -17,6 +17,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,153 +27,231 @@ import java.util.List;
  */
 public class DBUtils
 {
-	public static int getCloudCount()
-	{
-		final List<Integer> tmp = new ArrayList<Integer>();
-		executeDBAction(new IDBAction()
-		{
-			public void execute(Connection c, Statement stmt) throws Exception
-			{
-				ResultSet rs = stmt.executeQuery("SELECT COUNT(*) As total FROM CLOUD");
-				tmp.add(rs.getInt("total"));
-			}
-		});
+    public static int getCloudCount()
+    {
+        return executeDBAction((Connection c, Statement stmt) ->
+        {
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) As total FROM CLOUD");
+            return rs.getInt("total");
+        });
+    }
 
-		return tmp.get(0);
-	}
+    public static int getCloudCountLastMonth()
+    {
+        return executeDBAction((Connection c, Statement stmt) ->
+        {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            cal.add(Calendar.DATE, -30);
+            String dateAsString = WordCloud.dtf.format(cal.getTime());
 
-	public static void updateCloud(final WordCloud cloud)
-	{
-		executeDBAction(new IDBAction()
-		{
-			public void execute(Connection c, Statement stmt) throws Exception
-			{
-				String[] fields = new String[] { "WIDTH", "HEIGHT", "SVG", "SVG2", "CREATOR_IP", "WORD_COUNT", "SIMILARITY_ALGO", "RANKING_ALGO", "LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR", "ASPECT_RATIO" };
-				WCSetting settings = cloud.getSettings();
-                Object[] values = new Object[] { cloud.getWidth(), cloud.getHeight(), cloud.getSvg(), cloud.getSvg2(), cloud.getCreatorIP(), settings.getWordCount(),
-					settings.getSimilarityAlgorithm().toString(), settings.getRankingAlgorithm().toString(), settings.getLayoutAlgorithm().toString(),
-					settings.getFont().getName(), settings.getColorScheme().toString(), settings.getClusterAlgorithm().toString(), settings.getAspectRatio().toString() };
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) As total FROM CLOUD WHERE CREATION_DATE > " + dateAsString);
+            return rs.getInt("total");
+        });
+    }
 
-				StringBuffer sql = new StringBuffer();
-				sql.append("UPDATE CLOUD SET ");
-				for (int i = 0; i < fields.length; ++i)
-				{
-					if (i != 0)
-						sql.append(",");
-					sql.append(fields[i]);
-					sql.append("=");
-					sql.append("?");
-				}
+    public static int getCloudCountLastWeek()
+    {
+        return executeDBAction((Connection c, Statement stmt) ->
+        {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            cal.add(Calendar.DATE, -7);
+            String dateAsString = WordCloud.dtf.format(cal.getTime());
 
-				sql.append("WHERE ID = ?;");
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) As total FROM CLOUD WHERE CREATION_DATE > " + dateAsString);
+            return rs.getInt("total");
+        });
+    }
 
-				PreparedStatement ps = c.prepareStatement(sql.toString());
-				for (int i = 0; i < values.length; i++)
-				{
-					addValue(ps, i + 1, values[i]);
-				}
-				addValue(ps, values.length + 1, cloud.getId());
-				ps.execute();
+    public static void updateCloud(final WordCloud cloud)
+    {
+        executeDBAction(new IDBAction()
+        {
+            public Void execute(Connection c, Statement stmt) throws Exception
+            {
+                String[] fields = new String[] {
+                        "WIDTH",
+                        "HEIGHT",
+                        "SVG",
+                        "SVG2",
+                        "CREATOR_IP",
+                        "WORD_COUNT",
+                        "SIMILARITY_ALGO",
+                        "RANKING_ALGO",
+                        "LAYOUT_ALGO",
+                        "FONT",
+                        "COLOR_SCHEME",
+                        "COLOR_DISTR",
+                        "ASPECT_RATIO" };
 
-			}
+                WCSetting settings = cloud.getSettings();
+                Object[] values = new Object[] {
+                        cloud.getWidth(),
+                        cloud.getHeight(),
+                        cloud.getSvg(),
+                        cloud.getSvg2(),
+                        cloud.getCreatorIP(),
+                        settings.getWordCount(),
+                        settings.getSimilarityAlgorithm().toString(),
+                        settings.getRankingAlgorithm().toString(),
+                        settings.getLayoutAlgorithm().toString(),
+                        settings.getFont().getName(),
+                        settings.getColorScheme().toString(),
+                        settings.getClusterAlgorithm().toString(),
+                        settings.getAspectRatio().toString() };
 
-			private void addValue(PreparedStatement ps, int index, Object o) throws SQLException
-			{
-				if (o instanceof String)
-					ps.setString(index, o.toString());
-				else if (o instanceof Integer)
-					ps.setInt(index, (Integer) o);
-				else if (o == null)
-					ps.setNull(index, Types.VARCHAR);
-				else
-					throw new RuntimeException("unknown db type for object: " + o);
-			}
-		});
+                StringBuffer sql = new StringBuffer();
+                sql.append("UPDATE CLOUD SET ");
+                for (int i = 0; i < fields.length; ++i)
+                {
+                    if (i != 0)
+                        sql.append(",");
+                    sql.append(fields[i]);
+                    sql.append("=");
+                    sql.append("?");
+                }
 
-	};
+                sql.append("WHERE ID = ?;");
 
-	public static void addCloud(final WordCloud cloud)
-	{
-		executeDBAction(new IDBAction()
-		{
-			public void execute(Connection c, Statement stmt) throws Exception
-			{
-				String[] fields = new String[] { "ID", "INPUT_TEXT", "SOURCE_TEXT", "CREATION_DATE", "WIDTH", "HEIGHT", "WIDTH2", "HEIGHT2", "SVG", "SVG2", "CREATOR_IP", "WORD_COUNT",
-					"SIMILARITY_ALGO", "RANKING_ALGO", "LAYOUT_ALGO", "FONT", "COLOR_SCHEME", "COLOR_DISTR", "ASPECT_RATIO" };
+                PreparedStatement ps = c.prepareStatement(sql.toString());
+                for (int i = 0; i < values.length; i++)
+                {
+                    addValue(ps, i + 1, values[i]);
+                }
+                addValue(ps, values.length + 1, cloud.getId());
+                ps.execute();
 
-				WCSetting settings = cloud.getSettings();
-                Object[] values = new Object[] { cloud.getId(), cloud.getInputText(), cloud.getSourceText(), cloud.getCreationDate(), cloud.getWidth(), cloud.getHeight(), cloud.getWidth2(),
-					cloud.getHeight2(), cloud.getSvg(), cloud.getSvg2(), cloud.getCreatorIP(), settings.getWordCount(), settings.getSimilarityAlgorithm().toString(),
-					settings.getRankingAlgorithm().toString(), settings.getLayoutAlgorithm().toString(), settings.getFont().getName(),
-					settings.getColorScheme().toString(), settings.getClusterAlgorithm().toString(), settings.getAspectRatio().toString() };
+                return null;
+            }
 
-				StringBuffer sql = new StringBuffer();
-				sql.append("INSERT INTO CLOUD (");
-				for (int i = 0; i < fields.length; i++)
-				{
-					if (i != 0)
-						sql.append(",");
-					sql.append(fields[i]);
-				}
-				sql.append(") ");
+            private void addValue(PreparedStatement ps, int index, Object o) throws SQLException
+            {
+                if (o instanceof String)
+                    ps.setString(index, o.toString());
+                else if (o instanceof Integer)
+                    ps.setInt(index, (Integer)o);
+                else if (o == null)
+                    ps.setNull(index, Types.VARCHAR);
+                else
+                    throw new RuntimeException("unknown db type for object: " + o);
+            }
+        });
 
-				sql.append(" VALUES (");
-				for (int i = 0; i < values.length; i++)
-				{
-					if (i != 0)
-						sql.append(",");
-					sql.append("?");
-				}
-				sql.append(");");
+    };
 
-				//System.out.println("SQL: " + sql.toString());
-				PreparedStatement ps = c.prepareStatement(sql.toString());
-				for (int i = 0; i < values.length; i++)
-				{
-					addValue(ps, i + 1, values[i]);
-				}
+    public static void addCloud(final WordCloud cloud)
+    {
+        executeDBAction(new IDBAction()
+        {
+            public Void execute(Connection c, Statement stmt) throws Exception
+            {
+                String[] fields = new String[] {
+                        "ID",
+                        "INPUT_TEXT",
+                        "SOURCE_TEXT",
+                        "CREATION_DATE",
+                        "WIDTH",
+                        "HEIGHT",
+                        "WIDTH2",
+                        "HEIGHT2",
+                        "SVG",
+                        "SVG2",
+                        "CREATOR_IP",
+                        "WORD_COUNT",
+                        "SIMILARITY_ALGO",
+                        "RANKING_ALGO",
+                        "LAYOUT_ALGO",
+                        "FONT",
+                        "COLOR_SCHEME",
+                        "COLOR_DISTR",
+                        "ASPECT_RATIO" };
 
-				ps.executeUpdate();
-			}
+                WCSetting settings = cloud.getSettings();
+                Object[] values = new Object[] {
+                        cloud.getId(),
+                        cloud.getInputText(),
+                        cloud.getSourceText(),
+                        cloud.getCreationDate(),
+                        cloud.getWidth(),
+                        cloud.getHeight(),
+                        cloud.getWidth2(),
+                        cloud.getHeight2(),
+                        cloud.getSvg(),
+                        cloud.getSvg2(),
+                        cloud.getCreatorIP(),
+                        settings.getWordCount(),
+                        settings.getSimilarityAlgorithm().toString(),
+                        settings.getRankingAlgorithm().toString(),
+                        settings.getLayoutAlgorithm().toString(),
+                        settings.getFont().getName(),
+                        settings.getColorScheme().toString(),
+                        settings.getClusterAlgorithm().toString(),
+                        settings.getAspectRatio().toString() };
 
-			private void addValue(PreparedStatement ps, int index, Object o) throws SQLException
-			{
-				if (o instanceof String)
-					ps.setString(index, o.toString());
-				else if (o instanceof Integer)
-					ps.setInt(index, (Integer) o);
-				else if (o == null)
-					ps.setNull(index, Types.VARCHAR);
-				else
-					throw new RuntimeException("unknown db type for object: " + o);
-			}
-		});
-	}
+                StringBuffer sql = new StringBuffer();
+                sql.append("INSERT INTO CLOUD (");
+                for (int i = 0; i < fields.length; i++)
+                {
+                    if (i != 0)
+                        sql.append(",");
+                    sql.append(fields[i]);
+                }
+                sql.append(") ");
 
-	public static WordCloud getCloud(final int id) throws DBCloudNotFoundException
-	{
-		final WordCloud cloud = new WordCloud();
+                sql.append(" VALUES (");
+                for (int i = 0; i < values.length; i++)
+                {
+                    if (i != 0)
+                        sql.append(",");
+                    sql.append("?");
+                }
+                sql.append(");");
 
-		executeDBAction(new IDBAction()
-		{
-			public void execute(Connection c, Statement stmt) throws Exception
-			{
-				ResultSet rs = stmt.executeQuery("SELECT * FROM CLOUD WHERE ID = " + id + ";");
+                //System.out.println("SQL: " + sql.toString());
+                PreparedStatement ps = c.prepareStatement(sql.toString());
+                for (int i = 0; i < values.length; i++)
+                {
+                    addValue(ps, i + 1, values[i]);
+                }
 
-				while (rs.next())
-				{
-					convertRSToCloud(cloud, rs);
-				}
-				rs.close();
-			}
+                ps.executeUpdate();
+                return null;
+            }
 
-		});
+            private void addValue(PreparedStatement ps, int index, Object o) throws SQLException
+            {
+                if (o instanceof String)
+                    ps.setString(index, o.toString());
+                else if (o instanceof Integer)
+                    ps.setInt(index, (Integer)o);
+                else if (o == null)
+                    ps.setNull(index, Types.VARCHAR);
+                else
+                    throw new RuntimeException("unknown db type for object: " + o);
+            }
+        });
+    }
 
-		if (cloud.getId() != id)
-			throw new DBCloudNotFoundException("No word cloud exists with id=" + id);
+    public static WordCloud getCloud(final int id) throws DBCloudNotFoundException
+    {
+        return executeDBAction((Connection c, Statement stmt) ->
+        {
+            ResultSet rs = stmt.executeQuery("SELECT * FROM CLOUD WHERE ID = " + id + ";");
 
-		return cloud;
-	}
+            WordCloud cloud = new WordCloud();
+            while (rs.next())
+            {
+                convertRSToCloud(cloud, rs);
+            }
+            rs.close();
+
+            if (cloud.getId() != id)
+                throw new DBCloudNotFoundException("No word cloud exists with id=" + id);
+
+            return cloud;
+        });
+    }
 
     private static void convertRSToCloud(final WordCloud cloud, ResultSet rs) throws SQLException
     {
@@ -206,94 +286,109 @@ public class DBUtils
         cloud.setCreatorIP(rs.getString("CREATOR_IP"));
     }
 
-	public static List<WordCloud> getLatestClouds(final int limit)
-	{
-		final List<WordCloud> clouds = new ArrayList<WordCloud>();
+    public static List<WordCloud> getLatestClouds(final int limit)
+    {
+        return executeDBAction((Connection c, Statement stmt) ->
+        {
+            stmt.setMaxRows(limit - 1);
+            ResultSet rs = stmt.executeQuery("SELECT ID, CREATION_DATE, INPUT_TEXT, CREATOR_IP FROM CLOUD ORDER BY ID DESC;");
 
-		executeDBAction(new IDBAction()
-		{
-			public void execute(Connection c, Statement stmt) throws Exception
-			{
-				stmt.setMaxRows(limit - 1);
-				ResultSet rs = stmt.executeQuery("SELECT ID, CREATION_DATE, INPUT_TEXT, CREATOR_IP FROM CLOUD ORDER BY ID DESC;");
+            List<WordCloud> clouds = new ArrayList<WordCloud>();
+            while (rs.next())
+            {
+                WordCloud cloud = new WordCloud();
+                convertRSToCloudLight(cloud, rs);
 
-				while (rs.next())
-				{
-					WordCloud cloud = new WordCloud();
-					convertRSToCloudLight(cloud, rs);
+                clouds.add(cloud);
+            }
+            rs.close();
+            return clouds;
+        });
+    }
 
-					clouds.add(cloud);
-				}
-				rs.close();
-			}
-		});
+    public static void createDB()
+    {
+        executeDBAction((Connection c, Statement stmt) ->
+        {
+            stmt = c.createStatement();
+            String[] fields = new String[] {
+                    "ID INT PRIMARY KEY     NOT NULL",
+                    "INPUT_TEXT TEXT    NOT NULL",
+                    "SOURCE_TEXT TEXT NOT NULL",
+                    "CREATION_DATE CHAR(50) NOT NULL",
+                    "WIDTH INT NOT NULL",
+                    "HEIGHT INT NOT NULL",
+                    "WIDTH2 INT NOT NULL",
+                    "HEIGHT2 INT NOT NULL",
+                    "SVG TEXT NOT NULL",
+                    "SVG2 TEXT NOT NULL",
+                    "CREATOR_IP CHAR(50)",
+                    "WORD_COUNT INT NOT NULL",
+                    "SIMILARITY_ALGO CHAR(50)",
+                    "RANKING_ALGO CHAR(50)",
+                    "LAYOUT_ALGO CHAR(50)",
+                    "FONT CHAR(50)",
+                    "COLOR_SCHEME CHAR(50)",
+                    "COLOR_DISTR CHAR(50)",
+                    "ASPECT_RATIO CHAR(50)" };
 
-		return clouds;
-	}
+            StringBuffer sql = new StringBuffer();
+            sql.append("CREATE TABLE CLOUD (");
+            for (int i = 0; i < fields.length; i++)
+            {
+                if (i != 0)
+                    sql.append(", ");
+                sql.append(fields[i]);
+            }
+            sql.append(")");
 
-	public static void createDB()
-	{
-		executeDBAction(new IDBAction()
-		{
-			public void execute(Connection c, Statement stmt) throws SQLException
-			{
-				stmt = c.createStatement();
-				String[] fields = new String[] { "ID INT PRIMARY KEY     NOT NULL", "INPUT_TEXT TEXT    NOT NULL", "SOURCE_TEXT TEXT NOT NULL", "CREATION_DATE CHAR(50) NOT NULL",
-					"WIDTH INT NOT NULL", "HEIGHT INT NOT NULL", "WIDTH2 INT NOT NULL", "HEIGHT2 INT NOT NULL", "SVG TEXT NOT NULL", "SVG2 TEXT NOT NULL", "CREATOR_IP CHAR(50)",
-					"WORD_COUNT INT NOT NULL", "SIMILARITY_ALGO CHAR(50)", "RANKING_ALGO CHAR(50)", "LAYOUT_ALGO CHAR(50)", "FONT CHAR(50)", "COLOR_SCHEME CHAR(50)", "COLOR_DISTR CHAR(50)", "ASPECT_RATIO CHAR(50)" };
+            stmt.executeUpdate(sql.toString());
 
-				StringBuffer sql = new StringBuffer();
-				sql.append("CREATE TABLE CLOUD (");
-				for (int i = 0; i < fields.length; i++)
-				{
-					if (i != 0)
-						sql.append(", ");
-					sql.append(fields[i]);
-				}
-				sql.append(")");
+            return null;
+        });
+    }
 
-				stmt.executeUpdate(sql.toString());
-			}
-		});
-	}
+    private static <T> T executeDBAction(IDBAction<T> action)
+    {
+        T result = null;
 
-	private static void executeDBAction(IDBAction action)
-	{
-		Connection c = null;
-		Statement stmt = null;
-		try
-		{
-			Class.forName("org.sqlite.JDBC");
-			try
-			{
-				String path = CommonUtils.getAbsoluteFileName("") + "../../db/clouds.db";
-				c = DriverManager.getConnection("jdbc:sqlite:" + path);
-			}
-			catch (SQLException e)
-			{
-				//c = DriverManager.getConnection("jdbc:sqlite:war/db/clouds.db");
-				throw e;
-			}
-			//System.out.println("Opened database successfully");
+        Connection c = null;
+        Statement stmt = null;
+        try
+        {
+            Class.forName("org.sqlite.JDBC");
+            try
+            {
+                String path = CommonUtils.getAbsoluteFileName("") + "../../db/clouds.db";
+                c = DriverManager.getConnection("jdbc:sqlite:" + path);
+            }
+            catch (SQLException e)
+            {
+                //c = DriverManager.getConnection("jdbc:sqlite:war/db/clouds.db");
+                throw e;
+            }
+            //System.out.println("Opened database successfully");
 
-			stmt = c.createStatement();
+            stmt = c.createStatement();
 
-			action.execute(c, stmt);
+            result = action.execute(c, stmt);
 
-			stmt.close();
-			c.close();
-		}
-		catch (Exception e)
-		{
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			throw new RuntimeException(e);
-		}
-		//System.out.println("Action executed successfully");
-	}
+            stmt.close();
+            c.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        //System.out.println("Action executed successfully");
+        return result;
+    }
 
-	interface IDBAction
-	{
-		void execute(Connection c, Statement stmt) throws Exception;
-	}
+    @FunctionalInterface
+    interface IDBAction<T>
+    {
+        T execute(Connection c, Statement stmt) throws Exception;
+    }
 
 }

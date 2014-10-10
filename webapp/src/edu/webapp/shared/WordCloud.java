@@ -140,7 +140,7 @@ public class WordCloud implements Serializable
 
     private static final String DATE_FORMAT = "yyyyMMddHHmmssS";
     private static final DefaultDateTimeFormatInfo info = new DefaultDateTimeFormatInfo();
-    private static final DateTimeFormat dtf = new DateTimeFormat(WordCloud.DATE_FORMAT, info)
+    public static final DateTimeFormat dtf = new DateTimeFormat(WordCloud.DATE_FORMAT, info)
     {
     };
 

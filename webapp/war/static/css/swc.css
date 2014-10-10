@@ -168,6 +168,23 @@ body {
 	padding: 5px;
 }
 
+.stat {
+	border-collapse:collapse;
+	text-align: left;
+	margin: 0 auto;
+	width: 45%;
+}
+
+.stat:after {
+    content:"\a";
+    white-space: pre;
+}
+
+.stat td {      	
+	border: 1px solid black;
+	padding: 5px;
+}
+
 svg {
 	height: 100%;
 	width: 100%;

@@ -98,4 +98,11 @@ public class AppUtils
         // Return the dialog box
         return dialogBox;
     }
+    
+    public static void onFailure(Throwable caught)
+    {
+        DialogBox errorBox = AppUtils.createErrorBox(caught, null);
+        errorBox.center();
+        errorBox.show();
+    }
 }
