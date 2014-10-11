@@ -84,8 +84,8 @@ public class WordCloudLatestApp implements EntryPoint
         table.setHTML(2, 1, "" + result.getLastWeek());
 
         CellFormatter cf = table.getCellFormatter();
-        cf.setWidth(0, 0, "50%");
-        cf.setWidth(0, 1, "50%");
+        cf.setWidth(0, 0, "65%");
+        cf.setWidth(0, 1, "35%");
         return table;
     }
 

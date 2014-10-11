@@ -346,12 +346,14 @@ public class SettingsPanel
     private Widget createLayoutListBox()
     {
         final ListBox box = new ListBox();
+        box.addItem("Wordle (random)", WCSetting.LAYOUT_ALGORITHM.WORDLE.toString());
+        box.addItem("Tag Cloud (alphabetical)", WCSetting.LAYOUT_ALGORITHM.TAG_ALPHABETICAL.toString());
+        box.addItem("Tag Cloud (rank)", WCSetting.LAYOUT_ALGORITHM.TAG_RANK.toString());
+        box.addItem("Force-Directed", WCSetting.LAYOUT_ALGORITHM.MDS.toString());
         box.addItem("Star Forest", WCSetting.LAYOUT_ALGORITHM.STAR.toString());
         box.addItem("Cycle Cover", WCSetting.LAYOUT_ALGORITHM.CYCLE.toString());
-        box.addItem("Wordle (random)", WCSetting.LAYOUT_ALGORITHM.WORDLE.toString());
         box.addItem("Context Preserving", WCSetting.LAYOUT_ALGORITHM.CPWCV.toString());
         box.addItem("Inflate and Push", WCSetting.LAYOUT_ALGORITHM.INFLATE.toString());
-        box.addItem("Force-Directed", WCSetting.LAYOUT_ALGORITHM.MDS.toString());
         box.addItem("Seam Carving", WCSetting.LAYOUT_ALGORITHM.SEAM.toString());
 
         box.setSelectedIndex(findIndex(box, setting.getLayoutAlgorithm().toString()));

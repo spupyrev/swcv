@@ -116,6 +116,11 @@ public class SWCRectangle
         return new SWCPoint(getCenterX(), getCenterY());
     }
 
+    public double getArea()
+    {
+        return width * height;
+    }
+
     public void setRect(double x, double y, double width, double height)
     {
         this.x = x;

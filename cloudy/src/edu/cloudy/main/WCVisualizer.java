@@ -3,7 +3,8 @@ package edu.cloudy.main;
 import edu.cloudy.clustering.IClusterAlgo;
 import edu.cloudy.clustering.KMeansPlusPlus;
 import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.layout.WordleAlgo;
+import edu.cloudy.layout.TagCloudAlgo;
+import edu.cloudy.layout.TagCloudAlgo.TABLE_ORDER;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -73,7 +74,7 @@ public class WCVisualizer
         StringBuilder sb = new StringBuilder();
         while (scanner.hasNextLine())
         {
-            sb.append(scanner.nextLine());
+            sb.append(scanner.nextLine() + "\n");
         }
         scanner.close();
 
@@ -82,7 +83,7 @@ public class WCVisualizer
 
         System.out.println("#words: " + doc.getWords().size());
         //doc.weightFilter(15, new TFIDFRankingAlgo());
-        doc.weightFilter(10, new TFRankingAlgo());
+        doc.weightFilter(50, new TFRankingAlgo());
         //doc.weightFilter(15, new LexRankingAlgo());
 
         return doc;
@@ -156,8 +157,9 @@ public class WCVisualizer
         //LayoutAlgo algo = new StarForestAlgo();
         //LayoutAlgo algo = new CycleCoverAlgo(words, similarity);
         //LayoutAlgo algo = new SeamCarvingAlgo(words, similarity);
-        LayoutAlgo algo = new WordleAlgo(words, similarity);
+        //LayoutAlgo algo = new WordleAlgo(words, similarity);
         //LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
+        LayoutAlgo algo = new TagCloudAlgo(words, similarity, TABLE_ORDER.RANK);
 
         long startTime = System.currentTimeMillis();
         algo.run();

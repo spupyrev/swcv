@@ -8,14 +8,8 @@ import edu.cloudy.colors.IColorScheme;
 import edu.cloudy.colors.SentimentColorScheme;
 import edu.cloudy.colors.WebColorScheme;
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.layout.ContextPreservingAlgo;
-import edu.cloudy.layout.CycleCoverAlgo;
-import edu.cloudy.layout.InflateAndPushAlgo;
-import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.layout.MDSWithFDPackingAlgo;
-import edu.cloudy.layout.SeamCarvingAlgo;
-import edu.cloudy.layout.StarForestAlgo;
-import edu.cloudy.layout.WordleAlgo;
+import edu.cloudy.layout.*;
+import edu.cloudy.layout.TagCloudAlgo.TABLE_ORDER;
 import edu.cloudy.nlp.ContextDelimiter;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.WCVDynamicDocument;
@@ -363,6 +357,12 @@ public class WordCloudGenerator
     {
         if (algo.equals(LAYOUT_ALGORITHM.WORDLE))
             return new WordleAlgo(words, similarity);
+
+        if (algo.equals(LAYOUT_ALGORITHM.TAG_ALPHABETICAL))
+            return new TagCloudAlgo(words, similarity, TABLE_ORDER.ALPHABETICAL);
+
+        if (algo.equals(LAYOUT_ALGORITHM.TAG_RANK))
+            return new TagCloudAlgo(words, similarity, TABLE_ORDER.RANK);
 
         if (algo.equals(LAYOUT_ALGORITHM.CPWCV))
             return new ContextPreservingAlgo(words, similarity);

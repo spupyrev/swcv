@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
  */
 public class FontUtils
 {
-    public static final float DEFAULT_FONT_SIZE = 80;
+    public static final float DEFAULT_FONT_SIZE = 64;
     
     private static FontProvider provider = null;
 

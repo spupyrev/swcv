@@ -27,7 +27,7 @@ public class WCSetting implements Serializable
 
     public enum LAYOUT_ALGORITHM
     {
-        WORDLE, CPWCV, SEAM, INFLATE, STAR, CYCLE, MDS
+        WORDLE, CPWCV, SEAM, INFLATE, STAR, CYCLE, MDS, TAG_ALPHABETICAL, TAG_RANK
     }
 
     public enum SIMILARITY_ALGORITHM
