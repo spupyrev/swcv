@@ -2,7 +2,7 @@ package edu.cloudy.layout.packing;
 
 import edu.cloudy.geom.BoundingBoxGenerator;
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.packing.RectanglePacker.Rectangle;
 import edu.cloudy.nlp.Word;
 
@@ -19,7 +19,7 @@ public class BoundingBoxPlacer implements WordPlacer
 {
     private List<Word> words;
     private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
-    private List<? extends LayoutAlgo> singlePlacers;
+    private List<? extends LayoutResult> singlePlacers;
 
     private BoundingBoxGenerator bbGenerator;
     private double weightToAreaFactor;
@@ -27,7 +27,7 @@ public class BoundingBoxPlacer implements WordPlacer
     private double MAX_WIDTH;
     private double MAX_HEIGHT;
 
-    public BoundingBoxPlacer(List<Word> words, List<? extends LayoutAlgo> singlePlacers, double weightToAreaFactor, BoundingBoxGenerator bbGenerator)
+    public BoundingBoxPlacer(List<Word> words, List<? extends LayoutResult> singlePlacers, double weightToAreaFactor, BoundingBoxGenerator bbGenerator)
     {
         this.words = words;
         this.singlePlacers = singlePlacers;

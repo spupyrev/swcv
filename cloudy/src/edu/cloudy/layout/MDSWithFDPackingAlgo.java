@@ -9,7 +9,6 @@ import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.Logger;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,24 +30,16 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
     }
 
     @Override
-    public void run()
+    protected void run()
     {
-        //TODO: change scaling!!!!!!!!!!!!!!!!!!!!!!
-
         //initial layout
-        MDSAlgo algo = new MDSAlgo(words, similarity, false);
-        algo.run();
-
-        wordPositions = new HashMap<Word, SWCRectangle>();
-        for (Word w : words)
-        {
-            SWCRectangle rect = algo.getWordPosition(w);
-            wordPositions.put(w, rect);
-        }
+        LayoutResult initialLayout = new MDSAlgo(words, similarity, false).layout();
+        words.forEach(w -> wordPositions.put(w, initialLayout.getWordPosition(w)));
 
         runFDAdjustments();
 
-        new ForceDirectedOverlapRemoval<SWCRectangle>().run(words, wordPositions);
+        //postprocessing
+        new ForceDirectedOverlapRemoval<SWCRectangle>(5000).run(words, wordPositions);
         new ForceDirectedUniformity<SWCRectangle>().run(words, wordPositions);
     }
 

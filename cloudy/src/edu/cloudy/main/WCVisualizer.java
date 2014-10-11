@@ -3,6 +3,7 @@ package edu.cloudy.main;
 import edu.cloudy.clustering.IClusterAlgo;
 import edu.cloudy.clustering.KMeansPlusPlus;
 import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.TagCloudAlgo;
 import edu.cloudy.layout.TagCloudAlgo.TABLE_ORDER;
 import edu.cloudy.nlp.WCVDocument;
@@ -26,12 +27,12 @@ import java.util.Scanner;
 
 /**
  * @author spupyrev 
- * Apr 30, 2013 
+ * Apr 30, 2013
+ *  
  * create and visualize a wordcloud for a document
  */
 public class WCVisualizer
 {
-
     public static void main(String argc[])
     {
         Logger.doLogging = false;
@@ -59,7 +60,7 @@ public class WCVisualizer
         extractSimilarities(document, words, similarity);
 
         // 3. run a layout algorithm
-        LayoutAlgo algo = runLayout(words, similarity);
+        LayoutResult algo = runLayout(words, similarity);
         IClusterAlgo clusterAlgo = runClustering(words, similarity);
 
         // 4. visualize it
@@ -149,12 +150,12 @@ public class WCVisualizer
         }*/
     }
 
-    private LayoutAlgo runLayout(List<Word> words, Map<WordPair, Double> similarity)
+    private LayoutResult runLayout(List<Word> words, Map<WordPair, Double> similarity)
     {
         //LayoutAlgo algo = new ContextPreservingAlgo(words, similarity);
         //LayoutAlgo algo = new InflateAndPushAlgo();
         //LayoutAlgo algo = new MDSAlgo(words, similarity);
-        //LayoutAlgo algo = new StarForestAlgo();
+        //LayoutAlgo algo = new StarForestAlgo(words, similarity);
         //LayoutAlgo algo = new CycleCoverAlgo(words, similarity);
         //LayoutAlgo algo = new SeamCarvingAlgo(words, similarity);
         //LayoutAlgo algo = new WordleAlgo(words, similarity);
@@ -162,10 +163,10 @@ public class WCVisualizer
         LayoutAlgo algo = new TagCloudAlgo(words, similarity, TABLE_ORDER.RANK);
 
         long startTime = System.currentTimeMillis();
-        algo.run();
+        LayoutResult layout = algo.layout();
         System.out.printf("layout done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
 
-        return algo;
+        return layout;
     }
 
     private IClusterAlgo runClustering(List<Word> words, Map<WordPair, Double> similarity)
@@ -183,15 +184,8 @@ public class WCVisualizer
         return algo;
     }
 
-    private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo, IClusterAlgo clusterAlgo)
+    private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo, IClusterAlgo clusterAlgo)
     {
         new WordCloudFrame(words, similarity, algo, clusterAlgo);
-
-        renderSVG("test.svg", words, algo);
     }
-
-    private void renderSVG(String filename, List<Word> words, LayoutAlgo algo)
-    {
-    }
-
 }

@@ -10,8 +10,11 @@ import java.util.Map;
  * @author spupyrev
  * Nov 28, 2013
  */
-public interface IClusterAlgo {
-	void run(List<Word> words, Map<WordPair, Double> similarity);
-	int getCluster(Word word);
-	int getClusterNumber();
+public interface IClusterAlgo
+{
+    void run(List<Word> words, Map<WordPair, Double> similarity);
+
+    int getCluster(Word word);
+
+    int getClusterNumber();
 }

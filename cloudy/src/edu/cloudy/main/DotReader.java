@@ -2,6 +2,7 @@ package edu.cloudy.main;
 
 import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.ui.WordCloudFrame;
@@ -38,10 +39,10 @@ public class DotReader
         similarity = filterSimilarities(words, similarity);
 
         // 3. run a layout algorithm
-        LayoutAlgo algo = runLayout(words, similarity);
+        LayoutResult layout = runLayout(words, similarity);
 
         // 4. visualize it
-        visualize(words, similarity, algo);
+        visualize(words, similarity, layout);
     }
 
     private List<Word> filterWords(List<Word> words, Map<WordPair, Double> similarity, int maxWords)
@@ -175,22 +176,21 @@ public class DotReader
         return new Word(s1, Double.parseDouble(s2));
     }
 
-    private LayoutAlgo runLayout(List<Word> words, Map<WordPair, Double> similarity)
+    private LayoutResult runLayout(List<Word> words, Map<WordPair, Double> similarity)
     {
-        //LayoutAlgo algo = new StarForestAlgoNew();
         LayoutAlgo algo = new ContextPreservingAlgo(words, similarity);
 
         long startTime = System.currentTimeMillis();
-        algo.run();
+        LayoutResult res = algo.layout();
         System.out.printf("done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
 
-        return algo;
+        return res;
     }
 
-    private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
+    private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout)
     {
         if (words.size() > 0 && words.size() <= 50)
-            new WordCloudFrame(words, similarity, algo, null);
+            new WordCloudFrame(words, similarity, layout, null);
     }
 
 }

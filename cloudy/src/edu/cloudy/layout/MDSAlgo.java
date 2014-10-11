@@ -40,7 +40,7 @@ public class MDSAlgo extends BaseLayoutAlgo
     private static double SCALING = 0.5;
 
     @Override
-    public void run()
+    protected void run()
     {
         //maps words to their bounding rectangle
         wordPositions = computeBoundingBoxes();

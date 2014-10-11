@@ -28,7 +28,7 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
     }
 
     @Override
-    public void run()
+    protected void run()
     {
         SWCRectangle[] initialWordPositions = initialPlacement();
 
@@ -44,26 +44,14 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
 
     private SWCRectangle[] initialPlacement()
     {
-        //find initial placement by mds layout
-        MDSAlgo algo = new MDSAlgo(words, similarity);
-        algo.run();
-
-        //run mds
+        //initial layout
+        LayoutResult initialLayout = new MDSAlgo(words, similarity, false).layout();
+        
         SWCRectangle[] wordPositions = new SWCRectangle[words.size()];
         int i = 0;
         for (Word w : words)
         {
-            /*if (i == 0)
-            	wordPositions.put(w, new SWCRectangle(1, 1, 2, 1));
-            else if (i == 1)
-            	wordPositions.put(w, new SWCRectangle(3, 7, 3, 1));
-            else if (i == 2)
-            	wordPositions.put(w, new SWCRectangle(5, 4, 4, 2));
-            else if (i == 3)
-            	wordPositions.put(w, new SWCRectangle(10, 1, 2, 1));
-            else if (i == 4) wordPositions.put(w, new SWCRectangle(8, 8, 4, 3));*/
-
-            wordPositions[i] = algo.getWordPosition(w);
+            wordPositions[i] = initialLayout.getWordPosition(w);
             i++;
         }
         return wordPositions;

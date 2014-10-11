@@ -4,6 +4,7 @@ import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.InflateAndPushAlgo;
 import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.MDSAlgo;
 import edu.cloudy.layout.SeamCarvingAlgo;
 import edu.cloudy.layout.StarForestAlgo;
@@ -220,15 +221,15 @@ public class ALENEXPaperEvalulator
 
     private static RunResult computeMetrics(LayoutAlgo algo)
     {
-        //TODO
         List<Word> words = null;
         Map<WordPair, Double> similarity = null;
 
         //System.out.print("running " + algo + " ...");
         long startTime = System.currentTimeMillis();
+        LayoutResult layout = null;
         try
         {
-            algo.run();
+            layout = algo.layout();
         }
         catch (Exception e)
         {
@@ -241,15 +242,15 @@ public class ALENEXPaperEvalulator
         long stopTime = System.currentTimeMillis();
         RunResult result = new RunResult();
         result.runningTime = (stopTime - startTime) / 1000.0;
-        result.uniformity = new UniformAreaMetric().getValue(words, similarity, algo);
-        result.aspectRatio = new AspectRatioMetric().getValue(words, similarity, algo);
-        result.distortion = new DistortionMetric().getValue(words, similarity, algo);
-        result.stress = new StressMetric().getValue(words, similarity, algo);
-        result.adjacencies = new AdjacenciesMetric().getValue(words, similarity, algo) / new TotalWeightMetric().getValue(words, similarity, algo);
-        result.compactnessBB = new SpaceMetric(false).getValue(words, similarity, algo);
-        result.compactnessCH = new SpaceMetric(true).getValue(words, similarity, algo);
-        result.approxomation = new AdjacenciesMetric().getValue(words, similarity, algo)
-                / new MaxPlanarSubgraphMetric().getValue(words, similarity, algo);
+        result.uniformity = new UniformAreaMetric().getValue(words, similarity, layout);
+        result.aspectRatio = new AspectRatioMetric().getValue(words, similarity, layout);
+        result.distortion = new DistortionMetric().getValue(words, similarity, layout);
+        result.stress = new StressMetric().getValue(words, similarity, layout);
+        result.adjacencies = new AdjacenciesMetric().getValue(words, similarity, layout) / new TotalWeightMetric().getValue(words, similarity, layout);
+        result.compactnessBB = new SpaceMetric(false).getValue(words, similarity, layout);
+        result.compactnessCH = new SpaceMetric(true).getValue(words, similarity, layout);
+        result.approxomation = new AdjacenciesMetric().getValue(words, similarity, layout)
+                / new MaxPlanarSubgraphMetric().getValue(words, similarity, layout);
 
         return result;
     }

@@ -9,7 +9,6 @@ import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +25,9 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
 
     private Word[] lWords;
 
-    public ContextPreservingAlgo(List<Word> lWords, Map<WordPair, Double> similarity)
+    public ContextPreservingAlgo(List<Word> words, Map<WordPair, Double> similarity)
     {
-        super(lWords, similarity);
+        super(words, similarity);
         
         init();
     }
@@ -39,31 +38,16 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
     }
 
     @Override
-    public void run()
+    protected void run()
     {
-        wordPositions = initialPlacement();
+        //initial layout
+        LayoutResult initialLayout = new MDSAlgo(words, similarity, false).layout();
+        words.forEach(w -> wordPositions.put(w, initialLayout.getWordPosition(w)));
 
         //compute Delaunay
         delaunayEdges = computeDelaunay();
 
         runForceDirected();
-    }
-
-    private Map<Word, SWCRectangle> initialPlacement()
-    {
-        //find initial placement by mds layout
-        MDSAlgo algo = new MDSAlgo(words, similarity);
-        algo.run();
-
-        //run mds
-        Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
-        for (Word w : lWords)
-        {
-            SWCRectangle rect = algo.getWordPosition(w);
-            wordPositions.put(w, rect);
-        }
-
-        return wordPositions;
     }
 
     int[][] delaunayEdges;
@@ -343,8 +327,7 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
 
     private SWCPoint getCenter(int index)
     {
-        SWCPoint p = new SWCPoint(wordPositions.get(lWords[index]).getCenterX(), wordPositions.get(lWords[index]).getCenterY());
-        return p;
+        return wordPositions.get(lWords[index]).getCenter();
     }
 
     private boolean overlap(int i)

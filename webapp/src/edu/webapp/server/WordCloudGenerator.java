@@ -218,14 +218,15 @@ public class WordCloudGenerator
         // algo
         LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm(), document.getWords(), similarity);
         layoutAlgo.setAspectRatio(setting.getAspectRatioDouble());
-        layoutAlgo.run();
+        LayoutResult layout = layoutAlgo.layout();
 
         if (document instanceof WCVDynamicDocument)
         {
-            IColorScheme wordColorScheme1 = getColorScheme(((WCVDynamicDocument)document).getDoc1(), similarity, setting);
-            IColorScheme wordColorScheme2 = getColorScheme(((WCVDynamicDocument)document).getDoc2(), similarity, setting);
-            List<UIWord> uiWords1 = prepareUIWords(((WCVDynamicDocument)document).getDoc1().getWords(), layoutAlgo, wordColorScheme1);
-            List<UIWord> uiWords2 = prepareUIWords(((WCVDynamicDocument)document).getDoc2().getWords(), layoutAlgo, wordColorScheme2);
+            WCVDynamicDocument dynDocument = (WCVDynamicDocument)document;
+            IColorScheme wordColorScheme1 = getColorScheme(dynDocument.getDoc1(), similarity, setting);
+            IColorScheme wordColorScheme2 = getColorScheme(dynDocument.getDoc2(), similarity, setting);
+            List<UIWord> uiWords1 = prepareUIWordsForDynamic(dynDocument.getDoc1().getWords(), layoutAlgo, layout, wordColorScheme1);
+            List<UIWord> uiWords2 = prepareUIWordsForDynamic(dynDocument.getDoc2().getWords(), layoutAlgo, layout, wordColorScheme2);
 
             renderers.add(new WordCloudRenderer(uiWords1, SCR_WIDTH, SCR_HEIGHT));
             renderers.add(new WordCloudRenderer(uiWords2, SCR_WIDTH, SCR_HEIGHT));
@@ -233,13 +234,30 @@ public class WordCloudGenerator
         else
         {
             IColorScheme wordColorScheme = getColorScheme(document, similarity, setting);
-            List<UIWord> uiWords = prepareUIWords(document.getWords(), layoutAlgo, wordColorScheme);
+            List<UIWord> uiWords = prepareUIWords(document.getWords(), layout, wordColorScheme);
             renderers.add(new WordCloudRenderer(uiWords, SCR_WIDTH, SCR_HEIGHT));
         }
+
         return renderers;
     }
 
-    private static List<UIWord> prepareUIWords(List<Word> words, LayoutAlgo layoutAlgo, IColorScheme colorScheme)
+    private static List<UIWord> prepareUIWords(List<Word> words, LayoutResult layout, IColorScheme colorScheme)
+    {
+        List<UIWord> res = new ArrayList<UIWord>();
+        for (Word w : words)
+        {
+            UIWord uiWord = new UIWord();
+            uiWord.setText(w.word);
+            uiWord.setColor(colorScheme.getColor(w));
+            uiWord.setRectangle(layout.getWordPosition(w));
+
+            res.add(uiWord);
+        }
+
+        return res;
+    }
+
+    private static List<UIWord> prepareUIWordsForDynamic(List<Word> words, LayoutAlgo algo, LayoutResult layout, IColorScheme colorScheme)
     {
         List<UIWord> res = new ArrayList<UIWord>();
         for (Word w : words)
@@ -249,8 +267,8 @@ public class WordCloudGenerator
             uiWord.setColor(colorScheme.getColor(w));
 
             //restore the correct box for the dynamic case
-            SWCRectangle original = layoutAlgo.getWordPosition(w);
-            SWCRectangle result = layoutAlgo.getBoundingBox(w);
+            SWCRectangle original = layout.getWordPosition(w);
+            SWCRectangle result = ((BaseLayoutAlgo)algo).getBoundingBox(w);
             result.moveTo(original.getX(), original.getY());
 
             uiWord.setRectangle(result);

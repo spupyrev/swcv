@@ -1,7 +1,7 @@
 package edu.cloudy.metrics;
 
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -20,7 +20,7 @@ public class ProximityMetric implements QualityMetric, AdjacentMetric
     private static double EPS = 0.01;
 
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
+    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout)
     {
 
         double res = 0;
@@ -29,11 +29,11 @@ public class ProximityMetric implements QualityMetric, AdjacentMetric
             if (wp.getFirst().equals(wp.getSecond()))
                 continue;
 
-            if (close(algo, wp.getFirst(), wp.getSecond(), words))
+            if (close(layout, wp.getFirst(), wp.getSecond(), words))
             {
                 res += similarity.get(wp);
             }
-            else if (close(algo, wp.getSecond(), wp.getFirst(), words))
+            else if (close(layout, wp.getSecond(), wp.getFirst(), words))
             {
                 res += similarity.get(wp);
             }
@@ -42,10 +42,10 @@ public class ProximityMetric implements QualityMetric, AdjacentMetric
         return res;
     }
 
-    private boolean close(LayoutAlgo algo, Word first, Word second, List<Word> words)
+    private boolean close(LayoutResult layout, Word first, Word second, List<Word> words)
     {
-        SWCRectangle rect1 = algo.getWordPosition(first);
-        SWCRectangle rect2 = algo.getWordPosition(second);
+        SWCRectangle rect1 = layout.getWordPosition(first);
+        SWCRectangle rect2 = layout.getWordPosition(second);
 
         if (rect1 == null || rect2 == null)
             return false;
@@ -79,7 +79,7 @@ public class ProximityMetric implements QualityMetric, AdjacentMetric
             if (w.equals(first) || w.equals(second))
                 continue;
 
-            SWCRectangle tmpRect = algo.getWordPosition(w);
+            SWCRectangle tmpRect = layout.getWordPosition(w);
 
             // see if our line intersects any of the words
             if (connection.intersects(tmpRect.getX(), tmpRect.getY(), tmpRect.getWidth(), tmpRect.getHeight()))
@@ -110,7 +110,7 @@ public class ProximityMetric implements QualityMetric, AdjacentMetric
         return true;
     }
 
-    public List<WordPair> getCloseWords(List<Word> words, LayoutAlgo algo)
+    public List<WordPair> getCloseWords(List<Word> words, LayoutResult layout)
     {
         List<WordPair> res = new ArrayList<WordPair>();
         for (int i = 0; i < words.size(); i++)
@@ -118,11 +118,11 @@ public class ProximityMetric implements QualityMetric, AdjacentMetric
             {
                 WordPair wp = new WordPair(words.get(i), words.get(j));
 
-                if (close(algo, wp.getFirst(), wp.getSecond(), words))
+                if (close(layout, wp.getFirst(), wp.getSecond(), words))
                 {
                     res.add(wp);
                 }
-                else if (close(algo, wp.getSecond(), wp.getFirst(), words))
+                else if (close(layout, wp.getSecond(), wp.getFirst(), words))
                 {
                     res.add(wp);
                 }

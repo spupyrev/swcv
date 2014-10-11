@@ -1,7 +1,7 @@
 package edu.cloudy.metrics;
 
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -17,7 +17,7 @@ public class PrecisionRecallMetric2 implements QualityMetric
     private double threshold;
 
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
+    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
     {
         threshold = calculateThreshold(similarity);
         double res = 0;
@@ -52,7 +52,7 @@ public class PrecisionRecallMetric2 implements QualityMetric
         return res;
     }
 
-    private List<Word> getCloseWords(Word word, List<Word> words, LayoutAlgo algo)
+    private List<Word> getCloseWords(Word word, List<Word> words, LayoutResult algo)
     {
         SWCRectangle rect = algo.getWordPosition(word);
         LinkedList<Word> closeWords = new LinkedList<Word>();
@@ -76,7 +76,7 @@ public class PrecisionRecallMetric2 implements QualityMetric
         return elip.intersects(rect2.getX(), rect2.getY(), rect2.getWidth(), rect2.getHeight());
     }
 
-    public double precisionRecall(Word w, LayoutAlgo algo, Map<WordPair, Double> similarity, List<Word> closeWords)
+    public double precisionRecall(Word w, LayoutResult algo, Map<WordPair, Double> similarity, List<Word> closeWords)
     {
         if (w == null)
             return 0;

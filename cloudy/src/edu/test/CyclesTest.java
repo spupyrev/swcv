@@ -1,6 +1,6 @@
 package edu.test;
 
-import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.SinglePathAlgo;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -23,7 +23,7 @@ public class CyclesTest
         Map<WordPair, Double> similarity = new HashMap();
         MatchingTest.randomSimilarities(words, similarity);
 
-        LayoutAlgo algo = runLayout(words, similarity);
+        LayoutResult algo = runLayout(words, similarity);
 
         new WordCloudFrame(words, similarity, algo, null);
     }
@@ -46,11 +46,9 @@ public class CyclesTest
         return cycle;
     }
 
-    private static LayoutAlgo runLayout(List<Word> cycle, Map<WordPair, Double> similarity)
+    private static LayoutResult runLayout(List<Word> cycle, Map<WordPair, Double> similarity)
     {
-        LayoutAlgo algo = new SinglePathAlgo(cycle, similarity);
-        algo.run();
-        return algo;
+        return new SinglePathAlgo(cycle, similarity).layout();
     }
 
 }

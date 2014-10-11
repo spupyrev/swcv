@@ -1,7 +1,7 @@
 package edu.cloudy.metrics;
 
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -17,7 +17,7 @@ public class AspectRatioMetric implements QualityMetric
     //private static final double GOLDEN_RATIO = (1.0 + Math.sqrt(5)) / 2.0;
 
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
+    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
     {
         if (words.isEmpty())
             return 0;

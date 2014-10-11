@@ -34,7 +34,7 @@ public class StarForestAlgo extends BaseLayoutAlgo
     {
         WordGraph g = new WordGraph(words, similarity);
 
-        List<SingleStarAlgo> forest = greedyExtractStarForest(g);
+        List<LayoutResult> forest = greedyExtractStarForest(g);
 
         WordPlacer wordPlacer = new ClusterForceDirectedPlacer(words, similarity, forest, bbGenerator);
 
@@ -46,9 +46,9 @@ public class StarForestAlgo extends BaseLayoutAlgo
         new ForceDirectedUniformity<SWCRectangle>().run(words, wordPositions);
     }
 
-    private List<SingleStarAlgo> greedyExtractStarForest(WordGraph g)
+    private List<LayoutResult> greedyExtractStarForest(WordGraph g)
     {
-        List<SingleStarAlgo> result = new ArrayList<SingleStarAlgo>();
+        List<LayoutResult> result = new ArrayList<LayoutResult>();
         Set<Vertex> usedVertices = new HashSet<Vertex>();
 
         while (true)
@@ -87,10 +87,9 @@ public class StarForestAlgo extends BaseLayoutAlgo
             WordGraph star = createStar(bestStarCenter, usedVertices, g);
             SingleStarAlgo ssa = new SingleStarAlgo(words, similarity);
             ssa.setGraph(star);
-            ssa.run();
 
             //take the star
-            result.add(ssa);
+            result.add(ssa.layout());
             //update used
             usedVertices.addAll(ssa.getRealizedVertices());
         }

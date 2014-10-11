@@ -38,7 +38,7 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
     }
 
     @Override
-    public void run()
+    protected void run()
     {
         if (!useGreedy)
         {
@@ -59,7 +59,7 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
         int CYCLE_SIZE_LIMIT = 12;
         cycles = breakLongCycles(cycles, CYCLE_SIZE_LIMIT);
 
-        List<BaseLayoutAlgo> cycleAlgos = new ArrayList<BaseLayoutAlgo>();
+        List<LayoutResult> cycleAlgos = new ArrayList<LayoutResult>();
         for (List<Vertex> c : cycles)
         {
             BaseLayoutAlgo algo = null;
@@ -69,8 +69,7 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
             else
                 algo = new SinglePathAlgo(getCycleWords(c), getCycleWeights(c));
 
-            algo.run();
-            cycleAlgos.add(algo);
+            cycleAlgos.add(algo.layout());
         }
 
         Logger.println("#cycles: " + cycles.size());

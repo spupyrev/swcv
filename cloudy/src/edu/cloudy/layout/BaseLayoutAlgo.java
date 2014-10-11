@@ -46,9 +46,15 @@ public abstract class BaseLayoutAlgo implements LayoutAlgo
     {
         return bbGenerator.getBoundingBox(word);
     }
-
-    public SWCRectangle getWordPosition(Word w)
+    
+    @Override
+    public LayoutResult layout()
     {
-        return wordPositions.get(w);
+        run();
+        
+        return new LayoutResult(wordPositions);
     }
+    
+    protected abstract void run();
+    
 }

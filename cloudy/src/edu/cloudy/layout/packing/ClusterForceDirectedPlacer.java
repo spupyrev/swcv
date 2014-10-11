@@ -3,7 +3,7 @@ package edu.cloudy.layout.packing;
 import edu.cloudy.geom.BoundingBoxGenerator;
 import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.LayoutUtils;
 import edu.cloudy.layout.mds.DistanceScaling;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
@@ -30,11 +30,11 @@ public class ClusterForceDirectedPlacer implements WordPlacer
     private List<Word> words;
     private Map<WordPair, Double> similarities;
     private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
-    private List<? extends LayoutAlgo> singlePlacers;
+    private List<? extends LayoutResult> singlePlacers;
 
     private BoundingBoxGenerator bbGenerator;
 
-    public ClusterForceDirectedPlacer(List<Word> words, Map<WordPair, Double> similarities, List<? extends LayoutAlgo> singlePlacers, BoundingBoxGenerator bbGenerator)
+    public ClusterForceDirectedPlacer(List<Word> words, Map<WordPair, Double> similarities, List<? extends LayoutResult> singlePlacers, BoundingBoxGenerator bbGenerator)
     {
         this.words = words;
         this.similarities = similarities;

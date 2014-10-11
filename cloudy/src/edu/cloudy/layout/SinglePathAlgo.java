@@ -6,7 +6,6 @@ import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,11 +53,8 @@ public class SinglePathAlgo extends BaseLayoutAlgo
                 {
                     Logger.log("can't layout the path with length = " + words.size());
 
-                    LayoutAlgo algo = new SingleCycleAlgo(words, similarity);
-                    algo.run();
-
-                    for (Word w : words)
-                        wordPositions.put(w, algo.getWordPosition(w));
+                    LayoutResult singleCycleLayout = new SingleCycleAlgo(words, similarity).layout(); 
+                    words.forEach(w -> wordPositions.put(w, singleCycleLayout.getWordPosition(w)));
 
                     return;
                 }
@@ -211,9 +207,7 @@ public class SinglePathAlgo extends BaseLayoutAlgo
 
     private void generateBoundingBoxes()
     {
-        wordPositions = new HashMap<Word, SWCRectangle>();
-        for (Word w : words)
-            wordPositions.put(w, getBoundingBox(w));
+        words.forEach(w -> wordPositions.put(w, getBoundingBox(w)));
 
         rec = new SWCRectangle[words.size()];
         for (int i = 0; i < words.size(); i++)

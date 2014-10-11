@@ -36,7 +36,7 @@ public class TagCloudAlgo extends BaseLayoutAlgo
     }
 
     @Override
-    public void run()
+    protected void run()
     {
         generateBoundingBoxes();
 

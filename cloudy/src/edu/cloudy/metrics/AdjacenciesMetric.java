@@ -1,7 +1,7 @@
 package edu.cloudy.metrics;
 
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -19,7 +19,7 @@ public class AdjacenciesMetric implements QualityMetric, AdjacentMetric
 	private static double EPS = 0.01;
 
 	@Override
-	public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
+	public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
 	{
 		//SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
 
@@ -38,7 +38,7 @@ public class AdjacenciesMetric implements QualityMetric, AdjacentMetric
 		return res;
 	}
 
-	private boolean close(LayoutAlgo algo, Word first, Word second)
+	private boolean close(LayoutResult algo, Word first, Word second)
 	{
 		SWCRectangle rect1 = algo.getWordPosition(first);
 		SWCRectangle rect2 = algo.getWordPosition(second);
@@ -66,7 +66,7 @@ public class AdjacenciesMetric implements QualityMetric, AdjacentMetric
 		return true;
 	}
 
-	public List<WordPair> getCloseWords(List<Word> words, LayoutAlgo algo)
+	public List<WordPair> getCloseWords(List<Word> words, LayoutResult algo)
 	{
 		List<WordPair> res = new ArrayList<WordPair>();
 		

@@ -2,7 +2,7 @@ package edu.cloudy.metrics;
 
 import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -16,7 +16,7 @@ import java.util.Map;
 public class DistortionMetric implements QualityMetric
 {
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
+    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
     {
         if (words.isEmpty())
             return 0;
@@ -103,7 +103,7 @@ public class DistortionMetric implements QualityMetric
         return Math.sqrt(sum);
     }
 
-    private double[][] getDissimilarityMatrix(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
+    private double[][] getDissimilarityMatrix(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
     {
         int n = words.size();
 
@@ -121,7 +121,7 @@ public class DistortionMetric implements QualityMetric
         return matrix;
     }
 
-    private double[][] getGeomDistance(List<Word> words, Map<WordPair, Double> similarity, LayoutAlgo algo)
+    private double[][] getGeomDistance(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
     {
         int n = words.size();
 
@@ -136,7 +136,7 @@ public class DistortionMetric implements QualityMetric
     }
 
     @SuppressWarnings("unused")
-    private double distance(Word first, Word second, LayoutAlgo algo)
+    private double distance(Word first, Word second, LayoutResult algo)
     {
         SWCRectangle rect1 = algo.getWordPosition(first);
         SWCRectangle rect2 = algo.getWordPosition(second);
@@ -148,7 +148,7 @@ public class DistortionMetric implements QualityMetric
         return p1.distance(p2);
     }
 
-    private double distance2(Word first, Word second, LayoutAlgo algo)
+    private double distance2(Word first, Word second, LayoutResult algo)
     {
         SWCRectangle rect1 = algo.getWordPosition(first);
         SWCRectangle rect2 = algo.getWordPosition(second);

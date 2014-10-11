@@ -92,7 +92,7 @@ public class MatchingTest
         algorithm.setUseGreedy(useGreedy);
 
         // Run it!
-        algorithm.run();
+        algorithm.layout();
         return algorithm.getRealizedWeight();
     }
 
@@ -111,7 +111,7 @@ public class MatchingTest
         SingleStarAlgo starsAlgo = new SingleStarAlgo(words, similarity);
 
         // Run it!
-        starsAlgo.run();
+        starsAlgo.layout();
         return starsAlgo.getRealizedWeight();
     }
 

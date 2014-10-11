@@ -1,7 +1,7 @@
 package edu.test;
 
 import edu.cloudy.layout.ContextPreservingAlgo;
-import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -82,9 +82,7 @@ public class DegreeWeightAnalyzer
 
     private static List<Double> realizedWeights(List<Word> words, Map<WordPair, Double> similarity)
     {
-        //LayoutAlgo algo = new CycleCoverAlgo();
-        LayoutAlgo algo = new ContextPreservingAlgo(words, similarity);
-        algo.run();
+        LayoutResult algo = new ContextPreservingAlgo(words, similarity).layout();
 
         //List<WordPair> wpl = new AdjacenciesMetric().realizedPairs(words, similarity, algo);
         List<WordPair> wpl = null;//new AdjacenciesMetric().realizedPairs(words, similarity, algo);

@@ -46,7 +46,7 @@ public class StarsTest
         starsAlgo.setGraph(graph);
 
         // Run it!
-        starsAlgo.run();
+        starsAlgo.layout();
         return starsAlgo.getRealizedWeight();
     }
 

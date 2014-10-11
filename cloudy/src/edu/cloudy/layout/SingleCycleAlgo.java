@@ -4,7 +4,6 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,9 +21,10 @@ public class SingleCycleAlgo extends BaseLayoutAlgo
     }
 
     @Override
-    public void run()
+    protected void run()
     {
-        generateBoundingBoxes();
+        //generate bounding boxes
+        words.forEach(w -> wordPositions.put(w, getBoundingBox(w)));
         if (words.size() == 1)
             return;
 
@@ -111,18 +111,4 @@ public class SingleCycleAlgo extends BaseLayoutAlgo
             }
         }
     }
-
-    private void generateBoundingBoxes()
-    {
-        wordPositions = new HashMap<Word, SWCRectangle>();
-        for (Word w : words)
-            wordPositions.put(w, getBoundingBox(w));
-    }
-
-    @Override
-    public SWCRectangle getWordPosition(Word w)
-    {
-        return wordPositions.get(w);
-    }
-
 }

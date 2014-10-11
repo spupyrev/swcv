@@ -4,9 +4,6 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.graph.Edge;
 import edu.cloudy.graph.Vertex;
 import edu.cloudy.graph.WordGraph;
-import edu.cloudy.layout.packing.FixedPositionWordPlacer;
-import edu.cloudy.layout.packing.MapWordPlacer;
-import edu.cloudy.layout.packing.WordPlacer;
 import edu.cloudy.metrics.AdjacenciesMetric;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -96,7 +93,7 @@ public class SingleStarAlgo extends BaseLayoutAlgo
     }
 
     @Override
-    public void run()
+    protected void run()
     {
         computeKnapsacks();
 
@@ -533,7 +530,7 @@ public class SingleStarAlgo extends BaseLayoutAlgo
             }
             else
             {
-                throw new IllegalStateException("Something very strange has happened.");
+                throw new IllegalStateException("Something very strange happened");
             }
 
             for (int j = 0; j < winningElements.length; j++)
@@ -550,26 +547,6 @@ public class SingleStarAlgo extends BaseLayoutAlgo
 
             setToReplace.clear(); // this empties the set;
             setToReplace.addAll(winningSet);
-            /*Logger.log("Top set size: " + top.size());
-            Logger.log("Top value: " + valueTop);
-            for (Vertex v : top) {
-            	Logger.log(v.word);
-            }
-            Logger.log("Bottom set size: " + bottom.size());
-            Logger.log("Bottom value: " + valueBottom);
-            for (Vertex v : bottom) {
-            	Logger.log(v.word);
-            }
-            Logger.log("Left set size: " + left.size());
-            Logger.log("Left value: " + valueLeft);
-            for (Vertex v : left) {
-            	Logger.log(v.word);
-            }
-            Logger.log("Right set size: " + right.size());
-            Logger.log("Right value: " + valueRight);
-            for (Vertex v : right) {
-            	Logger.log(v.word);
-            }*/
         }
 
         boxesBottom = bottom;
@@ -591,114 +568,21 @@ public class SingleStarAlgo extends BaseLayoutAlgo
         }
     }
 
-    @SuppressWarnings("unused")
-    private void checkSanity()
-    {
-        // make sure that all the sets sum up
-        HashSet<Vertex> sum = new HashSet<Vertex>(boxesBottom);
-        sum.addAll(boxesLeft);
-        assert (sum.size() == boxesBottom.size() + boxesLeft.size());
-        sum.addAll(boxesNotRealized);
-        assert (sum.size() == boxesBottom.size() + boxesLeft.size() + boxesNotRealized.size());
-        sum.addAll(boxesRight);
-        assert (sum.size() == boxesBottom.size() + boxesLeft.size() + boxesNotRealized.size() + boxesRight.size());
-        sum.addAll(boxesTop);
-        assert (sum.size() == boxesBottom.size() + boxesLeft.size() + boxesNotRealized.size() + boxesRight.size() + boxesTop.size());
-        sum.add(center);
-
-        // OK, sets are disjunct
-        assert (sum.size() == graph.vertexSet().size());
-        // Same number
-        sum.removeAll(graph.vertexSet());
-        assert (sum.size() == 0);
-        // And equal!
-
-        double usedBottom = 0;
-        for (Vertex v : this.boxesBottom)
-        {
-            usedBottom += this.wordPositions.get(v).getWidth();
-        }
-        double usedTop = 0;
-        for (Vertex v : this.boxesTop)
-        {
-            usedTop += this.wordPositions.get(v).getWidth();
-        }
-        double usedRight = 0;
-        for (Vertex v : this.boxesRight)
-        {
-            usedRight += this.wordPositions.get(v).getHeight();
-        }
-        double usedLeft = 0;
-        for (Vertex v : this.boxesLeft)
-        {
-            usedLeft += this.wordPositions.get(v).getHeight();
-        }
-
-        Logger.log("Used: " + Double.toString(usedTop) + "/" + Double.toString(usedBottom) + "/" + Double.toString(usedLeft) + "/"
-                + Double.toString(usedRight));
-
-        if (boxesNotRealized.size() > 0)
-        {
-            Vertex first = boxesNotRealized.iterator().next();
-            double neededWidth = getBoundingBox(first).getWidth();
-            double neededHeight = getBoundingBox(first).getHeight();
-
-            Vertex minWidth = first, minHeight = first;
-
-            for (Vertex v : boxesNotRealized)
-            {
-                double width = getBoundingBox(v).getWidth();
-                double height = getBoundingBox(v).getHeight();
-
-                if (width < neededWidth)
-                {
-                    neededWidth = width;
-                    minWidth = v;
-                }
-
-                if (height < neededHeight)
-                {
-                    neededHeight = height;
-                    minHeight = v;
-                }
-            }
-
-            double freeWidth = this.wordPositions.get(this.center).getWidth() - Math.min(usedBottom, usedTop);
-            double freeHeight = this.wordPositions.get(this.center).getHeight() - Math.min(usedLeft, usedRight);
-
-            Logger.log("Total width: " + Double.toString(this.wordPositions.get(this.center).getWidth()));
-            Logger.log("Width optimality: " + Double.toString(neededWidth) + " > " + Double.toString(freeWidth));
-            Logger.log("Minimum width vertex: " + minWidth.word);
-            // compensate for rounding errors...
-            assert (neededWidth * 1.01 > freeWidth);
-            Logger.log("Total height: " + Double.toString(this.wordPositions.get(this.center).getHeight()));
-            Logger.log("Height optimality: " + Double.toString(neededHeight) + " > " + Double.toString(freeHeight));
-            Logger.log("Minimum height vertex: " + minHeight.word);
-            assert (neededHeight * 1.01 > freeHeight);
-        }
-    }
-
     @Override
-    public SWCRectangle getWordPosition(Word w)
+    public LayoutResult layout()
     {
-        if (boxesNotRealized.contains(w))
-            return null;
+        run();
 
-        return super.getWordPosition(w);
-    }
-
-    public List<WordPlacer> getPlacers()
-    {
-        List<WordPlacer> placers = new ArrayList<WordPlacer>();
-
-        placers.add(new MapWordPlacer(wordPositions));
-
-        for (Word w : boxesNotRealized)
+        return new LayoutResult(wordPositions)
         {
-            SWCRectangle rect = getBoundingBox(w);
-            placers.add(new FixedPositionWordPlacer(w, rect));
-        }
-
-        return placers;
+            @Override
+            public SWCRectangle getWordPosition(Word w)
+            {
+                if (boxesNotRealized.contains(w))
+                    return null;
+                
+                return wordPositions.get(w);
+            }
+        };
     }
 }
