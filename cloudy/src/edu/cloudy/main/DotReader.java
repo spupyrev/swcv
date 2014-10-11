@@ -7,6 +7,7 @@ import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.ui.WordCloudFrame;
 import edu.cloudy.utils.Logger;
+import edu.cloudy.utils.TimeMeasurer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -180,11 +181,7 @@ public class DotReader
     {
         LayoutAlgo algo = new ContextPreservingAlgo(words, similarity);
 
-        long startTime = System.currentTimeMillis();
-        LayoutResult res = algo.layout();
-        System.out.printf("done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
-
-        return res;
+        return TimeMeasurer.execute(() -> algo.layout());
     }
 
     private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout)

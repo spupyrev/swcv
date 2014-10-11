@@ -1,0 +1,18 @@
+package edu.cloudy.utils;
+
+import java.util.function.Supplier;
+
+/**
+ * @author spupyrev
+ * Oct 11, 2014
+ */
+public class TimeMeasurer
+{
+    public static <T> T execute(Supplier<T> function)
+    {
+        long startTime = System.currentTimeMillis();
+        T result = function.get();
+        System.out.printf("operation done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
+        return result;
+    }
+}

@@ -14,6 +14,7 @@ import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
 import edu.cloudy.ui.WordCloudFrame;
 import edu.cloudy.utils.Logger;
+import edu.cloudy.utils.TimeMeasurer;
 import edu.test.YoutubeCommentsReaderTest;
 
 import java.io.File;
@@ -134,7 +135,7 @@ public class WCVisualizer
             topPairs.add(wp);
         }
 
-        Collections.sort(topPairs, (o1, o2) -> similarity.get(o2).compareTo(similarity.get(o1))); 
+        Collections.sort(topPairs, (o1, o2) -> similarity.get(o2).compareTo(similarity.get(o1)));
 
         /*System.out.println("top words:");
         for (int i = 0; i < words.size(); i++) {
@@ -162,11 +163,7 @@ public class WCVisualizer
         //LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
         LayoutAlgo algo = new TagCloudAlgo(words, similarity, TABLE_ORDER.RANK);
 
-        long startTime = System.currentTimeMillis();
-        LayoutResult layout = algo.layout();
-        System.out.printf("layout done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
-
-        return layout;
+        return TimeMeasurer.execute(() -> algo.layout());
     }
 
     private IClusterAlgo runClustering(List<Word> words, Map<WordPair, Double> similarity)
