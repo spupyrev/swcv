@@ -155,7 +155,7 @@ public class WordCloudApp implements EntryPoint
 
     private void createAdvancedArea()
     {
-        final CaptionPanel settingArea = new SettingsPanel(setting, true).create();
+        final CaptionPanel settingArea = new SettingsPanel(setting).create();
         settingArea.removeStyleName("gwt-DecoratorPanel");
         RootPanel.get("settingContainer").add(settingArea);
     }

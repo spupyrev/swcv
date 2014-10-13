@@ -100,7 +100,7 @@ public class WordCloudDetailApp implements EntryPoint
 
     private void initializeSettingPanel(WordCloud cloud)
     {
-        CaptionPanel settingArea = new SettingsPanel(setting, true).create();
+        CaptionPanel settingArea = new SettingsPanel(setting).create();
         settingArea.setCaptionText("options");
         
         RootPanel rPanel = RootPanel.get("cloud-setting");

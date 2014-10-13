@@ -27,6 +27,7 @@ import edu.webapp.server.readers.DocumentExtractor;
 import edu.webapp.server.readers.DynamicReader;
 import edu.webapp.server.readers.IDocumentReader;
 import edu.webapp.server.readers.ISentimentReader;
+import edu.webapp.shared.WCColorSchemeCollection;
 import edu.webapp.shared.WCFont;
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
@@ -92,12 +93,13 @@ public class WordCloudGenerator
         }
         else
         {
-            if (reader instanceof ISentimentReader && setting.getClusterAlgorithm() == WCSetting.CLUSTER_ALGORITHM.SENTIMENT)
+            //TODO
+            if (reader instanceof ISentimentReader && setting.getColorScheme().getType().equals(WCColorSchemeCollection.COLOR_SCHEME_TYPE_SENTIMENT))
             {
                 wcvDocument = new WCVSentimentDocument(((ISentimentReader)reader).getStrChunks());
                 text = wcvDocument.getText();
             }
-            else if (setting.getClusterAlgorithm() == WCSetting.CLUSTER_ALGORITHM.SENTIMENT
+            else if (setting.getColorScheme().getType().equals(WCColorSchemeCollection.COLOR_SCHEME_TYPE_SENTIMENT)
                     && input.contains(ContextDelimiter.SENTIMENT_DELIMITER_TEXT))
             {
                 String[] strs = input.split(ContextDelimiter.SENTIMENT_DELIMITER_REGEX);
@@ -183,7 +185,7 @@ public class WordCloudGenerator
         LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm(), document.getWords(), similarity);
         layoutAlgo.setAspectRatio(setting.getAspectRatioDouble());
         LayoutResult layout = layoutAlgo.layout();
-        
+
         // coloring
         ColorScheme colorScheme = ColorSchemeCollection.getByName(setting.getColorScheme().getName());
         colorScheme.initialize(document.getWords(), similarity);

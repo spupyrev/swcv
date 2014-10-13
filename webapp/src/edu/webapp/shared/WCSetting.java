@@ -15,11 +15,6 @@ public class WCSetting implements Serializable
     {
     }
 
-    public enum CLUSTER_ALGORITHM
-    {
-        RANDOM, WORD_RANK, KMEANS, SENTIMENT, DYNAMIC
-    }
-
     public enum LAYOUT_ALGORITHM
     {
         WORDLE, CPWCV, SEAM, INFLATE, STAR, CYCLE, MDS, TAG_ALPHABETICAL, TAG_RANK
@@ -40,7 +35,6 @@ public class WCSetting implements Serializable
         AR11, AR43, AR169, AR219
     }
 
-    private CLUSTER_ALGORITHM clusterAlgorithm = CLUSTER_ALGORITHM.KMEANS;
     private WCColorScheme colorScheme = WCColorSchemeCollection.getDefault();
     private LAYOUT_ALGORITHM layoutAlgorithm = LAYOUT_ALGORITHM.CPWCV;
     private SIMILARITY_ALGORITHM similarityAlgorithm = SIMILARITY_ALGORITHM.COSINE;
@@ -55,10 +49,7 @@ public class WCSetting implements Serializable
         Random dice = new Random();
         int pick;
 
-        setWordCount(this.getWordCount());
-
-        pick = dice.nextInt(CLUSTER_ALGORITHM.values().length);
-        setClusterAlgorithm(CLUSTER_ALGORITHM.values()[pick]);
+        setWordCount(wordCount);
 
         setColorScheme(WCColorSchemeCollection.getRandom());
 
@@ -75,16 +66,6 @@ public class WCSetting implements Serializable
 
         pick = dice.nextInt(ASPECT_RATIO.values().length);
         setAspectRatio(ASPECT_RATIO.values()[pick]);
-    }
-
-    public CLUSTER_ALGORITHM getClusterAlgorithm()
-    {
-        return clusterAlgorithm;
-    }
-
-    public void setClusterAlgorithm(CLUSTER_ALGORITHM clusterAlgorithm)
-    {
-        this.clusterAlgorithm = clusterAlgorithm;
     }
 
     public WCColorScheme getColorScheme()
@@ -179,7 +160,6 @@ public class WCSetting implements Serializable
         sb.append("similarity: " + similarityAlgorithm + "\n");
         sb.append("ranking:    " + rankingAlgorithm + "\n");
         sb.append("colorTheme: " + colorScheme + "\n");
-        sb.append("colorDistr: " + clusterAlgorithm + "\n");
         sb.append("font: " + font.getName() + "\n");
         sb.append("aspectRatio: " + aspectRatio + "\n");
         return sb.toString();

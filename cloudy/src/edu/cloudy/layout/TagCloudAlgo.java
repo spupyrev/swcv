@@ -118,7 +118,7 @@ public class TagCloudAlgo extends BaseLayoutAlgo
     private double assignPositions(List<Word> curWords, double curY)
     {
         double maxH = maxHeight(words);
-        double h = Math.max(maxHeight(curWords), maxH / 3.0);
+        double h = Math.max(maxHeight(curWords), maxH / 2.5);
         double delta = (curWords.size() > 1 ? (MAX_WIDTH - sumWidth(curWords)) / (curWords.size() - 1) : 0);
         double curX = 0;
         for (Word w : curWords)
@@ -128,7 +128,7 @@ public class TagCloudAlgo extends BaseLayoutAlgo
             wordPositions.put(w, rect);
             curX += rect.getWidth() + delta;
         }
-        return h;
+        return h + 1;
     }
 
     private double maxHeight(List<Word> curWords)

@@ -1,12 +1,15 @@
 package edu.webapp.server.db;
 
 import edu.cloudy.utils.CommonUtils;
-import edu.webapp.shared.*;
+import edu.webapp.shared.DBCloudNotFoundException;
+import edu.webapp.shared.WCColorSchemeCollection;
+import edu.webapp.shared.WCFontCollection;
+import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WCSetting.ASPECT_RATIO;
-import edu.webapp.shared.WCSetting.CLUSTER_ALGORITHM;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
+import edu.webapp.shared.WordCloud;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -81,7 +84,6 @@ public class DBUtils
                         "LAYOUT_ALGO",
                         "FONT",
                         "COLOR_SCHEME",
-                        "COLOR_DISTR",
                         "ASPECT_RATIO" };
 
                 WCSetting settings = cloud.getSettings();
@@ -97,7 +99,6 @@ public class DBUtils
                         settings.getLayoutAlgorithm().toString(),
                         settings.getFont().getName(),
                         settings.getColorScheme().getName(),
-                        settings.getClusterAlgorithm().toString(),
                         settings.getAspectRatio().toString() };
 
                 StringBuffer sql = new StringBuffer();
@@ -163,7 +164,6 @@ public class DBUtils
                         "LAYOUT_ALGO",
                         "FONT",
                         "COLOR_SCHEME",
-                        "COLOR_DISTR",
                         "ASPECT_RATIO" };
 
                 WCSetting settings = cloud.getSettings();
@@ -185,7 +185,6 @@ public class DBUtils
                         settings.getLayoutAlgorithm().toString(),
                         settings.getFont().getName(),
                         settings.getColorScheme().getName(),
-                        settings.getClusterAlgorithm().toString(),
                         settings.getAspectRatio().toString() };
 
                 StringBuffer sql = new StringBuffer();
@@ -273,7 +272,6 @@ public class DBUtils
         cloud.getSettings().setLayoutAlgorithm(LAYOUT_ALGORITHM.valueOf(rs.getString("LAYOUT_ALGO")));
         cloud.getSettings().setFont(WCFontCollection.getByName(rs.getString("FONT")));
         cloud.getSettings().setColorScheme(WCColorSchemeCollection.getByName(rs.getString("COLOR_SCHEME")));
-        cloud.getSettings().setClusterAlgorithm(CLUSTER_ALGORITHM.valueOf(rs.getString("COLOR_DISTR")));
         cloud.getSettings().setAspectRatio(ASPECT_RATIO.valueOf(rs.getString("ASPECT_RATIO")));
     }
 
@@ -328,7 +326,6 @@ public class DBUtils
                     "LAYOUT_ALGO CHAR(50)",
                     "FONT CHAR(50)",
                     "COLOR_SCHEME CHAR(50)",
-                    "COLOR_DISTR CHAR(50)",
                     "ASPECT_RATIO CHAR(50)" };
 
             StringBuffer sql = new StringBuffer();

@@ -2,10 +2,7 @@ package edu.webapp.client;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CaptionPanel;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -13,9 +10,13 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.webapp.shared.*;
+import edu.webapp.client.ui.GroupedListBox;
+import edu.webapp.shared.WCColorScheme;
+import edu.webapp.shared.WCColorSchemeCollection;
+import edu.webapp.shared.WCFont;
+import edu.webapp.shared.WCFontCollection;
+import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WCSetting.ASPECT_RATIO;
-import edu.webapp.shared.WCSetting.CLUSTER_ALGORITHM;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
@@ -30,17 +31,14 @@ import java.util.List;
 public class SettingsPanel
 {
     private WCSetting setting;
-    private boolean enabled;
 
-    private ListBox clusterWidget;
     private ListBox colorSchemeWidget;
     private ListBox rankingWidget;
     private ListBox fontWidget;
 
-    public SettingsPanel(WCSetting setting, boolean enabled)
+    public SettingsPanel(WCSetting setting)
     {
         this.setting = setting;
-        this.enabled = enabled;
     }
 
     public CaptionPanel create()
@@ -61,17 +59,13 @@ public class SettingsPanel
         rankingWidget = createRankingListBox();
         layout.setWidget(3, 1, rankingWidget);
 
-        layout.setWidget(4, 0, createLabel("Cluster Algorithm:"));
-        clusterWidget = createClusterListBox();
-        layout.setWidget(4, 1, clusterWidget);
-
         cf.setStyleName(0, 2, "adv-cell-label");
         layout.setWidget(0, 2, createLabel("Font:"));
         fontWidget = createFontListBox();
         layout.setWidget(0, 3, fontWidget);
 
         cf.setStyleName(1, 2, "adv-cell-label");
-        layout.setWidget(1, 2, createLabel("Color Scheme:"));
+        layout.setWidget(1, 2, createLabel("Color:"));
         colorSchemeWidget = createColorListBox();
         layout.setWidget(1, 3, colorSchemeWidget);
 
@@ -80,9 +74,8 @@ public class SettingsPanel
         layout.setWidget(2, 3, createAspectRatioListBox());
 
         cf.setStyleName(3, 2, "adv-cell-label");
-        layout.setWidget(3, 2, createLabel("Non-English Text:"));
-        layout.setWidget(3, 3, createCheckBox());
-        colorSchemeAndDistrCheck();
+        layout.setWidget(3, 2, createLabel("Language:"));
+        layout.setWidget(3, 3, createLanguageListBox());
 
         // Wrap the content in a DecoratorPanel
         CaptionPanel panel = new CaptionPanel();
@@ -91,18 +84,20 @@ public class SettingsPanel
         return panel;
     }
 
-    private Widget createCheckBox()
+    private ListBox createLanguageListBox()
     {
-        final CheckBox box = new CheckBox();
-        box.setValue(false);
-        box.addClickHandler(new ClickHandler()
-        {
-            public void onClick(ClickEvent event)
-            {
-                setNonEnglishText(box.getValue());
-            }
+        final ListBox box = new ListBox();
+        box.addItem("English");
+        box.addItem("Non-English");
 
+        box.addChangeHandler(new ChangeHandler()
+        {
+            public void onChange(ChangeEvent event)
+            {
+                setNonEnglishText(box.getSelectedIndex() != 1);
+            }
         });
+
         return box;
     }
 
@@ -157,96 +152,6 @@ public class SettingsPanel
         return label;
     }
 
-    private ListBox createClusterListBox()
-    {
-        final ListBox box = new ListBox();
-        box.addItem("KMeans++", WCSetting.CLUSTER_ALGORITHM.KMEANS.toString());
-        box.addItem("Random", WCSetting.CLUSTER_ALGORITHM.RANDOM.toString());
-        box.addItem("Words Rank", WCSetting.CLUSTER_ALGORITHM.WORD_RANK.toString());
-        box.addItem("Sentiment (TwitterOnly)", WCSetting.CLUSTER_ALGORITHM.SENTIMENT.toString());
-        box.addItem("Dynamic (testing feature)", WCSetting.CLUSTER_ALGORITHM.DYNAMIC.toString());
-        box.setSelectedIndex(findIndex(box, setting.getClusterAlgorithm().toString()));
-
-        box.addChangeHandler(new ChangeHandler()
-        {
-            public void onChange(ChangeEvent event)
-            {
-                CLUSTER_ALGORITHM value = WCSetting.CLUSTER_ALGORITHM.valueOf(box.getValue(box.getSelectedIndex()));
-                setting.setClusterAlgorithm(value);
-                colorSchemeAndDistrCheck();
-            }
-        });
-
-        box.setEnabled(enabled);
-        return box;
-    }
-
-    private void colorSchemeAndDistrCheck()
-    {
-        CLUSTER_ALGORITHM distValue = WCSetting.CLUSTER_ALGORITHM.valueOf(clusterWidget.getValue(clusterWidget.getSelectedIndex()));
-        List<Integer> sentiIndices = getSentiIndices();
-        List<Integer> dynamicIndices = getDynamicIndices();
-
-        if (distValue == WCSetting.CLUSTER_ALGORITHM.SENTIMENT)
-        {
-            if (!sentiIndices.contains(colorSchemeWidget.getSelectedIndex()))
-            {
-                colorSchemeWidget.setSelectedIndex(sentiIndices.get(0));
-                setting.setColorScheme(WCColorSchemeCollection.getByName("SENTIMENT"));
-            }
-            for (Integer i : sentiIndices)
-                removeDisabled(colorSchemeWidget, i);
-            for (int i = 0; i < colorSchemeWidget.getItemCount(); ++i)
-                if (!sentiIndices.contains(i))
-                    setDisabled(colorSchemeWidget, i);
-        }
-        else if (distValue == WCSetting.CLUSTER_ALGORITHM.DYNAMIC)
-        {
-            if (!dynamicIndices.contains(colorSchemeWidget.getSelectedIndex()))
-            {
-                colorSchemeWidget.setSelectedIndex(dynamicIndices.get(0));
-                setting.setColorScheme(WCColorSchemeCollection.getByName("REDBLUEBLACK"));
-            }
-            
-            for (Integer i : dynamicIndices)
-                removeDisabled(colorSchemeWidget, i);
-            
-            for (int i = 0; i < colorSchemeWidget.getItemCount(); ++i)
-                if (!dynamicIndices.contains(i))
-                    setDisabled(colorSchemeWidget, i);
-        }
-        else
-        {
-            if (sentiIndices.contains(colorSchemeWidget.getSelectedIndex()))
-            {
-                colorSchemeWidget.setSelectedIndex(0);
-                setting.setColorScheme(WCColorSchemeCollection.getByName("BEAR_DOWN"));
-            }
-            
-            for (Integer i : sentiIndices)
-                setDisabled(colorSchemeWidget, i);
-            for (int i = 0; i < colorSchemeWidget.getItemCount(); ++i)
-                if (!sentiIndices.contains(i))
-                    removeDisabled(colorSchemeWidget, i);
-        }
-    }
-
-    private List<Integer> getDynamicIndices()
-    {
-        List<Integer> indices = new ArrayList<Integer>();
-        indices.add(findIndex(colorSchemeWidget, WCColorSchemeCollection.getByName("REDBLUEBLACK").getName()));
-        indices.add(findIndex(colorSchemeWidget, WCColorSchemeCollection.getByName("BLUEREDBLACK").getName()));
-        return indices;
-    }
-
-    private List<Integer> getSentiIndices()
-    {
-        List<Integer> indices = new ArrayList<Integer>();
-        indices.add(findIndex(colorSchemeWidget, WCColorSchemeCollection.getByName("SENTIMENT_OB").getName()));
-        indices.add(findIndex(colorSchemeWidget, WCColorSchemeCollection.getByName("SENTIMENT_GR").getName()));
-        return indices;
-    }
-
     private void removeDisabled(ListBox b, int index)
     {
         b.getElement().getElementsByTagName("option").getItem(index).removeAttribute("disabled");
@@ -259,11 +164,11 @@ public class SettingsPanel
 
     private ListBox createColorListBox()
     {
-        final ListBox box = new ListBox();
+        final GroupedListBox box = new GroupedListBox();
         for (WCColorScheme scheme : WCColorSchemeCollection.list())
-            box.addItem(scheme.getDescription(), scheme.getName());
+            box.addItem(scheme.getType() + " | " + scheme.getDescription(), scheme.getName());
 
-        box.setSelectedIndex(findIndex(box, setting.getColorScheme().toString()));
+        box.setSelectedIndex(findIndex(box, setting.getColorScheme().getName()));
 
         box.addChangeHandler(new ChangeHandler()
         {
@@ -274,7 +179,6 @@ public class SettingsPanel
             }
         });
 
-        box.setEnabled(enabled);
         return box;
     }
 
@@ -283,7 +187,7 @@ public class SettingsPanel
         final ListBox box = new ListBox();
         box.addItem("Cosine Coefficient", WCSetting.SIMILARITY_ALGORITHM.COSINE.toString());
         box.addItem("Jaccard Coefficient", WCSetting.SIMILARITY_ALGORITHM.JACCARD.toString());
-        box.addItem("Lin's Similarity Algorithm", WCSetting.SIMILARITY_ALGORITHM.LEXICAL.toString());
+        box.addItem("Lin's Similarity", WCSetting.SIMILARITY_ALGORITHM.LEXICAL.toString());
         box.addItem("Euclidean Distance", WCSetting.SIMILARITY_ALGORITHM.MATRIXDIS.toString());
 
         box.setSelectedIndex(findIndex(box, setting.getSimilarityAlgorithm().toString()));
@@ -297,7 +201,6 @@ public class SettingsPanel
             }
         });
 
-        box.setEnabled(enabled);
         return box;
     }
 
@@ -320,7 +223,6 @@ public class SettingsPanel
             }
         });
 
-        box.setEnabled(enabled);
         return box;
     }
 
@@ -348,7 +250,6 @@ public class SettingsPanel
             }
         });
 
-        box.setEnabled(enabled);
         return box;
     }
 
@@ -389,7 +290,6 @@ public class SettingsPanel
             }
         });
 
-        box.setEnabled(enabled);
         box.setTitle("Number of words to include in the word cloud");
 
         return box;
@@ -412,7 +312,6 @@ public class SettingsPanel
             }
         });
 
-        box.setEnabled(enabled);
         return box;
     }
 
@@ -434,7 +333,6 @@ public class SettingsPanel
             }
         });
 
-        box.setEnabled(enabled);
         return box;
     }
 
