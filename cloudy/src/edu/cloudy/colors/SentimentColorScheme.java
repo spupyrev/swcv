@@ -4,20 +4,14 @@ import edu.cloudy.nlp.Word;
 
 import java.awt.Color;
 
-public class SentimentColorScheme implements IColorScheme
+public class SentimentColorScheme extends ColorScheme
 {
     private Color[] colorSet;
 
-    public SentimentColorScheme(String colorSchemeName)
+    public SentimentColorScheme(String name, Color[] colorSet)
     {
-        if (colorSchemeName.equals("SENTIMENT2"))
-        {
-            colorSet = sentiment2;
-        }
-        else
-        {
-            colorSet = sentiment;
-        }
+        super(name);
+        this.colorSet = colorSet;
     }
 
     @Override
@@ -45,5 +39,4 @@ public class SentimentColorScheme implements IColorScheme
             return colorSet[1];
         }
     }
-
 }

@@ -1,12 +1,7 @@
 package edu.webapp.server;
 
-import edu.cloudy.clustering.IClusterAlgo;
-import edu.cloudy.clustering.KMeansPlusPlus;
-import edu.cloudy.colors.ClusterColorScheme;
-import edu.cloudy.colors.DynamicColorScheme;
-import edu.cloudy.colors.IColorScheme;
-import edu.cloudy.colors.SentimentColorScheme;
-import edu.cloudy.colors.WebColorScheme;
+import edu.cloudy.colors.ColorScheme;
+import edu.cloudy.colors.ColorSchemeCollection;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.*;
 import edu.cloudy.layout.TagCloudAlgo.TABLE_ORDER;
@@ -32,12 +27,8 @@ import edu.webapp.server.readers.DocumentExtractor;
 import edu.webapp.server.readers.DynamicReader;
 import edu.webapp.server.readers.IDocumentReader;
 import edu.webapp.server.readers.ISentimentReader;
-import edu.webapp.server.utils.RandomTwitterTrendExtractor;
-import edu.webapp.server.utils.RandomWikiUrlExtractor;
-import edu.webapp.server.utils.RandomYoutubeUrlExtractor;
 import edu.webapp.shared.WCFont;
 import edu.webapp.shared.WCSetting;
-import edu.webapp.shared.WCSetting.COLOR_SCHEME;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
@@ -137,33 +128,6 @@ public class WordCloudGenerator
         return cloud;
     }
 
-    private static IColorScheme getColorScheme(WCVDocument wcvDocument, Map<WordPair, Double> similarity, WCSetting setting)
-    {
-        IColorScheme wordColorScheme = null;
-        if (setting.getClusterAlgorithm().equals(WCSetting.CLUSTER_ALGORITHM.KMEANS))
-        {
-            int K = guessNumberOfClusters(wcvDocument.getWords().size(), setting);
-
-            IClusterAlgo clusterAlgo = new KMeansPlusPlus(K);
-            clusterAlgo.run(wcvDocument.getWords(), similarity);
-
-            wordColorScheme = new ClusterColorScheme(clusterAlgo, wcvDocument.getWords(), setting.getColorScheme().toString());
-        }
-        else if (setting.getClusterAlgorithm().equals(WCSetting.CLUSTER_ALGORITHM.SENTIMENT))
-        {
-            wordColorScheme = new SentimentColorScheme(setting.getColorScheme().toString());
-        }
-        else if (setting.getClusterAlgorithm().equals(WCSetting.CLUSTER_ALGORITHM.DYNAMIC))
-        {
-            wordColorScheme = new DynamicColorScheme(setting.getColorScheme().toString());
-        }
-        else
-        {
-            wordColorScheme = new WebColorScheme(setting.getColorScheme().toString(), setting.getClusterAlgorithm().toString(), wcvDocument.getWords().size());
-        }
-        return wordColorScheme;
-    }
-
     private static String getSvg(WordCloudRenderer renderer, WCFont wcFont)
     {
         // Create an instance of org.w3c.dom.Document.
@@ -215,33 +179,34 @@ public class WordCloudGenerator
         similarityAlgo.run();
         Map<WordPair, Double> similarity = similarityAlgo.getSimilarity();
 
-        // algo
+        // layout
         LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm(), document.getWords(), similarity);
         layoutAlgo.setAspectRatio(setting.getAspectRatioDouble());
         LayoutResult layout = layoutAlgo.layout();
+        
+        // coloring
+        ColorScheme colorScheme = ColorSchemeCollection.getByName(setting.getColorScheme().getName());
+        colorScheme.initialize(document.getWords(), similarity);
 
         if (document instanceof WCVDynamicDocument)
         {
             WCVDynamicDocument dynDocument = (WCVDynamicDocument)document;
-            IColorScheme wordColorScheme1 = getColorScheme(dynDocument.getDoc1(), similarity, setting);
-            IColorScheme wordColorScheme2 = getColorScheme(dynDocument.getDoc2(), similarity, setting);
-            List<UIWord> uiWords1 = prepareUIWordsForDynamic(dynDocument.getDoc1().getWords(), layoutAlgo, layout, wordColorScheme1);
-            List<UIWord> uiWords2 = prepareUIWordsForDynamic(dynDocument.getDoc2().getWords(), layoutAlgo, layout, wordColorScheme2);
+            List<UIWord> uiWords1 = prepareUIWordsForDynamic(dynDocument.getDoc1().getWords(), layoutAlgo, layout, colorScheme);
+            List<UIWord> uiWords2 = prepareUIWordsForDynamic(dynDocument.getDoc2().getWords(), layoutAlgo, layout, colorScheme);
 
             renderers.add(new WordCloudRenderer(uiWords1, SCR_WIDTH, SCR_HEIGHT));
             renderers.add(new WordCloudRenderer(uiWords2, SCR_WIDTH, SCR_HEIGHT));
         }
         else
         {
-            IColorScheme wordColorScheme = getColorScheme(document, similarity, setting);
-            List<UIWord> uiWords = prepareUIWords(document.getWords(), layout, wordColorScheme);
+            List<UIWord> uiWords = prepareUIWords(document.getWords(), layout, colorScheme);
             renderers.add(new WordCloudRenderer(uiWords, SCR_WIDTH, SCR_HEIGHT));
         }
 
         return renderers;
     }
 
-    private static List<UIWord> prepareUIWords(List<Word> words, LayoutResult layout, IColorScheme colorScheme)
+    private static List<UIWord> prepareUIWords(List<Word> words, LayoutResult layout, ColorScheme colorScheme)
     {
         List<UIWord> res = new ArrayList<UIWord>();
         for (Word w : words)
@@ -257,7 +222,7 @@ public class WordCloudGenerator
         return res;
     }
 
-    private static List<UIWord> prepareUIWordsForDynamic(List<Word> words, LayoutAlgo algo, LayoutResult layout, IColorScheme colorScheme)
+    private static List<UIWord> prepareUIWordsForDynamic(List<Word> words, LayoutAlgo algo, LayoutResult layout, ColorScheme colorScheme)
     {
         List<UIWord> res = new ArrayList<UIWord>();
         for (Word w : words)
@@ -402,49 +367,4 @@ public class WordCloudGenerator
 
         throw new RuntimeException("something is wrong");
     }
-
-    public String getRandomWikiUrl()
-    {
-        return RandomWikiUrlExtractor.getRandomWikiPage();
-    }
-
-    public String getRandomTwitterUrl()
-    {
-        return RandomTwitterTrendExtractor.getRandomTrend();
-    }
-
-    public String getRandomYoutubeUrl()
-    {
-        return RandomYoutubeUrlExtractor.getRandomUrl();
-    }
-
-    private static int guessNumberOfClusters(int n, WCSetting setting)
-    {
-        if (setting.getColorScheme().equals(COLOR_SCHEME.BEAR_DOWN))
-            return 2;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.BLACK))
-            return 1;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.BLUE))
-            return 1;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.ORANGE))
-            return 1;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.GREEN))
-            return 1;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_1))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_2))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.TRISCHEME_3))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_1))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_2))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.SIMILAR_3))
-            return 4;
-        else if (setting.getColorScheme().equals(COLOR_SCHEME.SENTIMENT))
-            return 5;
-        return Math.max((int)Math.sqrt((double)n / 2), 1);
-    }
-
 }

@@ -13,12 +13,9 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.webapp.shared.WCFont;
-import edu.webapp.shared.WCFontCollection;
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.*;
 import edu.webapp.shared.WCSetting.ASPECT_RATIO;
 import edu.webapp.shared.WCSetting.CLUSTER_ALGORITHM;
-import edu.webapp.shared.WCSetting.COLOR_SCHEME;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
@@ -48,7 +45,7 @@ public class SettingsPanel
 
     public CaptionPanel create()
     {
-        
+
         FlexTable layout = new FlexTable();
 
         CellFormatter cf = layout.getCellFormatter();
@@ -195,7 +192,7 @@ public class SettingsPanel
             if (!sentiIndices.contains(colorSchemeWidget.getSelectedIndex()))
             {
                 colorSchemeWidget.setSelectedIndex(sentiIndices.get(0));
-                setting.setColorScheme(COLOR_SCHEME.SENTIMENT);
+                setting.setColorScheme(WCColorSchemeCollection.getByName("SENTIMENT"));
             }
             for (Integer i : sentiIndices)
                 removeDisabled(colorSchemeWidget, i);
@@ -208,10 +205,12 @@ public class SettingsPanel
             if (!dynamicIndices.contains(colorSchemeWidget.getSelectedIndex()))
             {
                 colorSchemeWidget.setSelectedIndex(dynamicIndices.get(0));
-                setting.setColorScheme(COLOR_SCHEME.REDBLUEBLACK);
+                setting.setColorScheme(WCColorSchemeCollection.getByName("REDBLUEBLACK"));
             }
+            
             for (Integer i : dynamicIndices)
                 removeDisabled(colorSchemeWidget, i);
+            
             for (int i = 0; i < colorSchemeWidget.getItemCount(); ++i)
                 if (!dynamicIndices.contains(i))
                     setDisabled(colorSchemeWidget, i);
@@ -221,8 +220,9 @@ public class SettingsPanel
             if (sentiIndices.contains(colorSchemeWidget.getSelectedIndex()))
             {
                 colorSchemeWidget.setSelectedIndex(0);
-                setting.setColorScheme(COLOR_SCHEME.BEAR_DOWN);
+                setting.setColorScheme(WCColorSchemeCollection.getByName("BEAR_DOWN"));
             }
+            
             for (Integer i : sentiIndices)
                 setDisabled(colorSchemeWidget, i);
             for (int i = 0; i < colorSchemeWidget.getItemCount(); ++i)
@@ -234,16 +234,16 @@ public class SettingsPanel
     private List<Integer> getDynamicIndices()
     {
         List<Integer> indices = new ArrayList<Integer>();
-        indices.add(findIndex(colorSchemeWidget, WCSetting.COLOR_SCHEME.REDBLUEBLACK.toString()));
-        indices.add(findIndex(colorSchemeWidget, WCSetting.COLOR_SCHEME.BLUEREDBLACK.toString()));
+        indices.add(findIndex(colorSchemeWidget, WCColorSchemeCollection.getByName("REDBLUEBLACK").getName()));
+        indices.add(findIndex(colorSchemeWidget, WCColorSchemeCollection.getByName("BLUEREDBLACK").getName()));
         return indices;
     }
 
     private List<Integer> getSentiIndices()
     {
         List<Integer> indices = new ArrayList<Integer>();
-        indices.add(findIndex(colorSchemeWidget, WCSetting.COLOR_SCHEME.SENTIMENT.toString()));
-        indices.add(findIndex(colorSchemeWidget, WCSetting.COLOR_SCHEME.SENTIMENT2.toString()));
+        indices.add(findIndex(colorSchemeWidget, WCColorSchemeCollection.getByName("SENTIMENT_OB").getName()));
+        indices.add(findIndex(colorSchemeWidget, WCColorSchemeCollection.getByName("SENTIMENT_GR").getName()));
         return indices;
     }
 
@@ -260,27 +260,8 @@ public class SettingsPanel
     private ListBox createColorListBox()
     {
         final ListBox box = new ListBox();
-        box.addItem("BEAR DOWN", WCSetting.COLOR_SCHEME.BEAR_DOWN.toString());
-        box.addItem("Black", WCSetting.COLOR_SCHEME.BLACK.toString());
-        box.addItem("Blue", WCSetting.COLOR_SCHEME.BLUE.toString());
-        box.addItem("Sequential Blue", WCSetting.COLOR_SCHEME.BLUESEQUENTIAL.toString());
-        box.addItem("Orange", WCSetting.COLOR_SCHEME.ORANGE.toString());
-        box.addItem("Sequential Orange", WCSetting.COLOR_SCHEME.ORANGESEQUENTIAL.toString());
-        box.addItem("Green", WCSetting.COLOR_SCHEME.GREEN.toString());
-        box.addItem("Sequential Green", WCSetting.COLOR_SCHEME.GREENSEQUENTIAL.toString());
-        box.addItem("ColorBrewer 1", WCSetting.COLOR_SCHEME.BREWER_1.toString());
-        box.addItem("ColorBrewer 2", WCSetting.COLOR_SCHEME.BREWER_2.toString());
-        box.addItem("ColorBrewer 3", WCSetting.COLOR_SCHEME.BREWER_3.toString());
-        box.addItem("Trinity Scheme 1", WCSetting.COLOR_SCHEME.TRISCHEME_1.toString());
-        box.addItem("Trinity Scheme 2", WCSetting.COLOR_SCHEME.TRISCHEME_2.toString());
-        box.addItem("Trinity Scheme 3", WCSetting.COLOR_SCHEME.TRISCHEME_3.toString());
-        box.addItem("Similar Scheme 1", WCSetting.COLOR_SCHEME.SIMILAR_1.toString());
-        box.addItem("Similar Scheme 2", WCSetting.COLOR_SCHEME.SIMILAR_2.toString());
-        box.addItem("Similar Scheme 3", WCSetting.COLOR_SCHEME.SIMILAR_3.toString());
-        box.addItem("Sentiment ORANGE-BLUE", WCSetting.COLOR_SCHEME.SENTIMENT.toString());
-        box.addItem("Sentiment GREEN-RED", WCSetting.COLOR_SCHEME.SENTIMENT2.toString());
-        box.addItem("RedBlueBlack", WCSetting.COLOR_SCHEME.REDBLUEBLACK.toString());
-        box.addItem("BlueRedBlack", WCSetting.COLOR_SCHEME.BLUEREDBLACK.toString());
+        for (WCColorScheme scheme : WCColorSchemeCollection.list())
+            box.addItem(scheme.getDescription(), scheme.getName());
 
         box.setSelectedIndex(findIndex(box, setting.getColorScheme().toString()));
 
@@ -288,7 +269,7 @@ public class SettingsPanel
         {
             public void onChange(ChangeEvent event)
             {
-                COLOR_SCHEME value = WCSetting.COLOR_SCHEME.valueOf(box.getValue(box.getSelectedIndex()));
+                WCColorScheme value = WCColorSchemeCollection.getByName(box.getValue(box.getSelectedIndex()));
                 setting.setColorScheme(value);
             }
         });

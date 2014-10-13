@@ -20,11 +20,6 @@ public class WCSetting implements Serializable
         RANDOM, WORD_RANK, KMEANS, SENTIMENT, DYNAMIC
     }
 
-    public enum COLOR_SCHEME
-    {
-        BLACK, GREEN, ORANGE, BLUE, BREWER_1, BREWER_2, BREWER_3, SIMILAR_1, SIMILAR_2, SIMILAR_3, TRISCHEME_1, TRISCHEME_2, TRISCHEME_3, BEAR_DOWN, SENTIMENT, SENTIMENT2, REDBLUEBLACK, BLUEREDBLACK, ORANGESEQUENTIAL, BLUESEQUENTIAL, GREENSEQUENTIAL
-    }
-
     public enum LAYOUT_ALGORITHM
     {
         WORDLE, CPWCV, SEAM, INFLATE, STAR, CYCLE, MDS, TAG_ALPHABETICAL, TAG_RANK
@@ -46,7 +41,7 @@ public class WCSetting implements Serializable
     }
 
     private CLUSTER_ALGORITHM clusterAlgorithm = CLUSTER_ALGORITHM.KMEANS;
-    private COLOR_SCHEME colorScheme = COLOR_SCHEME.BREWER_2;
+    private WCColorScheme colorScheme = WCColorSchemeCollection.getDefault();
     private LAYOUT_ALGORITHM layoutAlgorithm = LAYOUT_ALGORITHM.CPWCV;
     private SIMILARITY_ALGORITHM similarityAlgorithm = SIMILARITY_ALGORITHM.COSINE;
     private RANKING_ALGORITHM rankingAlgorithm = RANKING_ALGORITHM.TF;
@@ -65,8 +60,7 @@ public class WCSetting implements Serializable
         pick = dice.nextInt(CLUSTER_ALGORITHM.values().length);
         setClusterAlgorithm(CLUSTER_ALGORITHM.values()[pick]);
 
-        pick = dice.nextInt(COLOR_SCHEME.values().length);
-        setColorScheme(COLOR_SCHEME.values()[pick]);
+        setColorScheme(WCColorSchemeCollection.getRandom());
 
         pick = dice.nextInt(LAYOUT_ALGORITHM.values().length);
         setLayoutAlgorithm(LAYOUT_ALGORITHM.values()[pick]);
@@ -93,12 +87,12 @@ public class WCSetting implements Serializable
         this.clusterAlgorithm = clusterAlgorithm;
     }
 
-    public COLOR_SCHEME getColorScheme()
+    public WCColorScheme getColorScheme()
     {
         return colorScheme;
     }
 
-    public void setColorScheme(COLOR_SCHEME colorScheme)
+    public void setColorScheme(WCColorScheme colorScheme)
     {
         this.colorScheme = colorScheme;
     }

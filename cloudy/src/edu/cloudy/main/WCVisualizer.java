@@ -1,7 +1,7 @@
 package edu.cloudy.main;
 
-import edu.cloudy.clustering.IClusterAlgo;
-import edu.cloudy.clustering.KMeansPlusPlus;
+import edu.cloudy.colors.ColorScheme;
+import edu.cloudy.colors.ColorSchemeCollection;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.TagCloudAlgo;
@@ -62,10 +62,9 @@ public class WCVisualizer
 
         // 3. run a layout algorithm
         LayoutResult algo = runLayout(words, similarity);
-        IClusterAlgo clusterAlgo = runClustering(words, similarity);
 
         // 4. visualize it
-        visualize(words, similarity, algo, clusterAlgo);
+        visualize(words, similarity, algo);
         //visualize(words, similarity, algo, null);
     }
 
@@ -166,23 +165,10 @@ public class WCVisualizer
         return TimeMeasurer.execute(() -> algo.layout());
     }
 
-    private IClusterAlgo runClustering(List<Word> words, Map<WordPair, Double> similarity)
+    private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout)
     {
-        int K = (int)Math.sqrt((double)words.size() / 2);
-
-        //IClusterAlgo algo = new KMeans(K);
-        IClusterAlgo algo = new KMeansPlusPlus(K);
-
-        //long startTime = System.currentTimeMillis();
-        algo.run(words, similarity);
-        //System.out.printf("clustering done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
-        //System.out.println("#clusters: " + algo.getClusterNumber());
-
-        return algo;
-    }
-
-    private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo, IClusterAlgo clusterAlgo)
-    {
-        new WordCloudFrame(words, similarity, algo, clusterAlgo);
+        ColorScheme colorScheme = ColorSchemeCollection.getDefault();
+        colorScheme.initialize(words, similarity);
+        new WordCloudFrame(words, similarity, layout, colorScheme);
     }
 }

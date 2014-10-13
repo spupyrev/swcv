@@ -1,31 +1,34 @@
 package edu.cloudy.colors;
 
-import java.awt.Color;
-
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.Word.DocIndex;
 
-public class DynamicColorScheme implements IColorScheme
-{
-	private Color[] colorSet;
-	
-	public DynamicColorScheme(String colorSetName){
-		if (colorSetName.equals("BLUEREDBLACK")){
-			colorSet = blueredblack;
-		}else{
-			colorSet = redblueblack;
-		}
-	}
+import java.awt.Color;
 
-	@Override
-	public Color getColor(Word word)
-	{
-		if (word.documentIndex == DocIndex.First){
-			return colorSet[0];
-		}else if(word.documentIndex == DocIndex.Second){
-			return colorSet[1];
-		}else{
-			return colorSet[2];
-		}
-	}
+public class DynamicColorScheme extends ColorScheme
+{
+    private Color[] colorSet;
+
+    public DynamicColorScheme(String name, Color[] colorSet)
+    {
+        super(name);
+        this.colorSet = colorSet;
+    }
+
+    @Override
+    public Color getColor(Word word)
+    {
+        if (word.documentIndex == DocIndex.First)
+        {
+            return colorSet[0];
+        }
+        else if (word.documentIndex == DocIndex.Second)
+        {
+            return colorSet[1];
+        }
+        else
+        {
+            return colorSet[2];
+        }
+    }
 }

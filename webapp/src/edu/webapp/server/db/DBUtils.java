@@ -4,7 +4,6 @@ import edu.cloudy.utils.CommonUtils;
 import edu.webapp.shared.*;
 import edu.webapp.shared.WCSetting.ASPECT_RATIO;
 import edu.webapp.shared.WCSetting.CLUSTER_ALGORITHM;
-import edu.webapp.shared.WCSetting.COLOR_SCHEME;
 import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
 import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
 import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
@@ -97,7 +96,7 @@ public class DBUtils
                         settings.getRankingAlgorithm().toString(),
                         settings.getLayoutAlgorithm().toString(),
                         settings.getFont().getName(),
-                        settings.getColorScheme().toString(),
+                        settings.getColorScheme().getName(),
                         settings.getClusterAlgorithm().toString(),
                         settings.getAspectRatio().toString() };
 
@@ -185,7 +184,7 @@ public class DBUtils
                         settings.getRankingAlgorithm().toString(),
                         settings.getLayoutAlgorithm().toString(),
                         settings.getFont().getName(),
-                        settings.getColorScheme().toString(),
+                        settings.getColorScheme().getName(),
                         settings.getClusterAlgorithm().toString(),
                         settings.getAspectRatio().toString() };
 
@@ -273,7 +272,7 @@ public class DBUtils
         cloud.getSettings().setRankingAlgorithm(RANKING_ALGORITHM.valueOf(rs.getString("RANKING_ALGO")));
         cloud.getSettings().setLayoutAlgorithm(LAYOUT_ALGORITHM.valueOf(rs.getString("LAYOUT_ALGO")));
         cloud.getSettings().setFont(WCFontCollection.getByName(rs.getString("FONT")));
-        cloud.getSettings().setColorScheme(COLOR_SCHEME.valueOf(rs.getString("COLOR_SCHEME")));
+        cloud.getSettings().setColorScheme(WCColorSchemeCollection.getByName(rs.getString("COLOR_SCHEME")));
         cloud.getSettings().setClusterAlgorithm(CLUSTER_ALGORITHM.valueOf(rs.getString("COLOR_DISTR")));
         cloud.getSettings().setAspectRatio(ASPECT_RATIO.valueOf(rs.getString("ASPECT_RATIO")));
     }
