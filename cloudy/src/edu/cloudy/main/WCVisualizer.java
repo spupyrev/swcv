@@ -162,7 +162,7 @@ public class WCVisualizer
         //LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
         LayoutAlgo algo = new TagCloudAlgo(words, similarity, TABLE_ORDER.RANK);
 
-        return TimeMeasurer.execute(() -> algo.layout());
+        return TimeMeasurer.execute("layout", () -> algo.layout());
     }
 
     private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout)

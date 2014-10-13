@@ -10,9 +10,14 @@ public class TimeMeasurer
 {
     public static <T> T execute(Supplier<T> function)
     {
+        return execute("operation", function);
+    }
+    
+    public static <T> T execute(String description, Supplier<T> function)
+    {
         long startTime = System.currentTimeMillis();
         T result = function.get();
-        System.out.printf("operation done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
+        System.out.printf(description + " done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
         return result;
     }
 }
