@@ -68,9 +68,7 @@ public class TagCloudAlgo extends BaseLayoutAlgo
 
     private void computeCloudDimensions()
     {
-        double area = 0;
-        for (SWCRectangle r : wordRectangles.values())
-            area += r.getArea();
+        double area = wordRectangles.values().stream().mapToDouble(r -> r.getArea()).sum();
 
         MAX_HEIGHT = Math.sqrt(1.25 * area / aspectRatio);
         MAX_WIDTH = MAX_HEIGHT * aspectRatio;
@@ -133,18 +131,12 @@ public class TagCloudAlgo extends BaseLayoutAlgo
 
     private double maxHeight(List<Word> curWords)
     {
-        double mx = 0;
-        for (Word w : curWords)
-            mx = Math.max(mx, wordRectangles.get(w).getHeight());
-        return mx;
+        return curWords.stream().mapToDouble(w -> wordRectangles.get(w).getHeight()).max().orElse(0);
     }
 
     private double sumWidth(List<Word> curWords)
     {
-        double sum = 0;
-        for (Word w : curWords)
-            sum += wordRectangles.get(w).getWidth();
-        return sum;
+        return curWords.stream().mapToDouble(w -> wordRectangles.get(w).getWidth()).sum();
     }
 
 }
