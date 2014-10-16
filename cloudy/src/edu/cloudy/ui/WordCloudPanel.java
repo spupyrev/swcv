@@ -1,5 +1,8 @@
 package edu.cloudy.ui;
 
+import edu.cloudy.render.UIWord;
+import edu.cloudy.render.WordCloudRenderer;
+
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -19,7 +22,7 @@ public class WordCloudPanel extends JPanel implements ActionListener
 
     public WordCloudPanel(List<UIWord> words)
     {
-        renderer = new WordCloudRenderer(words, 1024, 800);
+        renderer = new WordCloudRenderer(words, 1280, 1024);
         setBackground(Color.WHITE);
         timer = new Timer(100, this);
     }
@@ -64,7 +67,7 @@ public class WordCloudPanel extends JPanel implements ActionListener
 
     public void setShowWords(boolean b)
     {
-        renderer.setShowWords(b);
+        renderer.setShowText(b);
     }
 
     public boolean isShowRectangles()
@@ -87,8 +90,8 @@ public class WordCloudPanel extends JPanel implements ActionListener
         return false;
     }
 
-    public boolean isShowWords()
+    public boolean isShowText()
     {
-        return renderer.isShowWords();
+        return renderer.isShowText();
     }
 }

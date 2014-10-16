@@ -4,13 +4,13 @@ import edu.cloudy.colors.ColorScheme;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
+import edu.cloudy.render.UIWord;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import java.awt.BorderLayout;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,27 +47,10 @@ public class WordCloudFrame extends JFrame
     {
         setLayout(new BorderLayout());
 
-        WordCloudPanel panel = new WordCloudPanel(prepareUIWords(words, layout, colorScheme));
+        WordCloudPanel panel = new WordCloudPanel(UIWord.prepareUIWords(words, layout, colorScheme));
         add(BorderLayout.CENTER, panel);
         add(BorderLayout.EAST, new MetricsPanel(words, similarity, layout));
 
         setJMenuBar(new WordCloudMenuBar(panel));
     }
-    
-    private List<UIWord> prepareUIWords(List<Word> words, LayoutResult layout, ColorScheme colorScheme)
-    {
-        List<UIWord> res = new ArrayList<UIWord>();
-        for (Word w : words)
-        {
-            UIWord uiWord = new UIWord();
-            uiWord.setText(w.word);
-            uiWord.setColor(colorScheme.getColor(w));
-            uiWord.setRectangle(layout.getWordPosition(w));
-
-            res.add(uiWord);
-        }
-
-        return res;
-    }
-    
 }

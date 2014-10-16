@@ -20,8 +20,8 @@ import edu.cloudy.nlp.similarity.EuclideanAlgo;
 import edu.cloudy.nlp.similarity.JaccardCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.LexicalSimilarityAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
-import edu.cloudy.ui.UIWord;
-import edu.cloudy.ui.WordCloudRenderer;
+import edu.cloudy.render.UIWord;
+import edu.cloudy.render.WordCloudRenderer;
 import edu.cloudy.utils.FontUtils;
 import edu.webapp.server.readers.DocumentExtractor;
 import edu.webapp.server.readers.DynamicReader;
@@ -53,8 +53,8 @@ import java.util.Map;
 
 public class WordCloudGenerator
 {
-    private static final int SCR_WIDTH = 1024;
-    private static final int SCR_HEIGHT = 800;
+    private static final int SCR_WIDTH = 1280;
+    private static final int SCR_HEIGHT = 1024;
 
     private static final int MINIMUM_NUMBER_OF_WORDS = 10;
 
@@ -119,7 +119,6 @@ public class WordCloudGenerator
 
             // Ask to render into the SVG Graphics2D implementation.
             WordCloudRenderer renderer = renderers.get(0);
-            renderer.setShowRectangles(false);
 
             String svg = getSvg(renderer, setting.getFont());
 
@@ -201,27 +200,11 @@ public class WordCloudGenerator
         }
         else
         {
-            List<UIWord> uiWords = prepareUIWords(document.getWords(), layout, colorScheme);
+            List<UIWord> uiWords = UIWord.prepareUIWords(document.getWords(), layout, colorScheme);
             renderers.add(new WordCloudRenderer(uiWords, SCR_WIDTH, SCR_HEIGHT));
         }
 
         return renderers;
-    }
-
-    private static List<UIWord> prepareUIWords(List<Word> words, LayoutResult layout, ColorScheme colorScheme)
-    {
-        List<UIWord> res = new ArrayList<UIWord>();
-        for (Word w : words)
-        {
-            UIWord uiWord = new UIWord();
-            uiWord.setText(w.word);
-            uiWord.setColor(colorScheme.getColor(w));
-            uiWord.setRectangle(layout.getWordPosition(w));
-
-            res.add(uiWord);
-        }
-
-        return res;
     }
 
     private static List<UIWord> prepareUIWordsForDynamic(List<Word> words, LayoutAlgo algo, LayoutResult layout, ColorScheme colorScheme)
@@ -260,11 +243,9 @@ public class WordCloudGenerator
             throw new RuntimeException("Wrong number of renderers");
 
         WordCloudRenderer renderer1 = renderers.get(0);
-        renderer1.setShowRectangles(false);
         svg1 = getSvg(renderer1, setting.getFont());
 
         WordCloudRenderer renderer2 = renderers.get(1);
-        renderer2.setShowRectangles(false);
         svg2 = getSvg(renderer2, setting.getFont());
 
         Date timestamp = Calendar.getInstance().getTime();
