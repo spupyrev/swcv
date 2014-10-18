@@ -41,12 +41,12 @@ public class StarsTest
 
     private static double getStarsResult(List<Word> words, Map<WordPair, Double> similarity)
     {
-        SingleStarAlgo starsAlgo = new SingleStarAlgo(words, similarity);
+        SingleStarAlgo starsAlgo = new SingleStarAlgo();
         WordGraph graph = new WordGraph(words, similarity);
         starsAlgo.setGraph(graph);
 
         // Run it!
-        starsAlgo.layout();
+        starsAlgo.layout(words, similarity);
         return starsAlgo.getRealizedWeight();
     }
 

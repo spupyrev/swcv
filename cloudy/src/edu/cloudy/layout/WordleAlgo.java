@@ -2,7 +2,6 @@ package edu.cloudy.layout;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,9 +28,9 @@ public class WordleAlgo extends BaseLayoutAlgo
     private double MAX_WIDTH;
     private double MAX_HEIGHT;
 
-    public WordleAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public WordleAlgo()
     {
-        super(words, similarity);
+        super();
     }
 
     @Override

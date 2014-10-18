@@ -4,13 +4,9 @@ import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.Logger;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 /**
  * June 21, 2014
@@ -24,16 +20,15 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
     private static final double MIN_STEP = 1;
     private static final double MIN_RELATIVE_CHANGE = 0.00005;
 
-    public MDSWithFDPackingAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public MDSWithFDPackingAlgo()
     {
-        super(words, similarity);
     }
 
     @Override
     protected void run()
     {
         //initial layout
-        LayoutResult initialLayout = new MDSAlgo(words, similarity, false).layout();
+        LayoutResult initialLayout = new MDSAlgo(false).layout(words, similarity);
         words.forEach(w -> wordPositions.put(w, initialLayout.getWordPosition(w)));
 
         runFDAdjustments();

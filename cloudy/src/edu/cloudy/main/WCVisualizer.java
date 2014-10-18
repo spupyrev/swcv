@@ -1,11 +1,10 @@
 package edu.cloudy.main;
 
 import edu.cloudy.colors.ColorScheme;
-import edu.cloudy.colors.ColorSchemeCollection;
+import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.layout.TagCloudAlgo;
-import edu.cloudy.layout.TagCloudAlgo.TABLE_ORDER;
+import edu.cloudy.layout.TagCloudRankAlgo;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -160,14 +159,14 @@ public class WCVisualizer
         //LayoutAlgo algo = new SeamCarvingAlgo(words, similarity);
         //LayoutAlgo algo = new WordleAlgo(words, similarity);
         //LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
-        LayoutAlgo algo = new TagCloudAlgo(words, similarity, TABLE_ORDER.RANK);
+        LayoutAlgo algo = new TagCloudRankAlgo();
 
-        return TimeMeasurer.execute("layout", () -> algo.layout());
+        return TimeMeasurer.execute("layout", () -> algo.layout(words, similarity));
     }
 
     private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout)
     {
-        ColorScheme colorScheme = ColorSchemeCollection.getDefault();
+        ColorScheme colorScheme = ColorSchemeRegistry.getDefault();
         colorScheme.initialize(words, similarity);
         new WordCloudFrame(words, similarity, layout, colorScheme);
     }

@@ -5,10 +5,6 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author spupyrev
@@ -16,9 +12,8 @@ import java.util.Map;
  */
 public class InflateAndPushAlgo extends BaseLayoutAlgo
 {
-    public InflateAndPushAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public InflateAndPushAlgo()
     {
-        super(words, similarity);
     }
 
     @Override
@@ -46,9 +41,9 @@ public class InflateAndPushAlgo extends BaseLayoutAlgo
     private void initialPlacement(double scale)
     {
         //find initial placement by mds layout
-        MDSAlgo algo = new MDSAlgo(words, similarity);
+        MDSAlgo algo = new MDSAlgo();
         algo.setBoundingBoxGenerator(new BoundingBoxGenerator(scale));
-        LayoutResult initialLayout = algo.layout();
+        LayoutResult initialLayout = algo.layout(words, similarity);
         
         words.forEach(w -> wordPositions.put(w, initialLayout.getWordPosition(w)));
     }

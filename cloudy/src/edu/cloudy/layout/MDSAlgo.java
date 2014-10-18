@@ -8,7 +8,6 @@ import edu.cloudy.nlp.WordPair;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -25,15 +24,14 @@ public class MDSAlgo extends BaseLayoutAlgo
 {
     private boolean useOverlapRemoval = true;
 
-    public MDSAlgo(List<Word> words, Map<WordPair, Double> similarity, boolean useOverlapRemoval)
+    public MDSAlgo(boolean useOverlapRemoval)
     {
-        super(words, similarity);
         this.useOverlapRemoval = useOverlapRemoval;
     }
 
-    public MDSAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public MDSAlgo()
     {
-        this(words, similarity, true);
+        this(true);
     }
 
     //private static double SCALING = 1.0;

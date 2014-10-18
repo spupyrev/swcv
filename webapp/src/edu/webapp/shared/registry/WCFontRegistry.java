@@ -1,4 +1,6 @@
-package edu.webapp.shared;
+package edu.webapp.shared.registry;
+
+import edu.webapp.shared.WCFont;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ import java.util.Random;
  * @author spupyrev
  * Oct 6, 2014
  */
-public class WCFontCollection implements Serializable
+public class WCFontRegistry implements Serializable
 {
     private static final long serialVersionUID = 8054870954525877210L;
 

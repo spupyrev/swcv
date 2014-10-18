@@ -1,25 +1,22 @@
 package edu.webapp.server;
 
 import edu.cloudy.colors.ColorScheme;
-import edu.cloudy.colors.ColorSchemeCollection;
+import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.layout.*;
-import edu.cloudy.layout.TagCloudAlgo.TABLE_ORDER;
+import edu.cloudy.layout.BaseLayoutAlgo;
+import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutAlgorithmRegistry;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.ContextDelimiter;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.WCVDynamicDocument;
 import edu.cloudy.nlp.WCVSentimentDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.nlp.ranking.LexRankingAlgo;
 import edu.cloudy.nlp.ranking.RankingAlgo;
-import edu.cloudy.nlp.ranking.TFIDFRankingAlgo;
-import edu.cloudy.nlp.ranking.TFRankingAlgo;
-import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
-import edu.cloudy.nlp.similarity.EuclideanAlgo;
-import edu.cloudy.nlp.similarity.JaccardCoOccurenceAlgo;
-import edu.cloudy.nlp.similarity.LexicalSimilarityAlgo;
+import edu.cloudy.nlp.ranking.RankingAlgorithmRegistry;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
+import edu.cloudy.nlp.similarity.SimilarityAlgorithmRegistry;
 import edu.cloudy.render.UIWord;
 import edu.cloudy.render.WordCloudRenderer;
 import edu.cloudy.utils.FontUtils;
@@ -27,13 +24,10 @@ import edu.webapp.server.readers.DocumentExtractor;
 import edu.webapp.server.readers.DynamicReader;
 import edu.webapp.server.readers.IDocumentReader;
 import edu.webapp.server.readers.ISentimentReader;
-import edu.webapp.shared.WCColorSchemeCollection;
 import edu.webapp.shared.WCFont;
 import edu.webapp.shared.WCSetting;
-import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
-import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
-import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
 import edu.webapp.shared.WordCloud;
+import edu.webapp.shared.registry.WCColorSchemeRegistry;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGeneratorContext;
@@ -54,14 +48,14 @@ import java.util.Map;
 public class WordCloudGenerator
 {
     private static final int SCR_WIDTH = 1280;
-    private static final int SCR_HEIGHT = 1024;
+    private static final int SCR_HEIGHT = 800;
 
     private static final int MINIMUM_NUMBER_OF_WORDS = 10;
 
     public static WordCloud updateWordCloud(int id, String input, WCSetting setting, String ip) throws IllegalArgumentException
     {
         WordCloud updated = buildWordCloud(input, setting, ip);
-        updated.setId(saveCloud(id, updated));
+        updated.setId(WCExporter.saveCloud(id, updated));
         return updated;
     }
 
@@ -70,7 +64,7 @@ public class WordCloudGenerator
         WordCloud newCloud = buildWordCloud(input, setting, ip);
         if (newCloud == null)
             return null;
-        newCloud.setId(saveCloud(-1, newCloud));
+        newCloud.setId(WCExporter.saveCloud(-1, newCloud));
         return newCloud;
     }
 
@@ -94,12 +88,12 @@ public class WordCloudGenerator
         else
         {
             //TODO
-            if (reader instanceof ISentimentReader && setting.getColorScheme().getType().equals(WCColorSchemeCollection.COLOR_SCHEME_TYPE_SENTIMENT))
+            if (reader instanceof ISentimentReader && setting.getColorScheme().getType().equals(WCColorSchemeRegistry.COLOR_SCHEME_TYPE_SENTIMENT))
             {
                 wcvDocument = new WCVSentimentDocument(((ISentimentReader)reader).getStrChunks());
                 text = wcvDocument.getText();
             }
-            else if (setting.getColorScheme().getType().equals(WCColorSchemeCollection.COLOR_SCHEME_TYPE_SENTIMENT)
+            else if (setting.getColorScheme().getType().equals(WCColorSchemeRegistry.COLOR_SCHEME_TYPE_SENTIMENT)
                     && input.contains(ContextDelimiter.SENTIMENT_DELIMITER_TEXT))
             {
                 String[] strs = input.split(ContextDelimiter.SENTIMENT_DELIMITER_REGEX);
@@ -169,24 +163,25 @@ public class WordCloudGenerator
         document.parse();
 
         // ranking
-        document.weightFilter(setting.getWordCount(), createRanking(setting.getRankingAlgorithm(), document));
+        RankingAlgo rankingAlgo = RankingAlgorithmRegistry.getById(setting.getRankingAlgorithm().getId());
+        document.weightFilter(setting.getWordCount(), rankingAlgo);
 
         if (document.getWords().size() < MINIMUM_NUMBER_OF_WORDS)
             return null;
 
         // similarity
-        SimilarityAlgo similarityAlgo = createSimilarity(setting.getSimilarityAlgorithm());
+        SimilarityAlgo similarityAlgo = SimilarityAlgorithmRegistry.getById(setting.getSimilarityAlgorithm().getId());
         similarityAlgo.initialize(document);
         similarityAlgo.run();
         Map<WordPair, Double> similarity = similarityAlgo.getSimilarity();
 
         // layout
-        LayoutAlgo layoutAlgo = createLayoutAlgorithm(setting.getLayoutAlgorithm(), document.getWords(), similarity);
-        layoutAlgo.setAspectRatio(setting.getAspectRatioDouble());
-        LayoutResult layout = layoutAlgo.layout();
+        LayoutAlgo layoutAlgo = LayoutAlgorithmRegistry.getById(setting.getLayoutAlgorithm().getId());
+        layoutAlgo.setAspectRatio(setting.getAspectRatio().getValue());
+        LayoutResult layout = layoutAlgo.layout(document.getWords(), similarity);
 
         // coloring
-        ColorScheme colorScheme = ColorSchemeCollection.getByName(setting.getColorScheme().getName());
+        ColorScheme colorScheme = ColorSchemeRegistry.getByName(setting.getColorScheme().getName());
         colorScheme.initialize(document.getWords(), similarity);
 
         if (document instanceof WCVDynamicDocument)
@@ -255,11 +250,6 @@ public class WordCloudGenerator
         return cloud;
     }
 
-    public static int saveCloud(int id, WordCloud cloud)
-    {
-        return WCExporter.saveCloud(id, cloud);
-    }
-
     private static WordCloud createCloud(WCSetting setting, String input, String text, Date timestamp, String svg, String svg2, int width, int height, int width2, int height2, String ip)
     {
         WordCloud cloud = new WordCloud();
@@ -286,68 +276,8 @@ public class WordCloudGenerator
         return cloud;
     }
 
-    private static RankingAlgo createRanking(RANKING_ALGORITHM algo, WCVDocument document)
-    {
-        if (algo.equals(RANKING_ALGORITHM.TF))
-            return new TFRankingAlgo();
-
-        if (algo.equals(RANKING_ALGORITHM.TF_IDF))
-            return new TFIDFRankingAlgo();
-
-        if (algo.equals(RANKING_ALGORITHM.LEX))
-            return new LexRankingAlgo();
-
-        throw new RuntimeException("something is wrong");
-    }
-
     private static void logging(String text, WCSetting setting)
     {
         //System.out.println("running algorithm " + setting.toString());
-    }
-
-    private static SimilarityAlgo createSimilarity(SIMILARITY_ALGORITHM algo)
-    {
-        if (algo.equals(SIMILARITY_ALGORITHM.COSINE))
-            return new CosineCoOccurenceAlgo();
-        if (algo.equals(SIMILARITY_ALGORITHM.JACCARD))
-            return new JaccardCoOccurenceAlgo();
-        if (algo.equals(SIMILARITY_ALGORITHM.LEXICAL))
-            return new LexicalSimilarityAlgo();
-        if (algo.equals(SIMILARITY_ALGORITHM.MATRIXDIS))
-            return new EuclideanAlgo();
-
-        throw new RuntimeException("something is wrong");
-    }
-
-    private static LayoutAlgo createLayoutAlgorithm(LAYOUT_ALGORITHM algo, List<Word> words, Map<WordPair, Double> similarity)
-    {
-        if (algo.equals(LAYOUT_ALGORITHM.WORDLE))
-            return new WordleAlgo(words, similarity);
-
-        if (algo.equals(LAYOUT_ALGORITHM.TAG_ALPHABETICAL))
-            return new TagCloudAlgo(words, similarity, TABLE_ORDER.ALPHABETICAL);
-
-        if (algo.equals(LAYOUT_ALGORITHM.TAG_RANK))
-            return new TagCloudAlgo(words, similarity, TABLE_ORDER.RANK);
-
-        if (algo.equals(LAYOUT_ALGORITHM.CPWCV))
-            return new ContextPreservingAlgo(words, similarity);
-
-        if (algo.equals(LAYOUT_ALGORITHM.SEAM))
-            return new SeamCarvingAlgo(words, similarity);
-
-        if (algo.equals(LAYOUT_ALGORITHM.INFLATE))
-            return new InflateAndPushAlgo(words, similarity);
-
-        if (algo.equals(LAYOUT_ALGORITHM.STAR))
-            return new StarForestAlgo(words, similarity);
-
-        if (algo.equals(LAYOUT_ALGORITHM.CYCLE))
-            return new CycleCoverAlgo(words, similarity);
-
-        if (algo.equals(LAYOUT_ALGORITHM.MDS))
-            return new MDSWithFDPackingAlgo(words, similarity);
-
-        throw new RuntimeException("something is wrong");
     }
 }

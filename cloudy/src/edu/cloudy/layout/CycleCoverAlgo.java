@@ -26,10 +26,9 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
     private List<Edge> edgesInMatching;
     private boolean useGreedy = false;
 
-    public CycleCoverAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public CycleCoverAlgo()
     {
-        super(words, similarity);
-        this.graph = new WordGraph(words, similarity);
+        super();
     }
 
     public void setUseGreedy(boolean useGreedy)
@@ -40,6 +39,8 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
     @Override
     protected void run()
     {
+        graph = new WordGraph(words, similarity);
+        
         if (!useGreedy)
         {
             CycleCoverExtractor tme = new CycleCoverExtractor(graph);
@@ -59,23 +60,23 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
         int CYCLE_SIZE_LIMIT = 12;
         cycles = breakLongCycles(cycles, CYCLE_SIZE_LIMIT);
 
-        List<LayoutResult> cycleAlgos = new ArrayList<LayoutResult>();
+        List<LayoutResult> cycleLayouts = new ArrayList<LayoutResult>();
         for (List<Vertex> c : cycles)
         {
             BaseLayoutAlgo algo = null;
 
             if (c.size() <= CYCLE_SIZE_LIMIT)
-                algo = new SingleCycleAlgo(getCycleWords(c), getCycleWeights(c));
+                algo = new SingleCycleAlgo();
             else
-                algo = new SinglePathAlgo(getCycleWords(c), getCycleWeights(c));
+                algo = new SinglePathAlgo();
 
-            cycleAlgos.add(algo.layout());
+            cycleLayouts.add(algo.layout(getCycleWords(c), getCycleWeights(c)));
         }
 
         Logger.println("#cycles: " + cycles.size());
         Logger.println("weight: " + getRealizedWeight());
 
-        WordPlacer wordPlacer = new ClusterForceDirectedPlacer(graph.getWords(), graph.getSimilarities(), cycleAlgos, bbGenerator);
+        WordPlacer wordPlacer = new ClusterForceDirectedPlacer(graph.getWords(), graph.getSimilarities(), cycleLayouts, bbGenerator);
 
         for (Word w : graph.getWords())
         {

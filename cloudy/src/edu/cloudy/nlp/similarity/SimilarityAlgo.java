@@ -5,9 +5,11 @@ import edu.cloudy.nlp.WordPair;
 
 import java.util.Map;
 
-public interface SimilarityAlgo {
-	public void initialize(WCVDocument wordifier);
-	public void run();
-	
-	public Map<WordPair, Double> getSimilarity();
+public interface SimilarityAlgo
+{
+    public void initialize(WCVDocument wordifier);
+
+    public void run();
+
+    public Map<WordPair, Double> getSimilarity();
 }

@@ -48,7 +48,7 @@ public class CyclesTest
 
     private static LayoutResult runLayout(List<Word> cycle, Map<WordPair, Double> similarity)
     {
-        return new SinglePathAlgo(cycle, similarity).layout();
+        return new SinglePathAlgo().layout(cycle, similarity);
     }
 
 }

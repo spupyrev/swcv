@@ -2,11 +2,9 @@ package edu.cloudy.layout;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -14,10 +12,8 @@ import java.util.Random;
  */
 public class SpiralCycleAlgo extends BaseLayoutAlgo
 {
-
-    public SpiralCycleAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public SpiralCycleAlgo()
     {
-        super(words, similarity);
     }
 
     @Override

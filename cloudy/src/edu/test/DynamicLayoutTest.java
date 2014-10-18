@@ -1,6 +1,5 @@
 package edu.test;
 
-import edu.cloudy.geom.BoundingBoxGenerator;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.LayoutResult;
@@ -46,8 +45,7 @@ public class DynamicLayoutTest
 
         Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
         MatchingTest.randomSimilarities(doc.getWords(), similarity);
-        BoundingBoxGenerator bbg = new BoundingBoxGenerator(1.0);
-        LayoutResult algo = runLayout(doc.getWords(), similarity, bbg);
+        LayoutResult algo = runLayout(doc.getWords(), similarity);
 
         checkIntersections(doc, algo);
     }
@@ -71,9 +69,9 @@ public class DynamicLayoutTest
         }
     }
 
-    private static LayoutResult runLayout(List<Word> words, Map<WordPair, Double> similarity, BoundingBoxGenerator bbg)
+    private static LayoutResult runLayout(List<Word> words, Map<WordPair, Double> similarity)
     {
-        return new CycleCoverAlgo(words, similarity).layout();
+        return new CycleCoverAlgo().layout(words, similarity);
     }
 
 }

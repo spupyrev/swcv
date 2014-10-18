@@ -1,7 +1,7 @@
 package edu.cloudy.ui;
 
 import edu.cloudy.colors.ColorScheme;
-import edu.cloudy.colors.ColorSchemeCollection;
+import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
@@ -76,7 +76,7 @@ public class FlexWordlePanel extends JPanel implements ActionListener
 
     public void draw(Graphics2D g2, double screenWidth, double screenHeight)
     {
-        wordColors = ColorSchemeCollection.getDefault();
+        wordColors = ColorSchemeRegistry.getDefault();
         occupiedAreas = new ArrayList<Area>();
 
         long startTime = System.currentTimeMillis();

@@ -1,7 +1,13 @@
 package edu.webapp.shared;
 
+import edu.webapp.shared.registry.WCAspectRatioRegistry;
+import edu.webapp.shared.registry.WCColorSchemeRegistry;
+import edu.webapp.shared.registry.WCFontRegistry;
+import edu.webapp.shared.registry.WCLayoutAlgoRegistry;
+import edu.webapp.shared.registry.WCRankingAlgoRegistry;
+import edu.webapp.shared.registry.WCSimilarityAlgoRegistry;
+
 import java.io.Serializable;
-import java.util.Random;
 
 /**
  * @author spupyrev
@@ -15,57 +21,30 @@ public class WCSetting implements Serializable
     {
     }
 
-    public enum LAYOUT_ALGORITHM
-    {
-        WORDLE, CPWCV, SEAM, INFLATE, STAR, CYCLE, MDS, TAG_ALPHABETICAL, TAG_RANK
-    }
-
-    public enum SIMILARITY_ALGORITHM
-    {
-        COSINE, JACCARD, LEXICAL, MATRIXDIS
-    }
-
-    public enum RANKING_ALGORITHM
-    {
-        TF, TF_IDF, LEX
-    }
-
-    public enum ASPECT_RATIO
-    {
-        AR11, AR43, AR169, AR219
-    }
-
-    private WCColorScheme colorScheme = WCColorSchemeCollection.getDefault();
-    private LAYOUT_ALGORITHM layoutAlgorithm = LAYOUT_ALGORITHM.CPWCV;
-    private SIMILARITY_ALGORITHM similarityAlgorithm = SIMILARITY_ALGORITHM.COSINE;
-    private RANKING_ALGORITHM rankingAlgorithm = RANKING_ALGORITHM.TF;
-    private WCFont font = WCFontCollection.getDefault();
-    private ASPECT_RATIO aspectRatio = ASPECT_RATIO.AR169;
+    private WCColorScheme colorScheme = WCColorSchemeRegistry.getDefault();
+    private WCLayoutAlgo layoutAlgorithm = WCLayoutAlgoRegistry.getDefault();
+    private WCSimilarityAlgo similarityAlgorithm = WCSimilarityAlgoRegistry.getDefault();
+    private WCRankingAlgo rankingAlgorithm = WCRankingAlgoRegistry.getDefault();
+    private WCFont font = WCFontRegistry.getDefault();
+    private WCAspectRatio aspectRatio = WCAspectRatioRegistry.getDefault();
 
     private int wordCount = 50;
 
     public void setRandomSetting()
     {
-        Random dice = new Random();
-        int pick;
-
         setWordCount(wordCount);
 
-        setColorScheme(WCColorSchemeCollection.getRandom());
+        setColorScheme(WCColorSchemeRegistry.getRandom());
 
-        pick = dice.nextInt(LAYOUT_ALGORITHM.values().length);
-        setLayoutAlgorithm(LAYOUT_ALGORITHM.values()[pick]);
+        setLayoutAlgorithm(WCLayoutAlgoRegistry.getRandom());
 
-        pick = dice.nextInt(SIMILARITY_ALGORITHM.values().length);
-        setSimilarityAlgorithm(SIMILARITY_ALGORITHM.values()[pick]);
+        setSimilarityAlgorithm(WCSimilarityAlgoRegistry.getRandom());
 
-        pick = dice.nextInt(RANKING_ALGORITHM.values().length);
-        setRankingAlgorithm(RANKING_ALGORITHM.values()[pick]);
+        setRankingAlgorithm(WCRankingAlgoRegistry.getRandom());
 
-        setFont(WCFontCollection.getRandom());
+        setFont(WCFontRegistry.getRandom());
 
-        pick = dice.nextInt(ASPECT_RATIO.values().length);
-        setAspectRatio(ASPECT_RATIO.values()[pick]);
+        setAspectRatio(WCAspectRatioRegistry.getRandom());
     }
 
     public WCColorScheme getColorScheme()
@@ -78,22 +57,22 @@ public class WCSetting implements Serializable
         this.colorScheme = colorScheme;
     }
 
-    public LAYOUT_ALGORITHM getLayoutAlgorithm()
+    public WCLayoutAlgo getLayoutAlgorithm()
     {
         return layoutAlgorithm;
     }
 
-    public void setLayoutAlgorithm(LAYOUT_ALGORITHM layoutAlgorithm)
+    public void setLayoutAlgorithm(WCLayoutAlgo layoutAlgorithm)
     {
         this.layoutAlgorithm = layoutAlgorithm;
     }
 
-    public SIMILARITY_ALGORITHM getSimilarityAlgorithm()
+    public WCSimilarityAlgo getSimilarityAlgorithm()
     {
         return similarityAlgorithm;
     }
 
-    public void setSimilarityAlgorithm(SIMILARITY_ALGORITHM similarityAlgorithm)
+    public void setSimilarityAlgorithm(WCSimilarityAlgo similarityAlgorithm)
     {
         this.similarityAlgorithm = similarityAlgorithm;
     }
@@ -108,12 +87,12 @@ public class WCSetting implements Serializable
         this.wordCount = wordCount;
     }
 
-    public RANKING_ALGORITHM getRankingAlgorithm()
+    public WCRankingAlgo getRankingAlgorithm()
     {
         return rankingAlgorithm;
     }
 
-    public void setRankingAlgorithm(RANKING_ALGORITHM rankingAlgorithm)
+    public void setRankingAlgorithm(WCRankingAlgo rankingAlgorithm)
     {
         this.rankingAlgorithm = rankingAlgorithm;
     }
@@ -128,26 +107,12 @@ public class WCSetting implements Serializable
         this.font = font;
     }
 
-    public ASPECT_RATIO getAspectRatio()
+    public WCAspectRatio getAspectRatio()
     {
         return aspectRatio;
     }
 
-    public double getAspectRatioDouble()
-    {
-        if (aspectRatio == ASPECT_RATIO.AR11)
-            return 1.0;
-        if (aspectRatio == ASPECT_RATIO.AR43)
-            return 4.0 / 3.0;
-        if (aspectRatio == ASPECT_RATIO.AR169)
-            return 16.0 / 9.0;
-        if (aspectRatio == ASPECT_RATIO.AR219)
-            return 21.0 / 9.0;
-
-        return 1.0;
-    }
-
-    public void setAspectRatio(ASPECT_RATIO ar)
+    public void setAspectRatio(WCAspectRatio ar)
     {
         this.aspectRatio = ar;
     }

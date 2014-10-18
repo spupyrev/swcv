@@ -5,7 +5,6 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,9 +21,8 @@ import java.util.Set;
  */
 public class SeamCarvingAlgo extends BaseLayoutAlgo
 {
-    public SeamCarvingAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public SeamCarvingAlgo()
     {
-        super(words, similarity);
     }
 
     @Override
@@ -45,7 +43,7 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
     private SWCRectangle[] initialPlacement()
     {
         //initial layout
-        LayoutResult initialLayout = new MDSAlgo(words, similarity, false).layout();
+        LayoutResult initialLayout = new MDSAlgo(false).layout(words, similarity);
         
         SWCRectangle[] wordPositions = new SWCRectangle[words.size()];
         int i = 0;

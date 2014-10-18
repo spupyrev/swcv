@@ -11,17 +11,22 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.webapp.client.ui.GroupedListBox;
+import edu.webapp.shared.WCAspectRatio;
 import edu.webapp.shared.WCColorScheme;
-import edu.webapp.shared.WCColorSchemeCollection;
 import edu.webapp.shared.WCFont;
-import edu.webapp.shared.WCFontCollection;
+import edu.webapp.shared.WCLayoutAlgo;
+import edu.webapp.shared.WCRankingAlgo;
 import edu.webapp.shared.WCSetting;
-import edu.webapp.shared.WCSetting.ASPECT_RATIO;
-import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
-import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
-import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
+import edu.webapp.shared.WCSimilarityAlgo;
+import edu.webapp.shared.registry.WCAspectRatioRegistry;
+import edu.webapp.shared.registry.WCColorSchemeRegistry;
+import edu.webapp.shared.registry.WCFontRegistry;
+import edu.webapp.shared.registry.WCLayoutAlgoRegistry;
+import edu.webapp.shared.registry.WCRankingAlgoRegistry;
+import edu.webapp.shared.registry.WCSimilarityAlgoRegistry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -103,32 +108,35 @@ public class SettingsPanel
 
     private void setNonEnglishText(boolean checked)
     {
-        RANKING_ALGORITHM rankval = WCSetting.RANKING_ALGORITHM.valueOf(rankingWidget.getValue(rankingWidget.getSelectedIndex()));
+        //TODO
         if (checked)
         { // non en setting
+            WCRankingAlgo rankval = WCRankingAlgoRegistry.getById(rankingWidget.getValue(rankingWidget.getSelectedIndex()));
             List<Integer> enFonts = getEnOnlyFonts();
-            if (rankval == WCSetting.RANKING_ALGORITHM.TF_IDF)
+
+            if (rankval.getId().equals("tf-idf"))
             {
                 rankingWidget.setSelectedIndex(0);
-                setting.setFont(WCFontCollection.getByName("Archer"));
+                setting.setFont(WCFontRegistry.getByName("Archer"));
             }
 
             if (enFonts.contains(fontWidget.getSelectedIndex()))
             {
                 fontWidget.setSelectedIndex(1);
-                setting.setFont(WCFontCollection.getByName("ComicSansMS"));
+                setting.setFont(WCFontRegistry.getByName("ComicSansMS"));
             }
 
             for (int i = 0; i < fontWidget.getItemCount(); ++i)
                 if (enFonts.contains(i))
                     setDisabled(fontWidget, i);
 
-            setDisabled(rankingWidget, findIndex(rankingWidget, WCSetting.RANKING_ALGORITHM.TF_IDF.toString()));
+            setDisabled(rankingWidget, findIndex(rankingWidget, "tf-df"));
         }
         else
         { // en setting
             for (int i = 0; i < fontWidget.getItemCount(); ++i)
                 removeDisabled(fontWidget, i);
+
             for (int i = 0; i < rankingWidget.getItemCount(); ++i)
                 removeDisabled(rankingWidget, i);
         }
@@ -138,7 +146,7 @@ public class SettingsPanel
     {
         List<Integer> indices = new ArrayList<Integer>();
 
-        for (WCFont font : WCFontCollection.list())
+        for (WCFont font : WCFontRegistry.list())
             if (font.isEnglishOnly())
                 indices.add(findIndex(fontWidget, font.getName()));
 
@@ -162,63 +170,27 @@ public class SettingsPanel
         b.getElement().getElementsByTagName("option").getItem(index).setAttribute("disabled", "disabled");
     }
 
-    private ListBox createColorListBox()
+    private int findIndex(ListBox box, String value)
     {
-        final GroupedListBox box = new GroupedListBox();
-        for (WCColorScheme scheme : WCColorSchemeCollection.list())
-            box.addItem(scheme.getType() + " | " + scheme.getDescription(), scheme.getName());
-
-        box.setSelectedIndex(findIndex(box, setting.getColorScheme().getName()));
-
-        box.addChangeHandler(new ChangeHandler()
-        {
-            public void onChange(ChangeEvent event)
-            {
-                WCColorScheme value = WCColorSchemeCollection.getByName(box.getValue(box.getSelectedIndex()));
-                setting.setColorScheme(value);
-            }
-        });
-
-        return box;
-    }
-
-    private Widget createSimilarityListBox()
-    {
-        final ListBox box = new ListBox();
-        box.addItem("Cosine Coefficient", WCSetting.SIMILARITY_ALGORITHM.COSINE.toString());
-        box.addItem("Jaccard Coefficient", WCSetting.SIMILARITY_ALGORITHM.JACCARD.toString());
-        box.addItem("Lin's Similarity", WCSetting.SIMILARITY_ALGORITHM.LEXICAL.toString());
-        box.addItem("Euclidean Distance", WCSetting.SIMILARITY_ALGORITHM.MATRIXDIS.toString());
-
-        box.setSelectedIndex(findIndex(box, setting.getSimilarityAlgorithm().toString()));
-
-        box.addChangeHandler(new ChangeHandler()
-        {
-            public void onChange(ChangeEvent event)
-            {
-                SIMILARITY_ALGORITHM value = WCSetting.SIMILARITY_ALGORITHM.valueOf(box.getValue(box.getSelectedIndex()));
-                setting.setSimilarityAlgorithm(value);
-            }
-        });
-
-        return box;
+        for (int i = 0; i < box.getItemCount(); i++)
+            if (box.getValue(i).equals(value))
+                return i;
+        return -1;
     }
 
     private Widget createAspectRatioListBox()
     {
         final ListBox box = new ListBox();
-        box.addItem("1:1", WCSetting.ASPECT_RATIO.AR11.toString());
-        box.addItem("4:3", WCSetting.ASPECT_RATIO.AR43.toString());
-        box.addItem("16:9", WCSetting.ASPECT_RATIO.AR169.toString());
-        box.addItem("21:9", WCSetting.ASPECT_RATIO.AR219.toString());
+        for (WCAspectRatio algo : WCAspectRatioRegistry.list())
+            box.addItem(algo.getDescription(), algo.getId());
 
-        box.setSelectedIndex(findIndex(box, setting.getAspectRatio().toString()));
+        box.setSelectedIndex(findIndex(box, setting.getAspectRatio().getId()));
 
         box.addChangeHandler(new ChangeHandler()
         {
             public void onChange(ChangeEvent event)
             {
-                ASPECT_RATIO value = WCSetting.ASPECT_RATIO.valueOf(box.getValue(box.getSelectedIndex()));
+                WCAspectRatio value = WCAspectRatioRegistry.getById(box.getValue(box.getSelectedIndex()));
                 setting.setAspectRatio(value);
             }
         });
@@ -228,24 +200,17 @@ public class SettingsPanel
 
     private Widget createLayoutListBox()
     {
-        final ListBox box = new ListBox();
-        box.addItem("Wordle (random)", WCSetting.LAYOUT_ALGORITHM.WORDLE.toString());
-        box.addItem("Tag Cloud (alphabetical)", WCSetting.LAYOUT_ALGORITHM.TAG_ALPHABETICAL.toString());
-        box.addItem("Tag Cloud (rank)", WCSetting.LAYOUT_ALGORITHM.TAG_RANK.toString());
-        box.addItem("Force-Directed", WCSetting.LAYOUT_ALGORITHM.MDS.toString());
-        box.addItem("Star Forest", WCSetting.LAYOUT_ALGORITHM.STAR.toString());
-        box.addItem("Cycle Cover", WCSetting.LAYOUT_ALGORITHM.CYCLE.toString());
-        box.addItem("Context Preserving", WCSetting.LAYOUT_ALGORITHM.CPWCV.toString());
-        box.addItem("Inflate and Push", WCSetting.LAYOUT_ALGORITHM.INFLATE.toString());
-        box.addItem("Seam Carving", WCSetting.LAYOUT_ALGORITHM.SEAM.toString());
+        final GroupedListBox box = new GroupedListBox();
+        for (WCLayoutAlgo algo : WCLayoutAlgoRegistry.list())
+            box.addItem(algo.getType() + " | " + algo.getDescription(), algo.getId());
 
-        box.setSelectedIndex(findIndex(box, setting.getLayoutAlgorithm().toString()));
+        box.setSelectedIndex(findIndex(box, setting.getLayoutAlgorithm().getId()));
 
         box.addChangeHandler(new ChangeHandler()
         {
             public void onChange(ChangeEvent event)
             {
-                LAYOUT_ALGORITHM value = WCSetting.LAYOUT_ALGORITHM.valueOf(box.getValue(box.getSelectedIndex()));
+                WCLayoutAlgo value = WCLayoutAlgoRegistry.getById(box.getValue(box.getSelectedIndex()));
                 setting.setLayoutAlgorithm(value);
             }
         });
@@ -253,31 +218,13 @@ public class SettingsPanel
         return box;
     }
 
-    private int findIndex(ListBox box, String value)
-    {
-        for (int i = 0; i < box.getItemCount(); i++)
-            if (box.getValue(i).equals(value))
-                return i;
-        return -1;
-    }
-
     private ListBox createNumberListBox()
     {
         final ListBox box = new ListBox();
-        String[] values = new String[] {
-                "10",
-                "20",
-                "30",
-                "40",
-                "50",
-                "75",
-                "100",
-                "125",
-                "150",
-                "200" };
+        List<String> values = Arrays.asList("10", "20", "30", "40", "50", "75", "100", "125", "150", "200", "250", "300");
 
-        for (int i = 0; i < values.length; i++)
-            box.addItem(values[i]);
+        for (int i = 0; i < values.size(); i++)
+            box.addItem(values.get(i));
 
         box.setSelectedIndex(findIndex(box, String.valueOf(setting.getWordCount())));
 
@@ -298,7 +245,7 @@ public class SettingsPanel
     private ListBox createFontListBox()
     {
         final ListBox box = new ListBox();
-        for (WCFont font : WCFontCollection.list())
+        for (WCFont font : WCFontRegistry.list())
             box.addItem(font.getDescription(), font.getName());
 
         box.setSelectedIndex(findIndex(box, setting.getFont().getName()));
@@ -307,7 +254,7 @@ public class SettingsPanel
         {
             public void onChange(ChangeEvent event)
             {
-                WCFont value = WCFontCollection.getByName(box.getValue(box.getSelectedIndex()));
+                WCFont value = WCFontRegistry.getByName(box.getValue(box.getSelectedIndex()));
                 setting.setFont(value);
             }
         });
@@ -318,18 +265,57 @@ public class SettingsPanel
     private ListBox createRankingListBox()
     {
         final ListBox box = new ListBox();
-        box.addItem("Frequency", WCSetting.RANKING_ALGORITHM.TF.toString());
-        box.addItem("TF/ICF - BrownCorpus", WCSetting.RANKING_ALGORITHM.TF_IDF.toString());
-        box.addItem("LexRank", WCSetting.RANKING_ALGORITHM.LEX.toString());
+        for (WCRankingAlgo algo : WCRankingAlgoRegistry.list())
+            box.addItem(algo.getDescription(), algo.getId());
 
-        box.setSelectedIndex(findIndex(box, setting.getRankingAlgorithm().toString()));
+        box.setSelectedIndex(findIndex(box, setting.getRankingAlgorithm().getId()));
 
         box.addChangeHandler(new ChangeHandler()
         {
             public void onChange(ChangeEvent event)
             {
-                RANKING_ALGORITHM value = WCSetting.RANKING_ALGORITHM.valueOf(box.getValue(box.getSelectedIndex()));
+                WCRankingAlgo value = WCRankingAlgoRegistry.getById(box.getValue(box.getSelectedIndex()));
                 setting.setRankingAlgorithm(value);
+            }
+        });
+
+        return box;
+    }
+
+    private ListBox createColorListBox()
+    {
+        final GroupedListBox box = new GroupedListBox();
+        for (WCColorScheme scheme : WCColorSchemeRegistry.list())
+            box.addItem(scheme.getType() + " | " + scheme.getDescription(), scheme.getName());
+
+        box.setSelectedIndex(findIndex(box, setting.getColorScheme().getName()));
+
+        box.addChangeHandler(new ChangeHandler()
+        {
+            public void onChange(ChangeEvent event)
+            {
+                WCColorScheme value = WCColorSchemeRegistry.getByName(box.getValue(box.getSelectedIndex()));
+                setting.setColorScheme(value);
+            }
+        });
+
+        return box;
+    }
+
+    private Widget createSimilarityListBox()
+    {
+        final ListBox box = new ListBox();
+        for (WCSimilarityAlgo font : WCSimilarityAlgoRegistry.list())
+            box.addItem(font.getDescription(), font.getId());
+
+        box.setSelectedIndex(findIndex(box, setting.getSimilarityAlgorithm().getId()));
+
+        box.addChangeHandler(new ChangeHandler()
+        {
+            public void onChange(ChangeEvent event)
+            {
+                WCSimilarityAlgo value = WCSimilarityAlgoRegistry.getById(box.getValue(box.getSelectedIndex()));
+                setting.setSimilarityAlgorithm(value);
             }
         });
 

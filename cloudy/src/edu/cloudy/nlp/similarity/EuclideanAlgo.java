@@ -12,7 +12,6 @@ import java.util.Set;
 
 public class EuclideanAlgo implements SimilarityAlgo
 {
-
     private Map<WordPair, Double> similarity;
     private WCVDocument wordifier;
 

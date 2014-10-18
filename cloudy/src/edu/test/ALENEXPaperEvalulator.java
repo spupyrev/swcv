@@ -116,20 +116,20 @@ public class ALENEXPaperEvalulator
                 int runCount = 3;
                 for (int j = 0; j < runCount; j++)
                 {
-                    wordleResult.add(computeMetrics(new WordleAlgo(document.getWords(), similarity)));
-                    cpResults.add(computeMetrics(new ContextPreservingAlgo(document.getWords(), similarity)));
+                    wordleResult.add(computeMetrics(new WordleAlgo(), document.getWords(), similarity));
+                    cpResults.add(computeMetrics(new ContextPreservingAlgo(), document.getWords(), similarity));
                     if (i % 5 == 0)
-                    seamResult.add(computeMetrics(new SeamCarvingAlgo(document.getWords(), similarity)));
-                    inflateResult.add(computeMetrics(new InflateAndPushAlgo(document.getWords(), similarity)));
-                    starsResult.add(computeMetrics(new StarForestAlgo(document.getWords(), similarity)));
-                    cyclesResult.add(computeMetrics(new CycleCoverAlgo(document.getWords(), similarity)));
-                    mdsResult.add(computeMetrics(new MDSAlgo(document.getWords(), similarity)));
+                        seamResult.add(computeMetrics(new SeamCarvingAlgo(), document.getWords(), similarity));
+                    inflateResult.add(computeMetrics(new InflateAndPushAlgo(), document.getWords(), similarity));
+                    starsResult.add(computeMetrics(new StarForestAlgo(), document.getWords(), similarity));
+                    cyclesResult.add(computeMetrics(new CycleCoverAlgo(), document.getWords(), similarity));
+                    mdsResult.add(computeMetrics(new MDSAlgo(), document.getWords(), similarity));
                 }
 
                 takeAverage(wordleResult, runCount);
                 takeAverage(cpResults, runCount);
                 if (i % 5 == 0)
-                takeAverage(seamResult, runCount);
+                    takeAverage(seamResult, runCount);
                 takeAverage(inflateResult, runCount);
                 takeAverage(starsResult, runCount);
                 takeAverage(cyclesResult, runCount);
@@ -219,17 +219,14 @@ public class ALENEXPaperEvalulator
 
     }
 
-    private static RunResult computeMetrics(LayoutAlgo algo)
+    private static RunResult computeMetrics(LayoutAlgo algo, List<Word> words, Map<WordPair, Double> similarity)
     {
-        List<Word> words = null;
-        Map<WordPair, Double> similarity = null;
-
         //System.out.print("running " + algo + " ...");
         long startTime = System.currentTimeMillis();
         LayoutResult layout = null;
         try
         {
-            layout = algo.layout();
+            layout = algo.layout(words, similarity);
         }
         catch (Exception e)
         {
@@ -246,7 +243,8 @@ public class ALENEXPaperEvalulator
         result.aspectRatio = new AspectRatioMetric().getValue(words, similarity, layout);
         result.distortion = new DistortionMetric().getValue(words, similarity, layout);
         result.stress = new StressMetric().getValue(words, similarity, layout);
-        result.adjacencies = new AdjacenciesMetric().getValue(words, similarity, layout) / new TotalWeightMetric().getValue(words, similarity, layout);
+        result.adjacencies = new AdjacenciesMetric().getValue(words, similarity, layout)
+                / new TotalWeightMetric().getValue(words, similarity, layout);
         result.compactnessBB = new SpaceMetric(false).getValue(words, similarity, layout);
         result.compactnessCH = new SpaceMetric(true).getValue(words, similarity, layout);
         result.approxomation = new AdjacenciesMetric().getValue(words, similarity, layout)

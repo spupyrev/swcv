@@ -9,7 +9,7 @@ import java.util.List;
  * 
  * TODO: refactor names (make them constants?)
  */
-public class ColorSchemeCollection
+public class ColorSchemeRegistry
 {
     private static List<ColorScheme> schemes = new ArrayList<ColorScheme>();
 

@@ -7,7 +7,6 @@ import edu.cloudy.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author spupyrev
@@ -17,9 +16,8 @@ public class SinglePathAlgo extends BaseLayoutAlgo
 {
     private SWCRectangle[] rec;
 
-    public SinglePathAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public SinglePathAlgo()
     {
-        super(words, similarity);
     }
 
     @Override
@@ -53,7 +51,7 @@ public class SinglePathAlgo extends BaseLayoutAlgo
                 {
                     Logger.log("can't layout the path with length = " + words.size());
 
-                    LayoutResult singleCycleLayout = new SingleCycleAlgo(words, similarity).layout(); 
+                    LayoutResult singleCycleLayout = new SingleCycleAlgo().layout(words, similarity); 
                     words.forEach(w -> wordPositions.put(w, singleCycleLayout.getWordPosition(w)));
 
                     return;

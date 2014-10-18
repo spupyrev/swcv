@@ -21,7 +21,6 @@ public class WordGraph extends SimpleWeightedGraph<Vertex, Edge>
 
     public class EdgeComparator implements Comparator<Edge>
     {
-
         private boolean reverse = false;
 
         public EdgeComparator(boolean reverse)

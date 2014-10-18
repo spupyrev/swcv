@@ -37,9 +37,8 @@ public class SingleStarAlgo extends BaseLayoutAlgo
     private Vertex center;
     private WordGraph graph;
 
-    public SingleStarAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public SingleStarAlgo()
     {
-        super(words, similarity);
     }
 
     public void setGraph(WordGraph g)
@@ -569,8 +568,11 @@ public class SingleStarAlgo extends BaseLayoutAlgo
     }
 
     @Override
-    public LayoutResult layout()
+    public LayoutResult layout(List<Word> words, Map<WordPair, Double> similarity)
     {
+        this.words = words;
+        this.similarity = similarity;
+        
         run();
 
         return new LayoutResult(wordPositions)

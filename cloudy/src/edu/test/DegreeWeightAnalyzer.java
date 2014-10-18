@@ -82,7 +82,7 @@ public class DegreeWeightAnalyzer
 
     private static List<Double> realizedWeights(List<Word> words, Map<WordPair, Double> similarity)
     {
-        LayoutResult algo = new ContextPreservingAlgo(words, similarity).layout();
+        LayoutResult algo = new ContextPreservingAlgo().layout(words, similarity);
 
         //List<WordPair> wpl = new AdjacenciesMetric().realizedPairs(words, similarity, algo);
         List<WordPair> wpl = null;//new AdjacenciesMetric().realizedPairs(words, similarity, algo);

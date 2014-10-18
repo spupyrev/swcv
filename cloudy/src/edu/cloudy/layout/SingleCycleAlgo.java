@@ -1,11 +1,6 @@
 package edu.cloudy.layout;
 
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author spupyrev
@@ -15,9 +10,8 @@ public class SingleCycleAlgo extends BaseLayoutAlgo
 {
     private static boolean LAYOUT_VERTICAL = false;
 
-    public SingleCycleAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public SingleCycleAlgo()
     {
-        super(words, similarity);
     }
 
     @Override

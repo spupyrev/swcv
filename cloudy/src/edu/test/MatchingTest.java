@@ -88,11 +88,11 @@ public class MatchingTest
 
     private static double getCyclesResult(List<Word> words, Map<WordPair, Double> similarity, boolean useGreedy)
     {
-        CycleCoverAlgo algorithm = new CycleCoverAlgo(words, similarity);
+        CycleCoverAlgo algorithm = new CycleCoverAlgo();
         algorithm.setUseGreedy(useGreedy);
 
         // Run it!
-        algorithm.layout();
+        algorithm.layout(words, similarity);
         return algorithm.getRealizedWeight();
     }
 
@@ -108,10 +108,10 @@ public class MatchingTest
 
     private static double getStarsResult(List<Word> words, Map<WordPair, Double> similarity)
     {
-        SingleStarAlgo starsAlgo = new SingleStarAlgo(words, similarity);
+        SingleStarAlgo starsAlgo = new SingleStarAlgo();
 
         // Run it!
-        starsAlgo.layout();
+        starsAlgo.layout(words, similarity);
         return starsAlgo.getRealizedWeight();
     }
 

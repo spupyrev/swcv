@@ -2,14 +2,14 @@ package edu.webapp.server.db;
 
 import edu.cloudy.utils.CommonUtils;
 import edu.webapp.shared.DBCloudNotFoundException;
-import edu.webapp.shared.WCColorSchemeCollection;
-import edu.webapp.shared.WCFontCollection;
 import edu.webapp.shared.WCSetting;
-import edu.webapp.shared.WCSetting.ASPECT_RATIO;
-import edu.webapp.shared.WCSetting.LAYOUT_ALGORITHM;
-import edu.webapp.shared.WCSetting.RANKING_ALGORITHM;
-import edu.webapp.shared.WCSetting.SIMILARITY_ALGORITHM;
 import edu.webapp.shared.WordCloud;
+import edu.webapp.shared.registry.WCAspectRatioRegistry;
+import edu.webapp.shared.registry.WCColorSchemeRegistry;
+import edu.webapp.shared.registry.WCFontRegistry;
+import edu.webapp.shared.registry.WCLayoutAlgoRegistry;
+import edu.webapp.shared.registry.WCRankingAlgoRegistry;
+import edu.webapp.shared.registry.WCSimilarityAlgoRegistry;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -94,12 +94,12 @@ public class DBUtils
                         cloud.getSvg2(),
                         cloud.getCreatorIP(),
                         settings.getWordCount(),
-                        settings.getSimilarityAlgorithm().toString(),
-                        settings.getRankingAlgorithm().toString(),
-                        settings.getLayoutAlgorithm().toString(),
+                        settings.getSimilarityAlgorithm().getId(),
+                        settings.getRankingAlgorithm().getId(),
+                        settings.getLayoutAlgorithm().getId(),
                         settings.getFont().getName(),
                         settings.getColorScheme().getName(),
-                        settings.getAspectRatio().toString() };
+                        settings.getAspectRatio().getId() };
 
                 StringBuffer sql = new StringBuffer();
                 sql.append("UPDATE CLOUD SET ");
@@ -180,12 +180,12 @@ public class DBUtils
                         cloud.getSvg2(),
                         cloud.getCreatorIP(),
                         settings.getWordCount(),
-                        settings.getSimilarityAlgorithm().toString(),
-                        settings.getRankingAlgorithm().toString(),
-                        settings.getLayoutAlgorithm().toString(),
+                        settings.getSimilarityAlgorithm().getId(),
+                        settings.getRankingAlgorithm().getId(),
+                        settings.getLayoutAlgorithm().getId(),
                         settings.getFont().getName(),
                         settings.getColorScheme().getName(),
-                        settings.getAspectRatio().toString() };
+                        settings.getAspectRatio().getId() };
 
                 StringBuffer sql = new StringBuffer();
                 sql.append("INSERT INTO CLOUD (");
@@ -267,12 +267,12 @@ public class DBUtils
 
         cloud.setSettings(new WCSetting());
         cloud.getSettings().setWordCount(rs.getInt("WORD_COUNT"));
-        cloud.getSettings().setSimilarityAlgorithm(SIMILARITY_ALGORITHM.valueOf(rs.getString("SIMILARITY_ALGO")));
-        cloud.getSettings().setRankingAlgorithm(RANKING_ALGORITHM.valueOf(rs.getString("RANKING_ALGO")));
-        cloud.getSettings().setLayoutAlgorithm(LAYOUT_ALGORITHM.valueOf(rs.getString("LAYOUT_ALGO")));
-        cloud.getSettings().setFont(WCFontCollection.getByName(rs.getString("FONT")));
-        cloud.getSettings().setColorScheme(WCColorSchemeCollection.getByName(rs.getString("COLOR_SCHEME")));
-        cloud.getSettings().setAspectRatio(ASPECT_RATIO.valueOf(rs.getString("ASPECT_RATIO")));
+        cloud.getSettings().setSimilarityAlgorithm(WCSimilarityAlgoRegistry.getById(rs.getString("SIMILARITY_ALGO")));
+        cloud.getSettings().setRankingAlgorithm(WCRankingAlgoRegistry.getById(rs.getString("RANKING_ALGO")));
+        cloud.getSettings().setLayoutAlgorithm(WCLayoutAlgoRegistry.getById(rs.getString("LAYOUT_ALGO")));
+        cloud.getSettings().setFont(WCFontRegistry.getByName(rs.getString("FONT")));
+        cloud.getSettings().setColorScheme(WCColorSchemeRegistry.getByName(rs.getString("COLOR_SCHEME")));
+        cloud.getSettings().setAspectRatio(WCAspectRatioRegistry.getById(rs.getString("ASPECT_RATIO")));
     }
 
     private static void convertRSToCloudLight(final WordCloud cloud, ResultSet rs) throws SQLException

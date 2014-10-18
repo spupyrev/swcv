@@ -2,11 +2,8 @@ package edu.cloudy.layout;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,25 +12,12 @@ import java.util.Map;
  * @author spupyrev
  * Oct 4, 2014
  */
-public class TagCloudAlgo extends BaseLayoutAlgo
+public abstract class TagCloudAlgo extends BaseLayoutAlgo
 {
-    public enum TABLE_ORDER
-    {
-        RANK, ALPHABETICAL
-    }
-
     private Map<Word, SWCRectangle> wordRectangles = new HashMap<Word, SWCRectangle>();
-
-    private TABLE_ORDER order;
 
     private double MAX_WIDTH;
     private double MAX_HEIGHT;
-
-    public TagCloudAlgo(List<Word> words, Map<WordPair, Double> similarity, TABLE_ORDER order)
-    {
-        super(words, similarity);
-        this.order = order;
-    }
 
     @Override
     protected void run()
@@ -54,17 +38,7 @@ public class TagCloudAlgo extends BaseLayoutAlgo
         }
     }
 
-    private void sortWords()
-    {
-        if (order == TABLE_ORDER.ALPHABETICAL)
-        {
-            Collections.sort(words, (w1, w2) -> w1.word.compareToIgnoreCase(w2.word));
-        }
-        else if (order == TABLE_ORDER.RANK)
-        {
-            Collections.sort(words, Comparator.reverseOrder());
-        }
-    }
+    protected abstract void sortWords();
 
     private void computeCloudDimensions()
     {

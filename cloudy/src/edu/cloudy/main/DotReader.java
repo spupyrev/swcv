@@ -179,9 +179,8 @@ public class DotReader
 
     private LayoutResult runLayout(List<Word> words, Map<WordPair, Double> similarity)
     {
-        LayoutAlgo algo = new ContextPreservingAlgo(words, similarity);
-
-        return TimeMeasurer.execute(() -> algo.layout());
+        LayoutAlgo algo = new ContextPreservingAlgo();
+        return TimeMeasurer.execute(() -> algo.layout(words, similarity));
     }
 
     private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout)

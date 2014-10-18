@@ -1,16 +1,17 @@
 package edu.cloudy.main;
 
 import edu.cloudy.colors.ColorScheme;
-import edu.cloudy.colors.ColorSchemeCollection;
+import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutAlgorithmRegistry;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.nlp.WCVDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.nlp.ranking.TFRankingAlgo;
-import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
+import edu.cloudy.nlp.ranking.RankingAlgo;
+import edu.cloudy.nlp.ranking.RankingAlgorithmRegistry;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
+import edu.cloudy.nlp.similarity.SimilarityAlgorithmRegistry;
 import edu.cloudy.render.RenderUtils;
 import edu.cloudy.render.UIWord;
 import edu.cloudy.render.WordCloudRenderer;
@@ -34,7 +35,7 @@ public class Main
     {
         CommandLineArguments cmd = new CommandLineArguments(args);
 
-        if (!cmd.parse())
+        if (!cmd.parse() || cmd.isPrintUsage())
         {
             cmd.usage();
             System.exit(1);
@@ -90,7 +91,8 @@ public class Main
 
     private List<Word> ranking(WCVDocument document, CommandLineArguments cmd)
     {
-        document.weightFilter(50, new TFRankingAlgo());
+        RankingAlgo algo = RankingAlgorithmRegistry.getById(cmd.getRankAlgorithm());
+        document.weightFilter(cmd.getMaxWords(), algo);
 
         List<Word> words = document.getWords();
         if (words.size() < 10)
@@ -101,21 +103,21 @@ public class Main
 
     private Map<WordPair, Double> computeSimilarity(WCVDocument document, CommandLineArguments cmd)
     {
-        SimilarityAlgo similarityAlgo = new CosineCoOccurenceAlgo();
-        similarityAlgo.initialize(document);
-        similarityAlgo.run();
-        return similarityAlgo.getSimilarity();
+        SimilarityAlgo algo = SimilarityAlgorithmRegistry.getById(cmd.getSimilarityAlgorithm());
+        algo.initialize(document);
+        algo.run();
+        return algo.getSimilarity();
     }
 
     private LayoutResult layout(List<Word> words, Map<WordPair, Double> similarity, CommandLineArguments cmd)
     {
-        LayoutAlgo layoutAlgo = new WordleAlgo(words, similarity);
-        return layoutAlgo.layout();
+        LayoutAlgo algo = LayoutAlgorithmRegistry.getById(cmd.getLayoutAlgorithm());
+        return algo.layout(words, similarity);
     }
 
     private ColorScheme coloring(List<Word> words, Map<WordPair, Double> similarity, CommandLineArguments cmd)
     {
-        ColorScheme colorScheme = ColorSchemeCollection.getDefault();
+        ColorScheme colorScheme = ColorSchemeRegistry.getDefault();
         colorScheme.initialize(words, similarity);
         return colorScheme;
     }
@@ -123,23 +125,10 @@ public class Main
     private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout, ColorScheme colorScheme, CommandLineArguments cmd) throws FileNotFoundException
     {
         List<UIWord> uiWords = UIWord.prepareUIWords(words, layout, colorScheme);
-        WordCloudRenderer renderer = new WordCloudRenderer(uiWords, 1280, 1024);
+        WordCloudRenderer renderer = new WordCloudRenderer(uiWords, cmd.getMaxWidth(), cmd.getMaxHeight());
         byte[] content = RenderUtils.createCloud(renderer, cmd.getOutputFormat());
 
-        OutputStream out = null;
-        //PrintWriter out = null;
-        if (cmd.isAutogenOutputFile() && cmd.getInputFile() != null)
-        {
-            String inputFile = cmd.getInputFile();
-            int index = inputFile.lastIndexOf('.');
-            String filename = (index != -1 ? inputFile.substring(0, index) : inputFile);
-            filename += "." + cmd.getOutputFormat();
-            out = new FileOutputStream(filename);
-        }
-        else
-        {
-            out = cmd.getOutputFile() != null ? new FileOutputStream(cmd.getOutputFile()) : System.out;
-        }
+        OutputStream out = createOutputStream(cmd);
 
         try
         {
@@ -149,6 +138,22 @@ public class Main
         catch (IOException e)
         {
             throw new RuntimeException(e);
+        }
+    }
+
+    private OutputStream createOutputStream(CommandLineArguments cmd) throws FileNotFoundException
+    {
+        if (cmd.isAutogenOutputFile() && cmd.getInputFile() != null)
+        {
+            String inputFile = cmd.getInputFile();
+            int index = inputFile.lastIndexOf('.');
+            String filename = (index != -1 ? inputFile.substring(0, index) : inputFile);
+            filename += "." + cmd.getOutputFormat();
+            return new FileOutputStream(filename);
+        }
+        else
+        {
+            return cmd.getOutputFile() != null ? new FileOutputStream(cmd.getOutputFile()) : System.out;
         }
     }
 }

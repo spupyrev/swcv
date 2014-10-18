@@ -17,14 +17,13 @@ public abstract class BaseLayoutAlgo implements LayoutAlgo
 {
     protected List<Word> words;
     protected Map<WordPair, Double> similarity;
+    
     protected BoundingBoxGenerator bbGenerator;
     protected double aspectRatio;
     protected Map<Word, SWCRectangle> wordPositions;
 
-    public BaseLayoutAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public BaseLayoutAlgo()
     {
-        this.words = words;
-        this.similarity = similarity;
         bbGenerator = new BoundingBoxGenerator();
         wordPositions = new HashMap<Word, SWCRectangle>();
         aspectRatio = 16.0 / 9.0;
@@ -48,8 +47,11 @@ public abstract class BaseLayoutAlgo implements LayoutAlgo
     }
     
     @Override
-    public LayoutResult layout()
+    public LayoutResult layout(List<Word> words, Map<WordPair, Double> similarity)
     {
+        this.words = words;
+        this.similarity = similarity;
+        
         run();
         
         return new LayoutResult(wordPositions);

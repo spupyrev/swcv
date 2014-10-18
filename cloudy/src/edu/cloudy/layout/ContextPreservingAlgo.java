@@ -6,11 +6,9 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * May 12, 2013
@@ -25,23 +23,18 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
 
     private Word[] lWords;
 
-    public ContextPreservingAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public ContextPreservingAlgo()
     {
-        super(words, similarity);
-        
-        init();
-    }
-
-    private void init()
-    {
-        lWords = words.toArray(new Word[words.size()]); 
+        super();
     }
 
     @Override
     protected void run()
     {
+        lWords = words.toArray(new Word[words.size()]);
+        
         //initial layout
-        LayoutResult initialLayout = new MDSAlgo(words, similarity, false).layout();
+        LayoutResult initialLayout = new MDSAlgo(false).layout(words, similarity);
         words.forEach(w -> wordPositions.put(w, initialLayout.getWordPosition(w)));
 
         //compute Delaunay

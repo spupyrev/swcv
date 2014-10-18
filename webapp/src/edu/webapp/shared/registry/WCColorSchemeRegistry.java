@@ -1,4 +1,6 @@
-package edu.webapp.shared;
+package edu.webapp.shared.registry;
+
+import edu.webapp.shared.WCColorScheme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.Random;
  * @author spupyrev
  * Oct 11, 2014
  */
-public class WCColorSchemeCollection
+public class WCColorSchemeRegistry
 {
     public static final String COLOR_SCHEME_TYPE_MONO = "Monochrome";
     public static final String COLOR_SCHEME_TYPE_CLUSTER = "Semantic clusters";

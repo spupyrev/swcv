@@ -23,10 +23,9 @@ import java.util.Set;
  */
 public class StarForestAlgo extends BaseLayoutAlgo
 {
-
-    public StarForestAlgo(List<Word> words, Map<WordPair, Double> similarity)
+    public StarForestAlgo()
     {
-        super(words, similarity);
+        super();
     }
 
     @Override
@@ -85,11 +84,11 @@ public class StarForestAlgo extends BaseLayoutAlgo
 
             //run FPTAS on the star
             WordGraph star = createStar(bestStarCenter, usedVertices, g);
-            SingleStarAlgo ssa = new SingleStarAlgo(words, similarity);
+            SingleStarAlgo ssa = new SingleStarAlgo();
             ssa.setGraph(star);
 
             //take the star
-            result.add(ssa.layout());
+            result.add(ssa.layout(words, similarity));
             //update used
             usedVertices.addAll(ssa.getRealizedVertices());
         }
