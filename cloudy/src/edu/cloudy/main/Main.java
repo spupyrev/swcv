@@ -5,6 +5,7 @@ import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutAlgorithmRegistry;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.main.cmd.CommandLineArguments;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -15,6 +16,8 @@ import edu.cloudy.nlp.similarity.SimilarityAlgorithmRegistry;
 import edu.cloudy.render.RenderUtils;
 import edu.cloudy.render.UIWord;
 import edu.cloudy.render.WordCloudRenderer;
+import edu.cloudy.utils.FontUtils;
+import edu.cloudy.utils.FontUtils.AWTFontProvider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,6 +60,9 @@ public class Main
         // read the document
         SWCDocument document = readDocument(cmd);
 
+        //init fonts
+        FontUtils.initialize(new AWTFontProvider(cmd.getFont()));
+        
         // rank the words
         List<Word> words = ranking(document, cmd);
 

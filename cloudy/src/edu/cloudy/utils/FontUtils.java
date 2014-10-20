@@ -46,8 +46,6 @@ public class FontUtils
 
     public interface FontProvider
     {
-        //Font getFont();
-
         SWCRectangle getBoundingBox(String text);
     }
 
@@ -61,7 +59,11 @@ public class FontUtils
             dummy = new BufferedImage(1024, 1024, BufferedImage.TYPE_3BYTE_BGR);
         }
 
-        //@Override
+        public AWTFontProvider(String fontname)
+        {
+            font = new Font(fontname, Font.PLAIN, (int)DEFAULT_FONT_SIZE);
+        }
+
         public Font getFont()
         {
             if (font == null)

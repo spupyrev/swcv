@@ -1,8 +1,10 @@
-package edu.cloudy.main;
+package edu.cloudy.main.cmd;
 
 import edu.cloudy.nlp.ParseOptions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author spupyrev
@@ -25,6 +27,7 @@ public class CommandLineArguments
     private String layoutAlgorithm = "cp";
     private String rankAlgorithm = "tf";
     private String similarityAlgorithm = "cos";
+    private String font = "Arial";
 
     private ParseOptions parseOptions = new ParseOptions();
 
@@ -43,6 +46,7 @@ public class CommandLineArguments
         System.out.println("\t-wv      - set maximum width of drawing to 'v', in pixels (1280)");
         System.out.println("\t-hv      - set maximum height of drawing to 'v', in pixels (1024)");
         System.out.println("\t-aw:h    - set desired aspect ratio (width/height) for the drawing (16:9)");
+        System.out.println("\t-fv      - sprecifies font family of the words, it can be anything installed on your machine (Arial)");
 
         System.out.println("\t-Llayout - specifies which layout algorithm to use (cp)");
         System.out.println("\t     rnd : Wordle (random)");
@@ -86,6 +90,38 @@ public class CommandLineArguments
         System.out.println("\t-?       - print usage information, then exit");
     }
 
+    private static List<BaseArgumentParser> parsers;
+
+    static
+    {
+        parsers = new ArrayList<BaseArgumentParser>();
+
+        parsers.add(new StringArgumentParser("-o", (cmd, value) -> cmd.outputFile = value));
+        parsers.add(new StringArgumentParser("-O", (cmd, value) -> cmd.autogenOutputFile = true));
+        parsers.add(new StringArgumentParser("-T", (cmd, value) -> cmd.outputFormat = value));
+        parsers.add(new StringArgumentParser("-L", (cmd, value) -> cmd.layoutAlgorithm = value));
+        parsers.add(new StringArgumentParser("-R", (cmd, value) -> cmd.rankAlgorithm = value));
+        parsers.add(new StringArgumentParser("-S", (cmd, value) -> cmd.similarityAlgorithm = value));
+        parsers.add(new StringArgumentParser("-a", (cmd, value) ->
+        {
+            String[] tmp = value.split(":");
+            double w = Double.valueOf(tmp[0]);
+            double h = Double.valueOf(tmp[1]);
+            cmd.aspectRatio = w / h;
+        }));
+        parsers.add(new IntegerArgumentParser("-s", 10, 500, (cmd, value) -> cmd.maxWords = value));
+        parsers.add(new IntegerArgumentParser("-w", 256, 8192, (cmd, value) -> cmd.maxWidth = value));
+        parsers.add(new IntegerArgumentParser("-h", 192, 4800, (cmd, value) -> cmd.maxHeight = value));
+        parsers.add(new StringArgumentParser("-ps", (cmd, value) -> cmd.parseOptions.setRemoveStopwords(false)));
+        parsers.add(new StringArgumentParser("-pg", (cmd, value) -> cmd.parseOptions.setStemWords(false)));
+        parsers.add(new StringArgumentParser("-pn", (cmd, value) -> cmd.parseOptions.setRemoveNumbers(false)));
+        parsers.add(new IntegerArgumentParser("-pl", 1, 30, (cmd, value) -> cmd.parseOptions.setMinWordLength(value)));
+        parsers.add(new StringArgumentParser("-f", (cmd, value) -> cmd.font = value));
+        parsers.add(new StringArgumentParser("-?", (cmd, value) -> cmd.printUsage = true));
+        parsers.add(new StringArgumentParser("-", (cmd, value) -> System.out.println("unrecosgnized option '-" + value + "'")));
+        parsers.add(new StringArgumentParser("", (cmd, value) -> cmd.inputFile = value));
+    }
+
     public boolean parse()
     {
         Arrays.asList(args).forEach(a -> parseOption(a));
@@ -94,84 +130,12 @@ public class CommandLineArguments
 
     private void parseOption(String option)
     {
-        if (option.startsWith("-o"))
-        {
-            outputFile = option.substring(2);
-        }
-        else if (option.startsWith("-O"))
-        {
-            autogenOutputFile = true;
-        }
-        else if (option.startsWith("-T"))
-        {
-            outputFormat = option.substring(2);
-        }
-        else if (option.startsWith("-L"))
-        {
-            layoutAlgorithm = option.substring(2);
-        }
-        else if (option.startsWith("-R"))
-        {
-            rankAlgorithm = option.substring(2);
-        }
-        else if (option.startsWith("-S"))
-        {
-            similarityAlgorithm = option.substring(2);
-        }
-        else if (option.startsWith("-a"))
-        {
-            String[] tmp = option.substring(2).split(":");
-            double w = Double.valueOf(tmp[0]);
-            double h = Double.valueOf(tmp[1]);
-            aspectRatio = w / h;
-        }
-        else if (option.startsWith("-s"))
-        {
-            maxWords = Integer.valueOf(option.substring(2));
-            maxWords = Math.min(10, maxWords);
-            maxWords = Math.max(500, maxWords);
-        }
-        else if (option.startsWith("-w"))
-        {
-            maxWidth = Integer.valueOf(option.substring(2));
-            maxWidth = Math.min(8192, maxWidth);
-            maxWidth = Math.max(256, maxWidth);
-        }
-        else if (option.startsWith("-h"))
-        {
-            maxHeight = Integer.valueOf(option.substring(2));
-            maxHeight = Math.min(4800, maxHeight);
-            maxHeight = Math.max(192, maxHeight);
-        }
-        else if (option.startsWith("-ps"))
-        {
-            parseOptions.setRemoveStopwords(false);
-        }
-        else if (option.startsWith("-pg"))
-        {
-            parseOptions.setStemWords(false);
-        }
-        else if (option.startsWith("-pn"))
-        {
-            parseOptions.setRemoveNumbers(false);
-        }
-        else if (option.startsWith("-pl"))
-        {
-            int v = Integer.valueOf(option.substring(3));
-            parseOptions.setMinWordLength(v);
-        }
-        else if (option.startsWith("-?"))
-        {
-            printUsage = true;
-        }
-        else if (option.startsWith("-"))
-        {
-            System.out.println("unrecosgnized option '" + option.substring(1) + "'");
-        }
-        else
-        {
-            inputFile = option;
-        }
+        for (BaseArgumentParser parser : parsers)
+            if (parser.accept(option))
+            {
+                parser.apply(this, option);
+                break;
+            }
     }
 
     public String getInputFile()
@@ -237,6 +201,11 @@ public class CommandLineArguments
     public ParseOptions getParseOptions()
     {
         return parseOptions;
+    }
+
+    public String getFont()
+    {
+        return font;
     }
 
 }
