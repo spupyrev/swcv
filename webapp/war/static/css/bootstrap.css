@@ -177,7 +177,7 @@ input[type="color"]:focus,
 
 
 select {
-  width: 180px;
+  width: 160px;
   background-color: #ffffff;
   border: 1px solid #cccccc;
 }

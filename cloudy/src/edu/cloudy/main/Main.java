@@ -5,7 +5,7 @@ import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutAlgorithmRegistry;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.RankingAlgo;
@@ -55,7 +55,7 @@ public class Main
     private void constructWordCloud(CommandLineArguments cmd) throws Exception
     {
         // read the document
-        WCVDocument document = readDocument(cmd);
+        SWCDocument document = readDocument(cmd);
 
         // rank the words
         List<Word> words = ranking(document, cmd);
@@ -73,7 +73,7 @@ public class Main
         visualize(words, similarity, layout, colorScheme, cmd);
     }
 
-    private WCVDocument readDocument(CommandLineArguments cmd) throws FileNotFoundException
+    private SWCDocument readDocument(CommandLineArguments cmd) throws FileNotFoundException
     {
         Scanner scanner = cmd.getInputFile() != null ? new Scanner(new File(cmd.getInputFile())) : new Scanner(System.in);
         StringBuilder sb = new StringBuilder();
@@ -83,13 +83,13 @@ public class Main
         }
         scanner.close();
 
-        WCVDocument doc = new WCVDocument(sb.toString());
-        doc.parse();
+        SWCDocument doc = new SWCDocument(sb.toString());
+        doc.parse(cmd.getParseOptions());
 
         return doc;
     }
 
-    private List<Word> ranking(WCVDocument document, CommandLineArguments cmd)
+    private List<Word> ranking(SWCDocument document, CommandLineArguments cmd)
     {
         RankingAlgo algo = RankingAlgorithmRegistry.getById(cmd.getRankAlgorithm());
         document.weightFilter(cmd.getMaxWords(), algo);
@@ -101,17 +101,16 @@ public class Main
         return words;
     }
 
-    private Map<WordPair, Double> computeSimilarity(WCVDocument document, CommandLineArguments cmd)
+    private Map<WordPair, Double> computeSimilarity(SWCDocument document, CommandLineArguments cmd)
     {
         SimilarityAlgo algo = SimilarityAlgorithmRegistry.getById(cmd.getSimilarityAlgorithm());
-        algo.initialize(document);
-        algo.run();
-        return algo.getSimilarity();
+        return algo.computeSimilarity(document);
     }
 
     private LayoutResult layout(List<Word> words, Map<WordPair, Double> similarity, CommandLineArguments cmd)
     {
         LayoutAlgo algo = LayoutAlgorithmRegistry.getById(cmd.getLayoutAlgorithm());
+        algo.setAspectRatio(cmd.getAspectRatio());
         return algo.layout(words, similarity);
     }
 

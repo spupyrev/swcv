@@ -1,30 +1,30 @@
 package edu.cloudy.nlp.similarity;
 
+import edu.cloudy.nlp.SWCDocument;
+import edu.cloudy.nlp.Word;
+import edu.cloudy.nlp.WordPair;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.cloudy.nlp.WCVDocument;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-
-public class CosineCoOccurenceAlgo implements SimilarityAlgo
+public class CosineCoOccurenceAlgo extends BaseSimilarityAlgo
 {
     private Map<WordPair, Double> similarity;
-    private WCVDocument wordifier;
+    private SWCDocument wordifier;
 
     private final static double SIMILARITY_THRESHOLD = 0.000001;
 
     @Override
-    public void initialize(WCVDocument wordifier)
+    protected void initialize(SWCDocument wordifier)
     {
         this.wordifier = wordifier;
         this.similarity = null;
     }
 
     @Override
-    public void run()
+    protected void run()
     {
         List<Word> words = wordifier.getWords();
         Map<Word, Integer> wordToIndex = new HashMap<Word, Integer>();
@@ -127,7 +127,7 @@ public class CosineCoOccurenceAlgo implements SimilarityAlgo
     }
 
     @Override
-    public Map<WordPair, Double> getSimilarity()
+    protected Map<WordPair, Double> getSimilarity()
     {
         return similarity;
     }

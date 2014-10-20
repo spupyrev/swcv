@@ -1,6 +1,7 @@
 package edu.test;
 
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.ParseOptions;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFIDFRankingAlgo;
@@ -24,7 +25,7 @@ public class SimilarityTest
     public static void main(String[] args)
     {
 
-        WCVDocument document = readDoc();
+        SWCDocument document = readDoc();
 
         // 2. build similarities, words etc
         List<Word> words = new ArrayList<Word>();
@@ -32,19 +33,19 @@ public class SimilarityTest
         extractSimilarities(document, words, similarity);
     }
 
-    public static WCVDocument readDoc()
+    public static SWCDocument readDoc()
     {
-        List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
+        List<SWCDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
 
         WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/turing");
         xmlReader.read();
         Iterator<String> texts = xmlReader.getTexts();
 
-        WCVDocument doc = null;
+        SWCDocument doc = null;
         while (texts.hasNext())
         {
-            doc = new WCVDocument(texts.next());
-            doc.parse();
+            doc = new SWCDocument(texts.next());
+            doc.parse(new ParseOptions());
 
             alldocs.add(doc);
         }
@@ -53,7 +54,7 @@ public class SimilarityTest
         return doc;
     }
 
-    private static void extractSimilarities(WCVDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity)
+    private static void extractSimilarities(SWCDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity)
     {
         SimilarityAlgo[] coOccurenceAlgoArray = {
                 new LexicalSimilarityAlgo(),
@@ -66,9 +67,7 @@ public class SimilarityTest
         //SimilarityAlgo coOccurenceAlgo4 = new RandomSimilarityAlgo();
         for (SimilarityAlgo coOccurenceAlgo : coOccurenceAlgoArray)
         {
-            coOccurenceAlgo.initialize(wordifier);
-            coOccurenceAlgo.run();
-            Map<WordPair, Double> sim = coOccurenceAlgo.getSimilarity();
+            Map<WordPair, Double> sim = coOccurenceAlgo.computeSimilarity(wordifier);
 
             for (Word w : wordifier.getWords())
                 words.add(w);

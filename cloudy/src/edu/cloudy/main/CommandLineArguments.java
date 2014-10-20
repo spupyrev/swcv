@@ -1,5 +1,7 @@
 package edu.cloudy.main;
 
+import edu.cloudy.nlp.ParseOptions;
+
 import java.util.Arrays;
 
 /**
@@ -24,6 +26,8 @@ public class CommandLineArguments
     private String rankAlgorithm = "tf";
     private String similarityAlgorithm = "cos";
 
+    private ParseOptions parseOptions = new ParseOptions();
+
     public CommandLineArguments(String[] args)
     {
         this.args = args;
@@ -35,10 +39,10 @@ public class CommandLineArguments
         System.out.println("\twhere input file must contain a text with at least 10 distinct words. If no input file is supplied, the program reads from stdin.");
         System.out.println("\tAcceptable options are:");
 
-        System.out.println("\t-sv      - set maximum number of rendered words to v, allowed values are between 10 and 500 (50)");
-        System.out.println("\t-wv      - set maximum width of drawing to v, in pixels (1280)");
-        System.out.println("\t-hv      - set maximum height of drawing to v, in pixels (1024)");
-        System.out.println("\t-aw:h    - set the desired aspect ratio (width/height) for the drawing (16:9)");
+        System.out.println("\t-sv      - set maximum number of rendered words to 'v', allowed values are between 10 and 500 (50)");
+        System.out.println("\t-wv      - set maximum width of drawing to 'v', in pixels (1280)");
+        System.out.println("\t-hv      - set maximum height of drawing to 'v', in pixels (1024)");
+        System.out.println("\t-aw:h    - set desired aspect ratio (width/height) for the drawing (16:9)");
 
         System.out.println("\t-Llayout - specifies which layout algorithm to use (cp)");
         System.out.println("\t     rnd : Wordle (random)");
@@ -61,6 +65,11 @@ public class CommandLineArguments
         System.out.println("\t     jac : Jaccard Coefficient");
         System.out.println("\t     lex : Graph-based Lexical Similarity");
         System.out.println("\t     euc : Euclidean Distance");
+
+        System.out.println("\t-ps      - do NOT remove stop words");
+        System.out.println("\t-pg      - do NOT group similar words");
+        System.out.println("\t-pn      - do NOT remove numbers");
+        System.out.println("\t-plv     - set minimum length of words to 'v' (3)");
 
         System.out.println("\t-ofile   - write output to 'file' (stdout)");
         System.out.println("\t-O       - automatically generate an output filename based on the input filename with a .'format' appended");
@@ -134,6 +143,23 @@ public class CommandLineArguments
             maxHeight = Math.min(4800, maxHeight);
             maxHeight = Math.max(192, maxHeight);
         }
+        else if (option.startsWith("-ps"))
+        {
+            parseOptions.setRemoveStopwords(false);
+        }
+        else if (option.startsWith("-pg"))
+        {
+            parseOptions.setStemWords(false);
+        }
+        else if (option.startsWith("-pn"))
+        {
+            parseOptions.setRemoveNumbers(false);
+        }
+        else if (option.startsWith("-pl"))
+        {
+            int v = Integer.valueOf(option.substring(3));
+            parseOptions.setMinWordLength(v);
+        }
         else if (option.startsWith("-?"))
         {
             printUsage = true;
@@ -206,6 +232,11 @@ public class CommandLineArguments
     public double getAspectRatio()
     {
         return aspectRatio;
+    }
+
+    public ParseOptions getParseOptions()
+    {
+        return parseOptions;
     }
 
 }

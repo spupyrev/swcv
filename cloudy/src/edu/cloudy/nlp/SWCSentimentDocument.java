@@ -15,13 +15,13 @@ import java.util.Set;
  * @author jixianli
  *
  */
-public class WCVSentimentDocument extends WCVDocument
+public class SWCSentimentDocument extends SWCDocument
 {
     private List<String> strChunks;
     private int[] sentiValues;
     private String[] sentences;
 
-    public WCVSentimentDocument(List<String> strChunks)
+    public SWCSentimentDocument(List<String> strChunks)
     {
         this.strChunks = strChunks;
         sentiValues = new int[strChunks.size()];
@@ -36,9 +36,10 @@ public class WCVSentimentDocument extends WCVDocument
     }
 
     @Override
-    public void parse()
+    public void parse(ParseOptions parseOptions)
     {
-        super.parse();
+        super.parse(parseOptions);
+        
         assignSentiValueToChunks();
         calculateSentiValueToWords();
     }

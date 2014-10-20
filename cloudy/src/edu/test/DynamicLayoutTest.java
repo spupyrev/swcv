@@ -3,7 +3,8 @@ package edu.test;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.nlp.WCVDynamicDocument;
+import edu.cloudy.nlp.ParseOptions;
+import edu.cloudy.nlp.SWCDynamicDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
@@ -39,8 +40,8 @@ public class DynamicLayoutTest
             System.exit(1);
         }
 
-        WCVDynamicDocument doc = new WCVDynamicDocument(text1, text2);
-        doc.parse();
+        SWCDynamicDocument doc = new SWCDynamicDocument(text1, text2);
+        doc.parse(new ParseOptions());
         doc.weightFilter(100, new TFRankingAlgo());
 
         Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
@@ -50,7 +51,7 @@ public class DynamicLayoutTest
         checkIntersections(doc, algo);
     }
 
-    private static void checkIntersections(WCVDynamicDocument doc, LayoutResult algo)
+    private static void checkIntersections(SWCDynamicDocument doc, LayoutResult algo)
     {
         for (Word w : doc.getDoc1().getWords())
         {

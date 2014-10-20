@@ -1,6 +1,7 @@
 package edu.test;
 
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.ParseOptions;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.utils.Logger;
@@ -18,7 +19,7 @@ public class RankingTest
 	{
 		Logger.doLogging = false;
 
-		WCVDocument doc = readDocument("data/weekday_nohash.txt");
+		SWCDocument doc = readDocument("data/weekday_nohash.txt");
 
 		//List<WCVDocument> docs = readDocumentCollection("data/test_wiki1");
 		//WCVDocument doc = docs.get(0);
@@ -43,7 +44,7 @@ public class RankingTest
 		//			System.out.println(w.word + "   " + w.stem + "   " + w.weight);*/
 	}
 
-	private static WCVDocument readDocument(String filename)
+	private static SWCDocument readDocument(String filename)
 	{
 		WikipediaXMLReader xmlReader = new WikipediaXMLReader(filename);
 		xmlReader.read();
@@ -53,23 +54,23 @@ public class RankingTest
 		for (int i = 0; i < index; i++)
 			texts.next();
 
-		WCVDocument wordifier = new WCVDocument(texts.next());
+		SWCDocument wordifier = new SWCDocument(texts.next());
 		// 2. build similarities, words etc
-		wordifier.parse();
+		wordifier.parse(new ParseOptions());
 		return wordifier;
 	}
 
-	private static List<WCVDocument> readDocumentCollection(String filename)
+	private static List<SWCDocument> readDocumentCollection(String filename)
 	{
 		WikipediaXMLReader xmlReader = new WikipediaXMLReader(filename);
 		xmlReader.read();
 		Iterator<String> texts = xmlReader.getTexts();
 
-		List<WCVDocument> docs = new ArrayList<WCVDocument>();
+		List<SWCDocument> docs = new ArrayList<SWCDocument>();
 		while (texts.hasNext())
 		{
-			WCVDocument doc = new WCVDocument(texts.next());
-			doc.parse();
+			SWCDocument doc = new SWCDocument(texts.next());
+			doc.parse(new ParseOptions());
 			docs.add(doc);
 		}
 

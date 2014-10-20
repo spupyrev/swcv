@@ -1,6 +1,6 @@
 package edu.cloudy.nlp.ranking;
 
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 
 import java.io.FileInputStream;
@@ -20,7 +20,7 @@ public class TFIDFRankingAlgo implements RankingAlgo
     }
 
     @Override
-    public void buildWeights(WCVDocument document)
+    public void buildWeights(SWCDocument document)
     {
         Map<String, Double> idfMap = computeIDF();
 

@@ -40,7 +40,7 @@ public class StarForestExtractor
         WordGraph graph = (WordGraph)g.clone();
         List<WordGraph> trees = new ArrayList<WordGraph>();
 
-        //TODO: this can be anything
+        // this can be anything!!
         int maxTrees = 3;
         for (int i = 0; i < maxTrees; i++)
         {

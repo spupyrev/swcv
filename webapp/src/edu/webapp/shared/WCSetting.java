@@ -21,6 +21,8 @@ public class WCSetting implements Serializable
     {
     }
 
+    private int wordCount = 50;
+
     private WCColorScheme colorScheme = WCColorSchemeRegistry.getDefault();
     private WCLayoutAlgo layoutAlgorithm = WCLayoutAlgoRegistry.getDefault();
     private WCSimilarityAlgo similarityAlgorithm = WCSimilarityAlgoRegistry.getDefault();
@@ -28,19 +30,21 @@ public class WCSetting implements Serializable
     private WCFont font = WCFontRegistry.getDefault();
     private WCAspectRatio aspectRatio = WCAspectRatioRegistry.getDefault();
 
-    private int wordCount = 50;
+    //parse options
+    private boolean removeStopwords = true;
+    private boolean stemWords = true;
+    private boolean removeNumbers = true;
+    private int minWordLength = 3;
 
     public void setRandomSetting()
     {
-        setWordCount(wordCount);
-
         setColorScheme(WCColorSchemeRegistry.getRandom());
 
         setLayoutAlgorithm(WCLayoutAlgoRegistry.getRandom());
 
-        setSimilarityAlgorithm(WCSimilarityAlgoRegistry.getRandom());
+        //setSimilarityAlgorithm(WCSimilarityAlgoRegistry.getRandom());
 
-        setRankingAlgorithm(WCRankingAlgoRegistry.getRandom());
+        //setRankingAlgorithm(WCRankingAlgoRegistry.getRandom());
 
         setFont(WCFontRegistry.getRandom());
 
@@ -115,6 +119,46 @@ public class WCSetting implements Serializable
     public void setAspectRatio(WCAspectRatio ar)
     {
         this.aspectRatio = ar;
+    }
+
+    public boolean isRemoveStopwords()
+    {
+        return removeStopwords;
+    }
+
+    public void setRemoveStopwords(boolean removeStopwords)
+    {
+        this.removeStopwords = removeStopwords;
+    }
+
+    public boolean isStemWords()
+    {
+        return stemWords;
+    }
+
+    public void setStemWords(boolean stemWords)
+    {
+        this.stemWords = stemWords;
+    }
+
+    public boolean isRemoveNumbers()
+    {
+        return removeNumbers;
+    }
+
+    public void setRemoveNumbers(boolean removeNumbers)
+    {
+        this.removeNumbers = removeNumbers;
+    }
+
+    public int getMinWordLength()
+    {
+        return minWordLength;
+    }
+
+    public void setMinWordLength(int minWordLength)
+    {
+        this.minWordLength = minWordLength;
     }
 
     public String toString()

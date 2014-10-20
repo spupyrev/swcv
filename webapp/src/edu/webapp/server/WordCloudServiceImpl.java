@@ -3,6 +3,7 @@ package edu.webapp.server;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.webapp.client.WordCloudService;
+import edu.webapp.server.db.DBUtils;
 import edu.webapp.server.utils.RandomTwitterTrendExtractor;
 import edu.webapp.server.utils.RandomWikiUrlExtractor;
 import edu.webapp.server.utils.RandomYoutubeUrlExtractor;
@@ -15,26 +16,31 @@ import edu.webapp.shared.WordCloud;
 @SuppressWarnings("serial")
 public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCloudService
 {
+    public WordCloud buildWordCloud(String input, WCSetting setting) throws IllegalArgumentException
+    {
+        String ip = getThreadLocalRequest().getRemoteAddr();
 
-	public WordCloud buildWordCloud(String input, WCSetting setting) throws IllegalArgumentException
-	{
-		String ip = getThreadLocalRequest().getRemoteAddr();
-		WordCloud newcloud = WordCloudGenerator.createWordCloud(input, setting, ip);
-		return newcloud;
-	}
+        WordCloud newCloud = WordCloudGenerator.buildWordCloud(input, setting, ip);
+        if (newCloud == null)
+            return null;
+        
+        newCloud.setId(DBUtils.getCloudCount());
+        DBUtils.addCloud(newCloud);
+        return newCloud;
+    }
 
-	public String getRandomWikiUrl()
-	{
-		return RandomWikiUrlExtractor.getRandomWikiPage();
-	}
+    public String getRandomWikiUrl()
+    {
+        return RandomWikiUrlExtractor.getRandomWikiPage();
+    }
 
-	public String getRandomTwitterUrl()
-	{
-		return RandomTwitterTrendExtractor.getRandomTrend();
-	}
+    public String getRandomTwitterUrl()
+    {
+        return RandomTwitterTrendExtractor.getRandomTrend();
+    }
 
-	public String getRandomYoutubeUrl()
-	{
-		return RandomYoutubeUrlExtractor.getRandomUrl();
-	}
+    public String getRandomYoutubeUrl()
+    {
+        return RandomYoutubeUrlExtractor.getRandomUrl();
+    }
 }

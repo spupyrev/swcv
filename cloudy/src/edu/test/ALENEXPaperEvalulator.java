@@ -17,7 +17,8 @@ import edu.cloudy.metrics.SpaceMetric;
 import edu.cloudy.metrics.StressMetric;
 import edu.cloudy.metrics.TotalWeightMetric;
 import edu.cloudy.metrics.UniformAreaMetric;
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.ParseOptions;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.RankingAlgo;
@@ -47,7 +48,7 @@ public class ALENEXPaperEvalulator
     {
         Logger.doLogging = false;
 
-        List<WCVDocument> allDocuments = readDocuments(FILES_WIKI);
+        List<SWCDocument> allDocuments = readDocuments(FILES_WIKI);
         testRuntime(allDocuments, new TFRankingAlgo(), new CosineCoOccurenceAlgo());
 
         /*List<WCVDocument> allDocuments = readDocuments(FILES_WIKI);
@@ -87,7 +88,7 @@ public class ALENEXPaperEvalulator
         testRuntime(allDocuments, new LexRankingAlgo(), new RandomSimilarityAlgo());*/
     }
 
-    private static void testRuntime(List<WCVDocument> allDocuments, RankingAlgo rankingAlgo, SimilarityAlgo similarityAlgo)
+    private static void testRuntime(List<SWCDocument> allDocuments, RankingAlgo rankingAlgo, SimilarityAlgo similarityAlgo)
     {
         RunResult.outputLegend();
         for (int wc = 150; wc <= 150; wc += 50)
@@ -102,16 +103,14 @@ public class ALENEXPaperEvalulator
 
             for (int i = 0; i < allDocuments.size(); i++)
             {
-                WCVDocument document = new WCVDocument(allDocuments.get(i).getText());
-                document.parse();
+                SWCDocument document = new SWCDocument(allDocuments.get(i).getText());
+                document.parse(new ParseOptions());
 
                 document.weightFilter(wc, rankingAlgo);
 
                 // OK, give me the similarity
                 SimilarityAlgo coOccurenceAlgo = similarityAlgo;
-                coOccurenceAlgo.initialize(document);
-                coOccurenceAlgo.run();
-                Map<WordPair, Double> similarity = coOccurenceAlgo.getSimilarity();
+                Map<WordPair, Double> similarity = coOccurenceAlgo.computeSimilarity(document);
 
                 int runCount = 3;
                 for (int j = 0; j < runCount; j++)
@@ -154,9 +153,9 @@ public class ALENEXPaperEvalulator
         }
     }
 
-    public static List<WCVDocument> readDocuments(String[] files)
+    public static List<SWCDocument> readDocuments(String[] files)
     {
-        List<WCVDocument> docs = new ArrayList<WCVDocument>();
+        List<SWCDocument> docs = new ArrayList<SWCDocument>();
 
         for (String filename : files)
         {
@@ -169,8 +168,8 @@ public class ALENEXPaperEvalulator
             {
                 String text = texts.next();
 
-                WCVDocument wordifier = new WCVDocument(text);
-                wordifier.parse();
+                SWCDocument wordifier = new SWCDocument(text);
+                wordifier.parse(new ParseOptions());
 
                 if (wordifier.getWords().size() < 200)
                 {

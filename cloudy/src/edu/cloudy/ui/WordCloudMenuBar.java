@@ -301,13 +301,13 @@ public class WordCloudMenuBar extends JMenuBar
         return System.getProperty("user.dir") + "/resources";
     }
 
-    //TODO: remove
     private void exportPNG(final JPanel panel, String selectedFile)
     {
         BufferedImage img = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = img.createGraphics();
         panel.printAll(g2d);
         g2d.dispose();
+        
         try
         {
             ImageIO.write(img, "png", new File(selectedFile));
@@ -318,7 +318,6 @@ public class WordCloudMenuBar extends JMenuBar
         }
     }
 
-    //TODO: remove
     private void exportSVG(final JPanel panel, String selectedFile)
     {
         // Get a DOMImplementation.

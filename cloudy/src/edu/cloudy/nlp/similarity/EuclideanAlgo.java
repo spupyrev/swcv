@@ -1,6 +1,6 @@
 package edu.cloudy.nlp.similarity;
 
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class EuclideanAlgo implements SimilarityAlgo
+public class EuclideanAlgo extends BaseSimilarityAlgo
 {
     private Map<WordPair, Double> similarity;
-    private WCVDocument wordifier;
+    private SWCDocument wordifier;
 
     @Override
-    public void initialize(WCVDocument wordifier)
+    protected void initialize(SWCDocument wordifier)
     {
 
         this.wordifier = wordifier;
@@ -24,7 +24,7 @@ public class EuclideanAlgo implements SimilarityAlgo
     }
 
     @Override
-    public void run()
+    protected void run()
     {
 
         List<Word> words = wordifier.getWords();
@@ -57,7 +57,7 @@ public class EuclideanAlgo implements SimilarityAlgo
     }
 
     @Override
-    public Map<WordPair, Double> getSimilarity()
+    protected Map<WordPair, Double> getSimilarity()
     {
         return this.similarity;
 

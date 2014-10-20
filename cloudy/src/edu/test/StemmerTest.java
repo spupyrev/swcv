@@ -1,6 +1,6 @@
 package edu.test;
 
-import edu.cloudy.nlp.stemming.AbstractStemmer;
+import edu.cloudy.nlp.stemming.BaseStemmer;
 import edu.cloudy.nlp.stemming.LovinsStemmer;
 import edu.cloudy.nlp.stemming.PlingStemmer;
 import edu.cloudy.nlp.stemming.PorterStemmer;
@@ -11,10 +11,10 @@ public class StemmerTest
 {
     public static void main(String[] args)
     {
-        AbstractStemmer a = new LovinsStemmer();
-        AbstractStemmer b = new PorterStemmer();
-        AbstractStemmer c = new PreKrovetzStemmer();
-        AbstractStemmer d = new PlingStemmer();
+        BaseStemmer a = new LovinsStemmer();
+        BaseStemmer b = new PorterStemmer();
+        BaseStemmer c = new PreKrovetzStemmer();
+        BaseStemmer d = new PlingStemmer();
         String[] prestemmed = {
                 "dance",
                 "dances",

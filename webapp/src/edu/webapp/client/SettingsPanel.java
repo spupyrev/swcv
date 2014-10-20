@@ -2,10 +2,14 @@ package edu.webapp.client;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -41,13 +45,13 @@ public class SettingsPanel
     private ListBox rankingWidget;
     private ListBox fontWidget;
 
-    public SettingsPanel(WCSetting setting)
+    public SettingsPanel()
     {
-        this.setting = setting;
     }
 
-    public CaptionPanel create()
+    public CaptionPanel create(WCSetting setting)
     {
+        this.setting = setting;
 
         FlexTable layout = new FlexTable();
 
@@ -82,11 +86,45 @@ public class SettingsPanel
         layout.setWidget(3, 2, createLabel("Language:"));
         layout.setWidget(3, 3, createLanguageListBox());
 
+        addParseOptions(layout, cf);
+        
+        addTooltips(layout);
+
         // Wrap the content in a DecoratorPanel
         CaptionPanel panel = new CaptionPanel();
         panel.setCaptionText("advanced options for word cloud generation");
         panel.add(layout);
         return panel;
+    }
+
+    private void addParseOptions(FlexTable layout, CellFormatter cf)
+    {
+        cf.setStyleName(0, 4, "adv-cell-label");
+        layout.setWidget(0, 4, createLabel("Remove Common Words:"));
+        layout.setWidget(0, 5, createCheckboxStopwords());
+
+        cf.setStyleName(1, 4, "adv-cell-label");
+        layout.setWidget(1, 4, createLabel("Group Similar Words:"));
+        layout.setWidget(1, 5, createCheckboxStem());
+
+        cf.setStyleName(2, 4, "adv-cell-label");
+        layout.setWidget(2, 4, createLabel("Remove Numbers:"));
+        layout.setWidget(2, 5, createCheckboxRemoveNumbers());
+
+        cf.setStyleName(3, 4, "adv-cell-label");
+        layout.setWidget(3, 4, createLabel("Minimum Word Length:"));
+        layout.setWidget(3, 5, createIntegerField());
+
+    }
+
+    private void addTooltips(FlexTable layout)
+    {
+        for (int i = 0; i < layout.getRowCount(); i++)
+        {
+            layout.getWidget(i, 0).setTitle(layout.getWidget(i, 1).getTitle());
+            layout.getWidget(i, 2).setTitle(layout.getWidget(i, 3).getTitle());
+            layout.getWidget(i, 4).setTitle(layout.getWidget(i, 5).getTitle());
+        }
     }
 
     private ListBox createLanguageListBox()
@@ -102,6 +140,8 @@ public class SettingsPanel
                 setNonEnglishText(box.getSelectedIndex() != 1);
             }
         });
+
+        box.setTitle("Language of text");
 
         return box;
     }
@@ -157,6 +197,7 @@ public class SettingsPanel
     {
         Label label = new Label(text);
         label.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+        label.addStyleName("small");
         return label;
     }
 
@@ -195,6 +236,8 @@ public class SettingsPanel
             }
         });
 
+        box.setTitle("Desired aspect ratio of the drawing");
+
         return box;
     }
 
@@ -215,6 +258,7 @@ public class SettingsPanel
             }
         });
 
+        box.setTitle("Layout method for the word cloud");
         return box;
     }
 
@@ -259,6 +303,7 @@ public class SettingsPanel
             }
         });
 
+        box.setTitle("Font family of the words");
         return box;
     }
 
@@ -279,6 +324,7 @@ public class SettingsPanel
             }
         });
 
+        box.setTitle("Ranking method for computing word importance, which determines font size of each word");
         return box;
     }
 
@@ -299,6 +345,7 @@ public class SettingsPanel
             }
         });
 
+        box.setTitle("Color theme of the words");
         return box;
     }
 
@@ -319,6 +366,81 @@ public class SettingsPanel
             }
         });
 
+        box.setTitle("Similarity method for computing relatedness between words; similar words tend to be placed together");
+        return box;
+    }
+
+    private Widget createCheckboxStopwords()
+    {
+        final CheckBox box = new CheckBox();
+        box.setValue(setting.isRemoveStopwords());
+
+        box.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                setting.setRemoveStopwords(box.getValue());
+            }
+        });
+
+        box.setTitle("Exclude common stop words from the result\ne.g., 'the', 'is', 'at', 'which', 'on' etc");
+        return box;
+    }
+
+    private Widget createCheckboxStem()
+    {
+        final CheckBox box = new CheckBox();
+        box.setValue(setting.isStemWords());
+
+        box.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                setting.setStemWords(box.getValue());
+            }
+        });
+
+        box.setTitle("Combine similar words\ne.g., 'dance', 'dancer', 'danced', 'dancing' -> 'dance'");
+        return box;
+    }
+
+    private Widget createCheckboxRemoveNumbers()
+    {
+        final CheckBox box = new CheckBox();
+        box.setValue(setting.isRemoveNumbers());
+
+        box.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                setting.setRemoveNumbers(box.getValue());
+            }
+        });
+
+        box.setTitle("Remove numbers and punctuation characters from the result");
+        return box;
+    }
+
+    private Widget createIntegerField()
+    {
+        final IntegerBox box = new IntegerBox();
+        box.setValue(setting.getMinWordLength());
+        box.setMaxLength(2);
+        box.setWidth("15px");
+
+        box.addChangeHandler(new ChangeHandler()
+        {
+            @Override
+            public void onChange(ChangeEvent event)
+            {
+                setting.setMinWordLength(box.getValue());
+            }
+        });
+
+        box.setTitle("Specify the minimum number of characters in a word");
         return box;
     }
 

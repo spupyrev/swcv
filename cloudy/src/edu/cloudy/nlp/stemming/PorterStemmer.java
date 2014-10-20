@@ -16,7 +16,7 @@ package edu.cloudy.nlp.stemming;
 
 
 
-public class PorterStemmer extends AbstractStemmer {
+public class PorterStemmer extends BaseStemmer {
 
     /**
 	 * 

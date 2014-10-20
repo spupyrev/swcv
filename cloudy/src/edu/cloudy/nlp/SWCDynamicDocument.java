@@ -8,24 +8,26 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class WCVDynamicDocument extends WCVDocument
+public class SWCDynamicDocument extends SWCDocument
 {
-	private WCVDocument doc1;
-	private WCVDocument doc2;
+	private SWCDocument doc1;
+	private SWCDocument doc2;
 
-	public WCVDynamicDocument(String text1, String text2)
+	public SWCDynamicDocument(String text1, String text2)
 	{
 		super(text1 + ContextDelimiter.DYNAMIC_DELIMITER_TEXT + text2);
-		doc1 = new WCVDocument(text1);
-		doc2 = new WCVDocument(text2);
+		
+		doc1 = new SWCDocument(text1);
+		doc2 = new SWCDocument(text2);
 	}
 
 	@Override
-	public void parse()
+	public void parse(ParseOptions parseOptions)
 	{
-		super.parse();
-		doc1.parse();
-		doc2.parse();
+		super.parse(parseOptions);
+		
+		doc1.parse(parseOptions);
+		doc2.parse(parseOptions);
 	}
 
 	@Override
@@ -81,12 +83,12 @@ public class WCVDynamicDocument extends WCVDocument
 		Collections.reverse(list);
 	}
 
-	public WCVDocument getDoc1()
+	public SWCDocument getDoc1()
 	{
 		return doc1;
 	}
 
-	public WCVDocument getDoc2()
+	public SWCDocument getDoc2()
 	{
 		return doc2;
 	}

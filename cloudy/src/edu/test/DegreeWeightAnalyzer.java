@@ -2,7 +2,7 @@ package edu.test;
 
 import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
@@ -30,18 +30,15 @@ public class DegreeWeightAnalyzer
 
     private static void analyze()
     {
-        List<WCVDocument> documents = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
+        List<SWCDocument> documents = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
 
         List<Double> weights = new ArrayList<Double>();
-        for (WCVDocument doc : documents)
+        for (SWCDocument doc : documents)
         {
             doc.weightFilter(150, new TFRankingAlgo());
             //SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();
             SimilarityAlgo coOccurenceAlgo = new RandomSimilarityAlgo();
-            coOccurenceAlgo.initialize(doc);
-            coOccurenceAlgo.run();
-
-            Map<WordPair, Double> similarity = coOccurenceAlgo.getSimilarity();
+            Map<WordPair, Double> similarity = coOccurenceAlgo.computeSimilarity(doc);
             filter(doc.getWords(), similarity);
 
             //weights.addAll(similarity.values());

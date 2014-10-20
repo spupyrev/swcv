@@ -3,12 +3,9 @@ package edu.cloudy.nlp.stemming;
 import java.io.Serializable;
 
 /**
- * Abstract class for stemmers.
- *
- * @author Eibe Frank (eibe@cs.waikato.ac.nz)
- * @version 1.0
+ * Abstract class for stemmers
  */
-public abstract class AbstractStemmer implements Serializable
+public abstract class BaseStemmer implements Serializable
 {
     private static final long serialVersionUID = 8196452823768416664L;
 

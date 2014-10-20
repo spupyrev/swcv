@@ -1,6 +1,7 @@
 package edu.cloudy.main;
 
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.ParseOptions;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
@@ -20,70 +21,77 @@ import java.util.Map;
 /**
  * @author spupyrev 
  */
-public class DotWriter {
+public class DotWriter
+{
 
-	public static void main(String argc[]) {
-		Logger.doLogging = false;
-		new DotWriter().run();
-	}
+    public static void main(String argc[])
+    {
+        Logger.doLogging = false;
+        new DotWriter().run();
+    }
 
-	private void run() {
-		WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/words");
-		xmlReader.read();
-		Iterator<String> texts = xmlReader.getTexts();
+    private void run()
+    {
+        WikipediaXMLReader xmlReader = new WikipediaXMLReader("data/words");
+        xmlReader.read();
+        Iterator<String> texts = xmlReader.getTexts();
 
-		WCVDocument doc = null;
-		while (texts.hasNext()) {
-			doc = new WCVDocument(texts.next());
-			doc.parse();
-		}
+        SWCDocument doc = null;
+        while (texts.hasNext())
+        {
+            doc = new SWCDocument(texts.next());
+            doc.parse(new ParseOptions());
+        }
 
-		System.out.println("#words: " + doc.getWords().size());
-		doc.weightFilter(150, new TFRankingAlgo());
+        System.out.println("#words: " + doc.getWords().size());
+        doc.weightFilter(150, new TFRankingAlgo());
 
-		List<Word> words = new ArrayList<Word>();
-		Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
-		extractSimilarities(doc, words, similarity);
+        List<Word> words = new ArrayList<Word>();
+        Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
+        extractSimilarities(doc, words, similarity);
 
-		writeDotFile("words.gv", words, similarity);
-	}
+        writeDotFile("words.gv", words, similarity);
+    }
 
-	private void extractSimilarities(WCVDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity) {
-		SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();
-		coOccurenceAlgo.initialize(wordifier);
-		coOccurenceAlgo.run();
-		Map<WordPair, Double> sim = coOccurenceAlgo.getSimilarity();
+    private void extractSimilarities(SWCDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity)
+    {
+        SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();
+        Map<WordPair, Double> sim = coOccurenceAlgo.computeSimilarity(wordifier);
 
-		for (Word w : wordifier.getWords())
-			words.add(w);
+        for (Word w : wordifier.getWords())
+            words.add(w);
 
-		for (WordPair wp : sim.keySet()) {
-			similarity.put(wp, sim.get(wp));
-		}
+        for (WordPair wp : sim.keySet())
+            similarity.put(wp, sim.get(wp));
 
-	}
+    }
 
-	private void writeDotFile(String filename, List<Word> words, Map<WordPair, Double> similarity) {
+    private void writeDotFile(String filename, List<Word> words, Map<WordPair, Double> similarity)
+    {
 
-		try {
-			PrintWriter out = new PrintWriter(new File(filename));
-			out.print("graph {\n");
-			for (Word w : words)
-				out.print("  \"" + w.word + "\";\n");
+        try
+        {
+            PrintWriter out = new PrintWriter(new File(filename));
+            out.print("graph {\n");
+            for (Word w : words)
+                out.print("  \"" + w.word + "\";\n");
 
-			for (int i = 0; i < words.size(); i++)
-				for (int j = i + 1; j < words.size(); j++) {
-					double sim = similarity.get(new WordPair(words.get(i), words.get(j)));
-					String sw = String.format("%.5f", sim);
+            for (int i = 0; i < words.size(); i++)
+                for (int j = i + 1; j < words.size(); j++)
+                {
+                    double sim = similarity.get(new WordPair(words.get(i), words.get(j)));
+                    String sw = String.format("%.5f", sim);
 
-					out.print("  \"" + words.get(i).word + "\" -- \"" + words.get(j).word + "\" [len=" + sw + "];\n");
-				}
+                    out.print("  \"" + words.get(i).word + "\" -- \"" + words.get(j).word + "\" [len=" + sw + "];\n");
+                }
 
-			out.print("}\n");
-			out.close();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+            out.print("}\n");
+            out.close();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

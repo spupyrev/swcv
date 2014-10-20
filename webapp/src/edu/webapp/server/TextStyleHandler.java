@@ -1,9 +1,9 @@
 package edu.webapp.server;
 
+import edu.cloudy.render.SVGTextStyleHandler;
 import edu.cloudy.utils.FontUtils;
 import edu.webapp.shared.WCFont;
 
-import org.apache.batik.svggen.DefaultStyleHandler;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGSyntax;
 import org.w3c.dom.CDATASection;
@@ -18,10 +18,16 @@ import java.util.Map;
  * @author spupyrev
  * Oct 8, 2014
  */
-public class TextStyleHandler extends DefaultStyleHandler
+public class TextStyleHandler extends SVGTextStyleHandler
 {
     private int id = 0;
+    private WCFont wcFont;
     
+    public TextStyleHandler(WCFont wcFont)
+    {
+        this.wcFont = wcFont;
+    }
+
     @Override
     public void setStyle(Element element, Map styleMap, SVGGeneratorContext generatorContext)
     {
@@ -38,7 +44,7 @@ public class TextStyleHandler extends DefaultStyleHandler
         }
     }
 
-    public static void appendFontCSS(SVGSVGElement root, WCFont wcFont)
+    public void postRenderAction(SVGSVGElement root)    
     {
         if (wcFont.isWebSafe())
             return;

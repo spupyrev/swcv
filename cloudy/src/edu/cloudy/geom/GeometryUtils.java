@@ -144,7 +144,6 @@ public class GeometryUtils
     }
 
     // Is p inside the circle formed by triangle a-b-c?
-    // TODO: merge with CustomPoint.in
     public static boolean pointInsideCircle(SWCPoint p, SWCPoint a, SWCPoint b, SWCPoint c)
     {
         //find center

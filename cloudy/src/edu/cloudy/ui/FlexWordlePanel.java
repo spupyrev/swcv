@@ -2,7 +2,8 @@ package edu.cloudy.ui;
 
 import edu.cloudy.colors.ColorScheme;
 import edu.cloudy.colors.ColorSchemeRegistry;
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.ParseOptions;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.utils.FontUtils;
@@ -225,8 +226,8 @@ public class FlexWordlePanel extends JPanel implements ActionListener
         xmlReader.read();
         Iterator<String> texts = xmlReader.getTexts();
 
-        WCVDocument doc = new WCVDocument(texts.next());
-        doc.parse();
+        SWCDocument doc = new SWCDocument(texts.next());
+        doc.parse(new ParseOptions());
         doc.weightFilter(25, new TFRankingAlgo());
 
         List<String> words = new ArrayList<String>();

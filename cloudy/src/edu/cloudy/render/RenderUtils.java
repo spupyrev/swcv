@@ -66,24 +66,29 @@ public class RenderUtils
 
     public static byte[] createSVG(WordCloudRenderer renderer)
     {
+        return createSVG(renderer, new SVGTextStyleHandler());
+    }
+
+    public static byte[] createSVG(WordCloudRenderer renderer, SVGTextStyleHandler styleHandler)
+    {
         // Create an instance of org.w3c.dom.Document.
         DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
         Document document = domImpl.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
 
         // Configure the SVGGraphics2D
         SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
+        ctx.setStyleHandler(styleHandler);
         SVGGraphics2D svgGenerator = new SVGGraphics2D(ctx, false);
 
         // rendering the cloud
         renderer.render(svgGenerator);
 
-        //adding font css
         SVGSVGElement root = (SVGSVGElement)svgGenerator.getRoot();
+        styleHandler.postRenderAction(root);
 
-        Writer writer;
         try
         {
-            writer = new StringWriter();
+            Writer writer = new StringWriter();
             svgGenerator.stream(root, writer);
             writer.close();
 

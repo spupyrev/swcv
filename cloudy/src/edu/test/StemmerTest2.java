@@ -1,6 +1,6 @@
 package edu.test;
 
-import edu.cloudy.nlp.stemming.AbstractStemmer;
+import edu.cloudy.nlp.stemming.BaseStemmer;
 import edu.cloudy.nlp.stemming.PorterStemmer;
 
 /**
@@ -14,7 +14,7 @@ public class StemmerTest2
      */
     public static void main(String[] args)
     {
-        AbstractStemmer stemmer = new PorterStemmer();
+        BaseStemmer stemmer = new PorterStemmer();
         String a = "dance \n dancer\n dancing\n dances\n danced\n vertex\n vertices\n";
         System.out.print(stemString(stemmer, a));
     }
@@ -22,7 +22,7 @@ public class StemmerTest2
     /**
      * Stems everything in the given string.
      */
-    public static String stemString(AbstractStemmer stemmer, String str)
+    public static String stemString(BaseStemmer stemmer, String str)
     {
         str = str.toLowerCase();
         StringBuffer result = new StringBuffer();

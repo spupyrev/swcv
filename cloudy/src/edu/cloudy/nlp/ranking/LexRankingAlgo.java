@@ -1,6 +1,6 @@
 package edu.cloudy.nlp.ranking;
 
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -19,7 +19,7 @@ public class LexRankingAlgo implements RankingAlgo {
 	private static final double LEXRANK_THRESHOLD = 0.1;
 
 	@Override
-	public void buildWeights(WCVDocument wordifier) {
+	public void buildWeights(SWCDocument wordifier) {
 		Map<WordPair, Double> coocNumber = initCoocNumber(wordifier);
 
 		List<Word> words = wordifier.getWords();
@@ -46,7 +46,7 @@ public class LexRankingAlgo implements RankingAlgo {
 		}
 	}
 
-	private Map<WordPair, Double> initCoocNumber(WCVDocument wordifier) {
+	private Map<WordPair, Double> initCoocNumber(SWCDocument wordifier) {
 		int n = wordifier.getWords().size();
 		double[][] sim = new double[n][n];
 

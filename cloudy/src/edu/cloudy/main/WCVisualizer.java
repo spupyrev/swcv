@@ -5,7 +5,8 @@ import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.TagCloudRankAlgo;
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.ParseOptions;
+import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
@@ -50,7 +51,7 @@ public class WCVisualizer
     private void run() throws FileNotFoundException
     {
         // 1. read a document
-        WCVDocument document = readDocument();
+        SWCDocument document = readDocument();
         //WCVDocument document = readURL();
         //WCVDocument document = readYoutube();
 
@@ -67,7 +68,7 @@ public class WCVisualizer
         //visualize(words, similarity, algo, null);
     }
 
-    private WCVDocument readDocument() throws FileNotFoundException
+    private SWCDocument readDocument() throws FileNotFoundException
     {
         //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
         Scanner scanner = new Scanner(new File("data/papers"));
@@ -78,8 +79,8 @@ public class WCVisualizer
         }
         scanner.close();
 
-        WCVDocument doc = new WCVDocument(sb.toString());
-        doc.parse();
+        SWCDocument doc = new SWCDocument(sb.toString());
+        doc.parse(new ParseOptions());
 
         System.out.println("#words: " + doc.getWords().size());
         //doc.weightFilter(15, new TFIDFRankingAlgo());
@@ -90,7 +91,7 @@ public class WCVisualizer
     }
 
     @SuppressWarnings("unused")
-    private WCVDocument readPDFDocument()
+    private SWCDocument readPDFDocument()
     {
         /*PDFReader reader = new PDFReader("file:///E:/Research/Arizona/wordle/tex-apprx/clouds.pdf");
         assert (reader.isConnected());
@@ -105,10 +106,10 @@ public class WCVisualizer
     }
 
     @SuppressWarnings("unused")
-    private WCVDocument readYoutube()
+    private SWCDocument readYoutube()
     {
-        WCVDocument wdoc = new WCVDocument(YoutubeCommentsReaderTest.getComments("5guMumPFBag"));
-        wdoc.parse();
+        SWCDocument wdoc = new SWCDocument(YoutubeCommentsReaderTest.getComments("5guMumPFBag"));
+        wdoc.parse(new ParseOptions());
 
         System.out.println("#words: " + wdoc.getWords().size());
         wdoc.weightFilter(50, new TFRankingAlgo());
@@ -116,12 +117,10 @@ public class WCVisualizer
         return wdoc;
     }
 
-    private void extractSimilarities(WCVDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity)
+    private void extractSimilarities(SWCDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity)
     {
         SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();
-        coOccurenceAlgo.initialize(wordifier);
-        coOccurenceAlgo.run();
-        Map<WordPair, Double> sim = coOccurenceAlgo.getSimilarity();
+        Map<WordPair, Double> sim = coOccurenceAlgo.computeSimilarity(wordifier);
 
         for (Word w : wordifier.getWords())
             words.add(w);

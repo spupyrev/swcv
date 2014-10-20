@@ -1,6 +1,6 @@
 package edu.cloudy.nlp.ranking;
 
-import edu.cloudy.nlp.WCVDocument;
+import edu.cloudy.nlp.SWCDocument;
 
 /**
  * @author spupyrev
@@ -8,5 +8,5 @@ import edu.cloudy.nlp.WCVDocument;
  */
 public interface RankingAlgo
 {
-    public void buildWeights(WCVDocument document);
+    public void buildWeights(SWCDocument document);
 }

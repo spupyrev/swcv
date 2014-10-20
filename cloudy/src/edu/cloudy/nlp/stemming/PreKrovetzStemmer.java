@@ -2,7 +2,7 @@ package edu.cloudy.nlp.stemming;
 
 import org.lemurproject.kstem.KrovetzStemmer;
 
-public class PreKrovetzStemmer extends AbstractStemmer
+public class PreKrovetzStemmer extends BaseStemmer
 {
     private static final long serialVersionUID = 1L;
 

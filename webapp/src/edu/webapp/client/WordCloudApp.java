@@ -8,6 +8,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -20,6 +22,8 @@ import com.google.gwt.user.client.ui.TextArea;
 
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WordCloud;
+
+import java.util.Date;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -51,8 +55,11 @@ public class WordCloudApp implements EntryPoint
 
     private void createShowAdvancedButton()
     {
+        final String COOKIE_NAME = "show-adv-options";
+
         final Anchor showAdvancedButton = Anchor.wrap(Document.get().getElementById("adv_link"));
         final Panel settingArea = RootPanel.get("settingContainer");
+
         showAdvancedButton.addClickHandler(new ClickHandler()
         {
             public void onClick(ClickEvent event)
@@ -61,14 +68,33 @@ public class WordCloudApp implements EntryPoint
                 {
                     settingArea.removeStyleName("hide");
                     showAdvancedButton.setText("Hide Advanced Options");
+                    Cookies.setCookie(COOKIE_NAME, "1", new Date(System.currentTimeMillis() + (86400 * 7 * 1000)));
                 }
                 else
                 {
                     settingArea.addStyleName("hide");
                     showAdvancedButton.setText("Show Advanced Options");
+                    Cookies.removeCookie(COOKIE_NAME);
                 }
             }
         });
+
+        boolean needToShow = "1".equals(Cookies.getCookie(COOKIE_NAME));
+        if (needToShow)
+            showAdvancedButton.fireEvent(new GwtEvent<ClickHandler>()
+            {
+                @Override
+                public com.google.gwt.event.shared.GwtEvent.Type<ClickHandler> getAssociatedType()
+                {
+                    return ClickEvent.getType();
+                }
+
+                @Override
+                protected void dispatch(ClickHandler handler)
+                {
+                    handler.onClick(null);
+                }
+            });
     }
 
     private void createLuckyButtons()
@@ -155,7 +181,7 @@ public class WordCloudApp implements EntryPoint
 
     private void createAdvancedArea()
     {
-        final CaptionPanel settingArea = new SettingsPanel(setting).create();
+        final CaptionPanel settingArea = new SettingsPanel().create(setting);
         settingArea.removeStyleName("gwt-DecoratorPanel");
         RootPanel.get("settingContainer").add(settingArea);
     }
