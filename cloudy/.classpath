@@ -6,7 +6,10 @@
 	<classpathentry kind="lib" path="lib/fontbox-1.8.2.jar"/>
 	<classpathentry kind="lib" path="lib/jgrapht-jdk1.6.jar"/>
 	<classpathentry kind="lib" path="lib/kstem-3.4.jar"/>
+	<classpathentry kind="lib" path="lib/pdf-transcoder.jar"/>
 	<classpathentry kind="lib" path="lib/apache-opennlp-1.5.2-incubating/opennlp-tools-1.5.2-incubating.jar"/>
+	<classpathentry kind="lib" path="lib/apache-opennlp-1.5.2-incubating/jwnl-1.3.3.jar"/>
+	<classpathentry kind="lib" path="lib/apache-opennlp-1.5.2-incubating/opennlp-maxent-3.0.2-incubating.jar"/>
 	<classpathentry kind="lib" path="lib/batik-1.7/batik-svggen.jar"/>
 	<classpathentry kind="lib" path="lib/batik-1.7/xml-apis-ext.jar"/>
 	<classpathentry kind="lib" path="lib/batik-1.7/batik-util.jar"/>
@@ -22,8 +25,5 @@
 	<classpathentry kind="lib" path="lib/batik-1.7/batik-bridge.jar"/>
 	<classpathentry kind="lib" path="lib/batik-1.7/batik-script.jar"/>
 	<classpathentry kind="lib" path="lib/batik-1.7/batik-gvt.jar"/>
-	<classpathentry kind="lib" path="lib/apache-opennlp-1.5.2-incubating/jwnl-1.3.3.jar"/>
-	<classpathentry kind="lib" path="lib/apache-opennlp-1.5.2-incubating/opennlp-maxent-3.0.2-incubating.jar"/>
-	<classpathentry kind="lib" path="lib/pdf-transcoder.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

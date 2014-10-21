@@ -2,3 +2,4 @@
 .settings
 tmp.xml
 /data
+*.jar

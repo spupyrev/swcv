@@ -1,3 +1,4 @@
 .gwt
 .settings
 gwt-unitCache
+*.jar
