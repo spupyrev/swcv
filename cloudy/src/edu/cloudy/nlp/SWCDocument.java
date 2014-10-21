@@ -14,11 +14,9 @@ import org.lemurproject.kstem.KrovetzStemmer;
 
 import java.awt.Point;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -167,14 +165,7 @@ public class SWCDocument
     public String[] buildSentences()
     {
         InputStream modelIn1;
-        try
-        {
-            modelIn1 = new FileInputStream(CommonUtils.getAbsoluteFileName("opennlp/en-sent.bin"));
-        }
-        catch (FileNotFoundException e1)
-        {
-            throw new RuntimeException(e1);
-        }
+        modelIn1 = CommonUtils.getResourceAsStream("opennlp/en-sent.bin");
 
         SentenceModel model1 = null;
         try
@@ -209,14 +200,7 @@ public class SWCDocument
     private Tokenizer buildTokenizer()
     {
         InputStream modelIn2;
-        try
-        {
-            modelIn2 = new FileInputStream(CommonUtils.getAbsoluteFileName("opennlp/en-token.bin"));
-        }
-        catch (FileNotFoundException e1)
-        {
-            throw new RuntimeException(e1);
-        }
+        modelIn2 = CommonUtils.getResourceAsStream("opennlp/en-token.bin");
         TokenizerModel model2 = null;
         try
         {
@@ -260,7 +244,7 @@ public class SWCDocument
 
         try
         {
-            BufferedReader br = new BufferedReader(new FileReader(CommonUtils.getAbsoluteFileName("opennlp/stopwords-en.txt")));
+            BufferedReader br = new BufferedReader(new InputStreamReader(CommonUtils.getResourceAsStream("opennlp/stopwords-en.txt")));
             String line;
             while ((line = br.readLine()) != null)
             {

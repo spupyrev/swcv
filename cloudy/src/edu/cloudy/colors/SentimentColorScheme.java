@@ -10,7 +10,7 @@ public class SentimentColorScheme extends ColorScheme
 
     public SentimentColorScheme(String name, Color[] colorSet)
     {
-        super(name);
+        super(name, "");
         this.colorSet = colorSet;
     }
 

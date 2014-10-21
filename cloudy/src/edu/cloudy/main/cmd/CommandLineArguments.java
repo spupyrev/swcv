@@ -28,6 +28,7 @@ public class CommandLineArguments
     private String rankAlgorithm = "tf";
     private String similarityAlgorithm = "cos";
     private String font = "Arial";
+    private String color = "7";
 
     private ParseOptions parseOptions = new ParseOptions();
 
@@ -48,6 +49,23 @@ public class CommandLineArguments
         System.out.println("\t-aw:h    - set desired aspect ratio (width/height) for the drawing (16:9)");
         System.out.println("\t-fv      - sprecifies font family of the words, it can be anything installed on your machine (Arial)");
 
+        System.out.println("\t-Ccolor  - specifies coloring scheme of the words (7)");
+        System.out.println("\t       0 : black");
+        System.out.println("\t       1 : green");
+        System.out.println("\t       2 : orange");
+        System.out.println("\t       3 : blue");
+        System.out.println("\t       4 : random");
+        System.out.println("\t       5 : dark red-dark blue");
+        System.out.println("\t       6 : blue-green-pink");
+        System.out.println("\t       7 : red-blue-green-purple-orange");
+        System.out.println("\t       8 : pearl aqua-blond-lavender gray-coral pink");
+        System.out.println("\t       9 : red-persian green-spring bud-dark apple red");
+        System.out.println("\t      10 : turquoise-yellow-red-teal green");
+        System.out.println("\t      11 : persian green-yellow-red-teal green");
+        System.out.println("\t      12 : red to blue");
+        System.out.println("\t      13 : red to purple");
+        System.out.println("\t      14 : red to green");
+
         System.out.println("\t-Llayout - specifies which layout algorithm to use (cp)");
         System.out.println("\t     rnd : Wordle (random)");
         System.out.println("\t     tca : Tag Cloud (words sorted alphabetically)");
@@ -67,7 +85,7 @@ public class CommandLineArguments
         System.out.println("\t-Ssim    - specifies which similarity algorithm to use (cos)");
         System.out.println("\t     cos : Cosine Coefficient");
         System.out.println("\t     jac : Jaccard Coefficient");
-        System.out.println("\t     lex : Graph-based Lexical Similarity");
+        //System.out.println("\t     lex : Lin's Lexical Similarity");
         System.out.println("\t     euc : Euclidean Distance");
 
         System.out.println("\t-ps      - do NOT remove stop words");
@@ -99,6 +117,7 @@ public class CommandLineArguments
         parsers.add(new StringArgumentParser("-o", (cmd, value) -> cmd.outputFile = value));
         parsers.add(new StringArgumentParser("-O", (cmd, value) -> cmd.autogenOutputFile = true));
         parsers.add(new StringArgumentParser("-T", (cmd, value) -> cmd.outputFormat = value));
+        parsers.add(new StringArgumentParser("-C", (cmd, value) -> cmd.color = value));
         parsers.add(new StringArgumentParser("-L", (cmd, value) -> cmd.layoutAlgorithm = value));
         parsers.add(new StringArgumentParser("-R", (cmd, value) -> cmd.rankAlgorithm = value));
         parsers.add(new StringArgumentParser("-S", (cmd, value) -> cmd.similarityAlgorithm = value));
@@ -206,6 +225,11 @@ public class CommandLineArguments
     public String getFont()
     {
         return font;
+    }
+
+    public String getColor()
+    {
+        return color;
     }
 
 }

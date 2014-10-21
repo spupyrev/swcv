@@ -3,10 +3,6 @@ package edu.cloudy.nlp.similarity;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cmu.lti.lexical_db.ILexicalDatabase;
-import edu.cmu.lti.lexical_db.NictWordNet;
-import edu.cmu.lti.ws4j.RelatednessCalculator;
-import edu.cmu.lti.ws4j.impl.Lin;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,17 +12,8 @@ public class LexicalSimilarityAlgo extends BaseSimilarityAlgo
 {
     private Map<WordPair, Double> similarity;
     private SWCDocument wordifier;
-    private static ILexicalDatabase db = new NictWordNet();
-    private static RelatednessCalculator rc = new Lin(db);
-    /*private static RelatednessCalculator[] rcs = {
-            new HirstStOnge(db),
-            new LeacockChodorow(db),
-            new Lesk(db),
-            new WuPalmer(db),
-            new Resnik(db),
-            new JiangConrath(db),
-            new Lin(db),
-            new Path(db) };*/
+    //private static ILexicalDatabase db = new NictWordNet();
+    //private static RelatednessCalculator rc = new Lin(db);
 
     @Override
     protected void initialize(SWCDocument wordifier)
@@ -48,7 +35,7 @@ public class LexicalSimilarityAlgo extends BaseSimilarityAlgo
                     continue;
                 WordPair xyPair = new WordPair(x, y);
 
-                double xySimilarity = rc.calcRelatednessOfWords(x.word, y.word);
+                double xySimilarity = 0;//rc.calcRelatednessOfWords(x.word, y.word);
                 if (xySimilarity <= 0)
                     xySimilarity = 0.0;
                 similarity.put(xyPair, xySimilarity);

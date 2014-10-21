@@ -16,9 +16,9 @@ public class RandomColorScheme extends ColorScheme
     private Map<Word, Color> colors = new HashMap<Word, Color>();
     private Random rnd = new Random(123);
 
-    public RandomColorScheme(String name)
+    public RandomColorScheme(String name, String cmdIndex)
     {
-        super(name);
+        super(name, cmdIndex);
     }
 
     public Color getColor(Word w)

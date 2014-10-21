@@ -12,6 +12,7 @@ class StringArgumentParser implements BaseArgumentParser
     public StringArgumentParser(String prefix, ArgumentParser<String> parser)
     {
         this.prefix = prefix;
+        this.parser = parser;
     }
     
     public boolean accept(String option)

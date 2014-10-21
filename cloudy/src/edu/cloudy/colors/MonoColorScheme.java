@@ -12,9 +12,9 @@ public class MonoColorScheme extends ColorScheme
 {
     private Color color;
 
-    public MonoColorScheme(String name, Color color)
+    public MonoColorScheme(String name, String cmdIndex, Color color)
     {
-        super(name);
+        super(name, cmdIndex);
         this.color = color;
     }
 

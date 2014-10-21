@@ -1,7 +1,5 @@
 package edu.cloudy.nlp;
 
-import edu.arizona.sista.twitter4food.SentimentClassifier;
-
 import java.awt.Point;
 import java.util.List;
 import java.util.Set;
@@ -58,11 +56,11 @@ public class SWCSentimentDocument extends SWCDocument
 
     private void assignSentiValueToChunks()
     {
-        SentimentClassifier sc = SentimentClassifier.resourceClassifier();
+        /*SentimentClassifier sc = SentimentClassifier.resourceClassifier();
         for (int i = 0; i < sentences.length; ++i)
         {
             sentiValues[i] = sc.predict(sentences[i]);
-        }
+        }*/
     }
 
     private void calculateSentiValueToWords()

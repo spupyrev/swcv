@@ -21,9 +21,9 @@ public class ClusterColorScheme extends ColorScheme
     private int[] clusterIndex;
     private IClusterAlgo clusterAlgo = null;
 
-    public ClusterColorScheme(String name, int K, Color[] colorSequence)
+    public ClusterColorScheme(String name, String cmdIndex, int K, Color[] colorSequence)
     {
-        super(name);
+        super(name, cmdIndex);
 
         this.K = K;
         this.colorSequence = colorSequence;

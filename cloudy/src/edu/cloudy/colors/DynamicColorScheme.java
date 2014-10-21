@@ -11,7 +11,7 @@ public class DynamicColorScheme extends ColorScheme
 
     public DynamicColorScheme(String name, Color[] colorSet)
     {
-        super(name);
+        super(name, "");
         this.colorSet = colorSet;
     }
 

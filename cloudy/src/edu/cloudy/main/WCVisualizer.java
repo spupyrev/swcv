@@ -15,7 +15,6 @@ import edu.cloudy.nlp.similarity.SimilarityAlgo;
 import edu.cloudy.ui.WordCloudFrame;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.TimeMeasurer;
-import edu.test.YoutubeCommentsReaderTest;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -88,33 +87,6 @@ public class WCVisualizer
         //doc.weightFilter(15, new LexRankingAlgo());
 
         return doc;
-    }
-
-    @SuppressWarnings("unused")
-    private SWCDocument readPDFDocument()
-    {
-        /*PDFReader reader = new PDFReader("file:///E:/Research/Arizona/wordle/tex-apprx/clouds.pdf");
-        assert (reader.isConnected());
-        WCVDocument doc = new WCVDocument(reader.getText());
-        doc.parse();
-
-        System.out.println("#words: " + doc.getWords().size());
-        doc.weightFilter(85, new LexRankingAlgo());
-
-        return doc;*/
-        return null;
-    }
-
-    @SuppressWarnings("unused")
-    private SWCDocument readYoutube()
-    {
-        SWCDocument wdoc = new SWCDocument(YoutubeCommentsReaderTest.getComments("5guMumPFBag"));
-        wdoc.parse(new ParseOptions());
-
-        System.out.println("#words: " + wdoc.getWords().size());
-        wdoc.weightFilter(50, new TFRankingAlgo());
-
-        return wdoc;
     }
 
     private void extractSimilarities(SWCDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity)

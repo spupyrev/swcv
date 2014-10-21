@@ -61,6 +61,7 @@ public class FontUtils
 
         public AWTFontProvider(String fontname)
         {
+            this();
             font = new Font(fontname, Font.PLAIN, (int)DEFAULT_FONT_SIZE);
         }
 

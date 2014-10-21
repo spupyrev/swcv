@@ -122,7 +122,7 @@ public class Main
 
     private ColorScheme coloring(List<Word> words, Map<WordPair, Double> similarity, CommandLineArguments cmd)
     {
-        ColorScheme colorScheme = ColorSchemeRegistry.getDefault();
+        ColorScheme colorScheme = ColorSchemeRegistry.getByCmdIndex(cmd.getColor());
         colorScheme.initialize(words, similarity);
         return colorScheme;
     }
