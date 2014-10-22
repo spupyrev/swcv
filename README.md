@@ -11,9 +11,9 @@ The system can be accessed via command-line or web interfaces. It can also be us
 
 1. Install [Java SE Runtime Environment 8+](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 
-2. Download [cloudy.jar](downloads/cloudy.jar)
+2. Download [cloudy.jar](libs/cloudy.jar)
 
-3. Prepare input text file and invoke the tool by running *"java -jar cloudy.jar [options] [input file]"* or simply *"cloudy.jar [options] [input file]"* (without quotes). The options can be printed by running *"cloudy.jar -?"*
+3. Prepare input text file and invoke the tool by running *"java -jar cloudy.jar [options] [input file]"* (without quotes). The options can be printed by running *"java -jar cloudy.jar -?"*
 
 ###Using web interface:
 

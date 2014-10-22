@@ -1,6 +1,7 @@
 package edu.webapp.server.readers;
 
 import twitter4j.Query;
+import twitter4j.Query.ResultType;
 import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -120,7 +121,6 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
         cb.setOAuthConsumerSecret(TwitterCredentials.CONSUMER_SECRET);
         cb.setOAuthAccessToken(TwitterCredentials.ACCESS_TOKEN);
         cb.setOAuthAccessTokenSecret(TwitterCredentials.ACCESS_TOKEN_SECRET);
-        cb.setUseSSL(true);
         TwitterFactory tf = new TwitterFactory(cb.build());
         return tf.getInstance();
     }
@@ -131,7 +131,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
         private String searchPhrase;
 
         private int size = DEFAULT_NUMBER_OF_TWEETS;
-        private String resultType = Query.RECENT;
+        private ResultType resultType = Query.RECENT;
         private String lang;
         private boolean includeRetweets = false;
 
@@ -192,7 +192,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
             return searchPhrase;
         }
 
-        public String getResultType()
+        public ResultType getResultType()
         {
             return resultType;
         }
