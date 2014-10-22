@@ -15,14 +15,11 @@ public abstract class BaseSimilarityAlgo implements SimilarityAlgo
     @Override
     public Map<WordPair, Double> computeSimilarity(SWCDocument wordifier)
     {
-        initialize(wordifier);
-        run();
+        run(wordifier);
         return getSimilarity();
     }
 
-    protected abstract void initialize(SWCDocument wordifier);
-
-    protected abstract void run();
+    protected abstract void run(SWCDocument wordifier);
 
     protected abstract Map<WordPair, Double> getSimilarity();
 }

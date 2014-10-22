@@ -24,7 +24,7 @@ public class WordCloudDetailServiceImpl extends RemoteServiceServlet implements 
 	{
 		String ip = getThreadLocalRequest().getRemoteAddr();
 		
-        WordCloud updatedCloud = WordCloudGenerator.buildWordCloud(input, setting, ip);
+        WordCloud updatedCloud = new WordCloudGenerator().buildWordCloud(input, setting, ip);
         updatedCloud.setId(id);
         DBUtils.updateCloud(updatedCloud);
         return updatedCloud;

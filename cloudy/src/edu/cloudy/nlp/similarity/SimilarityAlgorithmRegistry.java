@@ -17,7 +17,6 @@ public class SimilarityAlgorithmRegistry
         algorithms.put("cos", CosineCoOccurenceAlgo.class);
         algorithms.put("jac", JaccardCoOccurenceAlgo.class);
         algorithms.put("lex", LexicalSimilarityAlgo.class);
-        algorithms.put("euc", EuclideanAlgo.class);
     }
 
     public static SimilarityAlgo getById(String id)

@@ -18,25 +18,25 @@ public class SentimentColorScheme extends ColorScheme
     public Color getColor(Word word)
     {
         double sentiValue = word.getSentimentValue();
-        if (sentiValue < -.5)
+        if (sentiValue < -0.6)
         {
             return colorSet[4];
         }
-        else if (sentiValue < 0)
+        else if (sentiValue < -0.15)
         {
             return colorSet[3];
         }
-        else if (sentiValue == 0)
+        else if (sentiValue > 0.15)
         {
-            return colorSet[2];
+            return colorSet[1];
         }
-        else if (sentiValue > 0.5)
+        else if (sentiValue > 0.6)
         {
             return colorSet[0];
         }
         else
         {
-            return colorSet[1];
+            return colorSet[2];
         }
     }
 }

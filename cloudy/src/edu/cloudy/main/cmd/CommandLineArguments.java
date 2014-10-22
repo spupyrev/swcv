@@ -85,8 +85,7 @@ public class CommandLineArguments
         System.out.println("\t-Ssim    - specifies which similarity algorithm to use (cos)");
         System.out.println("\t     cos : Cosine Coefficient");
         System.out.println("\t     jac : Jaccard Coefficient");
-        //System.out.println("\t     lex : Lin's Lexical Similarity");
-        System.out.println("\t     euc : Euclidean Distance");
+        System.out.println("\t     lex : Lin's Lexical Similarity");
 
         System.out.println("\t-ps      - do NOT remove stop words");
         System.out.println("\t-pg      - do NOT group similar words");

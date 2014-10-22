@@ -9,22 +9,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Similarity between words based on their co-occurence in the same sentences 
+ */
 public class CosineCoOccurenceAlgo extends BaseSimilarityAlgo
 {
-    private Map<WordPair, Double> similarity;
-    private SWCDocument wordifier;
-
     private final static double SIMILARITY_THRESHOLD = 0.000001;
+    
+    private Map<WordPair, Double> similarity;
 
     @Override
-    protected void initialize(SWCDocument wordifier)
-    {
-        this.wordifier = wordifier;
-        this.similarity = null;
-    }
-
-    @Override
-    protected void run()
+    protected void run(SWCDocument wordifier)
     {
         List<Word> words = wordifier.getWords();
         Map<Word, Integer> wordToIndex = new HashMap<Word, Integer>();

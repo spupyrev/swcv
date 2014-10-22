@@ -7,11 +7,9 @@ import edu.cloudy.layout.BaseLayoutAlgo;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutAlgorithmRegistry;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.nlp.ContextDelimiter;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.SWCDynamicDocument;
-import edu.cloudy.nlp.SWCSentimentDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.RankingAlgo;
@@ -25,15 +23,13 @@ import edu.cloudy.utils.FontUtils;
 import edu.webapp.server.readers.DocumentExtractor;
 import edu.webapp.server.readers.DynamicReader;
 import edu.webapp.server.readers.IDocumentReader;
-import edu.webapp.server.readers.ISentimentReader;
+import edu.webapp.server.utils.SentimentAnalysis;
 import edu.webapp.shared.WCFont;
 import edu.webapp.shared.WCSetting;
 import edu.webapp.shared.WordCloud;
-import edu.webapp.shared.registry.WCColorSchemeRegistry;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -51,62 +47,50 @@ public class WordCloudGenerator
 
     private static final int MINIMUM_NUMBER_OF_WORDS = 10;
 
-    public static WordCloud buildWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
+    public WordCloudGenerator()
+    {
+    }
+
+    public WordCloud buildWordCloud(String input, WCSetting setting, String ip) throws IllegalArgumentException
     {
         logging(input, setting);
         FontUtils.initialize(new SVGFontProvider(setting.getFont()));
 
         DocumentExtractor extractor = new DocumentExtractor(input);
         IDocumentReader reader = extractor.getReader();
-        SWCDocument document;
-        String text = reader.getText(input);
-
-        WordCloud cloud = null;
 
         if (reader instanceof DynamicReader)
         {
             DynamicReader r = (DynamicReader)reader;
-            cloud = generateWordCloudFromDynamic(input, r.getText1(), r.getText2(), setting, ip);
-        }
-        else
-        {
-            //TODO
-            if (reader instanceof ISentimentReader && setting.getColorScheme().getType().equals(WCColorSchemeRegistry.COLOR_SCHEME_TYPE_SENTIMENT))
-            {
-                document = new SWCSentimentDocument(((ISentimentReader)reader).getStrChunks());
-                text = document.getText();
-            }
-            else if (setting.getColorScheme().getType().equals(WCColorSchemeRegistry.COLOR_SCHEME_TYPE_SENTIMENT)
-                    && input.contains(ContextDelimiter.SENTIMENT_DELIMITER_TEXT))
-            {
-                String[] strs = input.split(ContextDelimiter.SENTIMENT_DELIMITER_REGEX);
-                document = new SWCSentimentDocument(Arrays.asList(strs));
-            }
-            else
-            {
-                document = new SWCDocument(text);
-            }
-
-            List<WordCloudRenderer> renderers = getRenderers(document, setting);
-
-            if (renderers == null)
-                return null;
-            if (renderers.size() != 1)
-                throw new RuntimeException("Wrong number of renderers");
-
-            // Ask to render into the SVG Graphics2D implementation.
-            WordCloudRenderer renderer = renderers.get(0);
-
-            String svg = getSvg(renderer, setting.getFont());
-
-            Date timestamp = Calendar.getInstance().getTime();
-            cloud = createCloud(setting, input, text, timestamp, svg, "", (int)renderer.getActualWidth(), (int)renderer.getActualHeight(), 0, 0, ip);
+            return generateWordCloudFromDynamic(input, r.getText1(), r.getText2(), setting, ip);
         }
 
-        return cloud;
+        //construct and parse document
+        String text = reader.getText(input);
+        SWCDocument document = new SWCDocument(text);
+        document.parse(getParseOptions(setting));
+
+        //too few words
+        if (document.getWords().size() < MINIMUM_NUMBER_OF_WORDS)
+            return null;
+
+        //compute sentiment values, if needed
+        SentimentAnalysis sa = new SentimentAnalysis();
+        if (sa.accept(reader, document, setting))
+            sa.computeValues(document);
+
+        List<WordCloudRenderer> renderers = getRenderers(document, setting);
+
+        if (renderers.size() != 1)
+            throw new RuntimeException("Wrong number of renderers");
+
+        WordCloudRenderer renderer = renderers.get(0);
+        String svg = getSvg(renderer, setting.getFont());
+        Date timestamp = Calendar.getInstance().getTime();
+        return createCloud(setting, input, text, timestamp, svg, "", (int)renderer.getActualWidth(), (int)renderer.getActualHeight(), 0, 0, ip);
     }
 
-    private static String getSvg(WordCloudRenderer renderer, WCFont wcFont)
+    private String getSvg(WordCloudRenderer renderer, WCFont wcFont)
     {
         try
         {
@@ -119,18 +103,11 @@ public class WordCloudGenerator
         }
     }
 
-    private static List<WordCloudRenderer> getRenderers(SWCDocument document, WCSetting setting)
+    private List<WordCloudRenderer> getRenderers(SWCDocument document, WCSetting setting)
     {
-        List<WordCloudRenderer> renderers = new ArrayList<WordCloudRenderer>();
-
-        document.parse(getParseOptions(setting));
-
         // ranking
         RankingAlgo rankingAlgo = RankingAlgorithmRegistry.getById(setting.getRankingAlgorithm().getId());
         document.weightFilter(setting.getWordCount(), rankingAlgo);
-
-        if (document.getWords().size() < MINIMUM_NUMBER_OF_WORDS)
-            return null;
 
         // similarity
         SimilarityAlgo similarityAlgo = SimilarityAlgorithmRegistry.getById(setting.getSimilarityAlgorithm().getId());
@@ -145,6 +122,7 @@ public class WordCloudGenerator
         ColorScheme colorScheme = ColorSchemeRegistry.getByName(setting.getColorScheme().getName());
         colorScheme.initialize(document.getWords(), similarity);
 
+        List<WordCloudRenderer> renderers = new ArrayList<WordCloudRenderer>();
         if (document instanceof SWCDynamicDocument)
         {
             SWCDynamicDocument dynDocument = (SWCDynamicDocument)document;
@@ -163,7 +141,7 @@ public class WordCloudGenerator
         return renderers;
     }
 
-    private static List<UIWord> prepareUIWordsForDynamic(List<Word> words, LayoutAlgo algo, LayoutResult layout, ColorScheme colorScheme)
+    private List<UIWord> prepareUIWordsForDynamic(List<Word> words, LayoutAlgo algo, LayoutResult layout, ColorScheme colorScheme)
     {
         List<UIWord> res = new ArrayList<UIWord>();
         for (Word w : words)
@@ -185,33 +163,32 @@ public class WordCloudGenerator
         return res;
     }
 
-    private static WordCloud generateWordCloudFromDynamic(String input, String text1, String text2, WCSetting setting, String ip)
+    private WordCloud generateWordCloudFromDynamic(String input, String text1, String text2, WCSetting setting, String ip)
     {
-        WordCloud cloud = null;
-        String svg1, svg2;
+        //create and parse document
+        SWCDynamicDocument document = new SWCDynamicDocument(text1, text2);
+        document.parse(getParseOptions(setting));
 
-        SWCDynamicDocument doc = new SWCDynamicDocument(text1, text2);
-        List<WordCloudRenderer> renderers = getRenderers(doc, setting);
-        if (renderers == null)
+        if (document.getWords().size() < MINIMUM_NUMBER_OF_WORDS)
             return null;
+
+        List<WordCloudRenderer> renderers = getRenderers(document, setting);
 
         if (renderers.size() != 2)
             throw new RuntimeException("Wrong number of renderers");
 
         WordCloudRenderer renderer1 = renderers.get(0);
-        svg1 = getSvg(renderer1, setting.getFont());
+        String svg1 = getSvg(renderer1, setting.getFont());
 
         WordCloudRenderer renderer2 = renderers.get(1);
-        svg2 = getSvg(renderer2, setting.getFont());
+        String svg2 = getSvg(renderer2, setting.getFont());
 
         Date timestamp = Calendar.getInstance().getTime();
 
-        cloud = createCloud(setting, input, doc.getText(), timestamp, svg1, svg2, (int)renderer1.getActualWidth(), (int)renderer1.getActualHeight(), (int)renderer2.getActualWidth(), (int)renderer2.getActualHeight(), ip);
-
-        return cloud;
+        return createCloud(setting, input, document.getText(), timestamp, svg1, svg2, (int)renderer1.getActualWidth(), (int)renderer1.getActualHeight(), (int)renderer2.getActualWidth(), (int)renderer2.getActualHeight(), ip);
     }
 
-    private static WordCloud createCloud(WCSetting setting, String input, String text, Date timestamp, String svg, String svg2, int width, int height, int width2, int height2, String ip)
+    private WordCloud createCloud(WCSetting setting, String input, String text, Date timestamp, String svg, String svg2, int width, int height, int width2, int height2, String ip)
     {
         WordCloud cloud = new WordCloud();
         if (!input.startsWith("http://") && !input.startsWith("https://") && !input.startsWith("twitter:") && input.length() > 80)
@@ -237,18 +214,18 @@ public class WordCloudGenerator
         return cloud;
     }
 
-    private static ParseOptions getParseOptions(WCSetting setting)
+    private ParseOptions getParseOptions(WCSetting setting)
     {
         ParseOptions options = new ParseOptions();
         options.setMinWordLength(setting.getMinWordLength());
         options.setRemoveNumbers(setting.isRemoveNumbers());
         options.setRemoveStopwords(setting.isRemoveStopwords());
         options.setStemWords(setting.isStemWords());
-        
+
         return options;
     }
 
-    private static void logging(String text, WCSetting setting)
+    private void logging(String text, WCSetting setting)
     {
         //System.out.println("running algorithm " + setting.toString());
     }

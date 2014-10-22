@@ -6,7 +6,6 @@ import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFIDFRankingAlgo;
 import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
-import edu.cloudy.nlp.similarity.EuclideanAlgo;
 import edu.cloudy.nlp.similarity.JaccardCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.LexicalSimilarityAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
@@ -59,8 +58,7 @@ public class SimilarityTest
         SimilarityAlgo[] coOccurenceAlgoArray = {
                 new LexicalSimilarityAlgo(),
                 new CosineCoOccurenceAlgo(),
-                new JaccardCoOccurenceAlgo(),
-                new EuclideanAlgo() };
+                new JaccardCoOccurenceAlgo() };
         //SimilarityAlgo CosineCoOccurenceAlgo2 = new LexicalSimilarityAlgo();
 
         //SimilarityAlgo coOccurenceAlgo3 = new JaccardCoOccurenceAlgo();

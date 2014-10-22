@@ -19,7 +19,6 @@ public class WCSimilarityAlgoRegistry
         algorithms.add(new WCSimilarityAlgo("cos", "Cosine Coefficient"));
         algorithms.add(new WCSimilarityAlgo("jac", "Jaccard Coefficient"));
         algorithms.add(new WCSimilarityAlgo("lex", "Lexical Similarity"));
-        algorithms.add(new WCSimilarityAlgo("euc", "Euclidean Distance"));
     }
 
     public static List<WCSimilarityAlgo> list()

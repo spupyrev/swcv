@@ -12,18 +12,10 @@ import java.util.Random;
 public class RandomSimilarityAlgo extends BaseSimilarityAlgo
 {
     private Map<WordPair, Double> similarity;
-    private SWCDocument document;
     private static Random rnd = new Random(123);
 
     @Override
-    protected void initialize(SWCDocument wordifier)
-    {
-        this.document = wordifier;
-        this.similarity = null;
-    }
-
-    @Override
-    protected void run()
+    protected void run(SWCDocument document)
     {
         List<Word> words = document.getWords();
 

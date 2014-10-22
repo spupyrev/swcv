@@ -24,5 +24,6 @@
 	<classpathentry kind="lib" path="lib/batik-1.7/batik-bridge.jar"/>
 	<classpathentry kind="lib" path="lib/batik-1.7/batik-script.jar"/>
 	<classpathentry kind="lib" path="lib/batik-1.7/batik-gvt.jar"/>
+	<classpathentry kind="lib" path="lib/ws4j-1.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

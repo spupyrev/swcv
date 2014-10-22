@@ -20,7 +20,7 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
     {
         String ip = getThreadLocalRequest().getRemoteAddr();
 
-        WordCloud newCloud = WordCloudGenerator.buildWordCloud(input, setting, ip);
+        WordCloud newCloud = new WordCloudGenerator().buildWordCloud(input, setting, ip);
         if (newCloud == null)
             return null;
         

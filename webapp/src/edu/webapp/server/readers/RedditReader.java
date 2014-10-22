@@ -1,32 +1,25 @@
 package edu.webapp.server.readers;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import edu.cloudy.nlp.ContextDelimiter;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class RedditReader implements IDocumentReader, ISentimentReader
 {
     private String url;
     private String regex = "https?://(?:[0-9A-Za-z-]+\\.)?reddit\\.com/r/\\S+/comments/(\\S+)(/\\?limit=\\d+)?";
     private String text;
-    private List<String> comments;
     private Document doc;
 
     public RedditReader()
     {
-        comments = new ArrayList<String>();
-    }
-
-    public List<String> getStrChunks()
-    {
-        return comments;
     }
 
     public boolean isConnected(String input)
@@ -94,8 +87,7 @@ public class RedditReader implements IDocumentReader, ISentimentReader
         els = doc.getElementsByClass("md");
         for (Element e : els)
         {
-            String tmp = e.text() + ".";
-            comments.add(tmp);
+            String tmp = e.text() + "." + ContextDelimiter.SENTIMENT_DELIMITER_TEXT + "\n";
             sb.append(tmp);
         }
         text = sb.toString();

@@ -14,7 +14,7 @@ public class WCColorSchemeRegistry
 {
     public static final String COLOR_SCHEME_TYPE_MONO = "Monochrome";
     public static final String COLOR_SCHEME_TYPE_CLUSTER = "Semantic clusters";
-    public static final String COLOR_SCHEME_TYPE_SENTIMENT = "Sentiment (twitter only)";
+    public static final String COLOR_SCHEME_TYPE_SENTIMENT = "Sentiment analysis";
     public static final String COLOR_SCHEME_TYPE_CONTRAST = "Contrast 2 clouds";
 
     private static List<WCColorScheme> schemes = new ArrayList<WCColorScheme>();

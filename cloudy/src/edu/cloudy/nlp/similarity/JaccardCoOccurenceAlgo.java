@@ -10,20 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Similarity between words based on their co-occurence in the same sentences 
+ */
 public class JaccardCoOccurenceAlgo extends BaseSimilarityAlgo
 {
     private Map<WordPair, Double> similarity;
-    private SWCDocument wordifier;
 
     @Override
-    protected void initialize(SWCDocument wordifier)
-    {
-        this.wordifier = wordifier;
-        this.similarity = null;
-    }
-
-    @Override
-    protected void run()
+    protected void run(SWCDocument wordifier)
     {
         List<Word> words = wordifier.getWords();
 

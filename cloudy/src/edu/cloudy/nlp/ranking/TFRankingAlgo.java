@@ -16,13 +16,9 @@ public class TFRankingAlgo implements RankingAlgo
     {
         List<Word> words = wordifier.getWords();
 
-        int maxCount = -1;
-        for (Word w : words)
-            maxCount = Math.max(maxCount, w.getCoordinates().size());
+        double maxCount = words.stream().mapToDouble(w -> w.getSentences().size()).max().orElse(1);
 
         for (Word w : words)
-        {
-            w.weight = (double)w.getCoordinates().size() / (double)maxCount;
-        }
+            w.weight = w.getSentences().size() / maxCount;
     }
 }

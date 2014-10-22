@@ -12,13 +12,14 @@ import opennlp.tools.tokenize.TokenizerModel;
 
 import org.lemurproject.kstem.KrovetzStemmer;
 
-import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,14 +35,7 @@ public class SWCDocument
 {
     private String text;
     private List<Word> words;
-
-    /**
-     * This is a default constructor used by WCVDocument4Sentiment
-     */
-    public SWCDocument()
-    {
-        this.text = null;
-    }
+    private List<String> sentences;
 
     public SWCDocument(String text)
     {
@@ -58,9 +52,9 @@ public class SWCDocument
         return words;
     }
 
-    public void setText(String text)
+    public List<String> getSentences()
     {
-        this.text = text;
+        return sentences;
     }
 
     public String getText()
@@ -79,8 +73,8 @@ public class SWCDocument
         text = TextUtils.splitSentences(text);
 
         Tokenizer tokenizer = buildTokenizer();
-        String[] sentences = buildSentences();
-        Set<String> stopwords = (parseOptions.isRemoveStopwords() ? buildStopwords() : new HashSet<String>());
+        List<String> sentences = buildSentences();
+        Set<String> stopwords = (parseOptions.isRemoveStopwords() ? buildStopwords() : Collections.EMPTY_SET);
 
         //LovinsStemmer stemmer = new LovinsStemmer();
         BaseStemmer stemmer = new PorterStemmer();
@@ -89,9 +83,9 @@ public class SWCDocument
         //stem => list of original words
         Map<String, List<String>> stemMap = new HashMap<String, List<String>>();
 
-        for (int i = 0; i < sentences.length; i++)
+        for (int i = 0; i < sentences.size(); i++)
         {
-            String[] temp = tokenizer.tokenize(sentences[i]);
+            String[] temp = tokenizer.tokenize(sentences.get(i));
             for (int j = 0; j < temp.length; j++)
             {
                 String currentWord = temp[j].toLowerCase();
@@ -117,7 +111,6 @@ public class SWCDocument
 
                 wordMap.get(currentStem).stem = currentStem;
                 wordMap.get(currentStem).addSentence(i);
-                wordMap.get(currentStem).addCoordinate(new Point(j, i));
                 stemMap.get(currentStem).add(temp[j]);
             }
         }
@@ -162,8 +155,11 @@ public class SWCDocument
         return true;
     }
 
-    public String[] buildSentences()
+    private List<String> buildSentences()
     {
+        if (sentences != null)
+            return sentences;
+
         InputStream modelIn1;
         modelIn1 = CommonUtils.getResourceAsStream("opennlp/en-sent.bin");
 
@@ -193,7 +189,7 @@ public class SWCDocument
         SentenceDetectorME sentenceDetector = new SentenceDetectorME(model1);
 
         // Split into sentences
-        String sentences[] = sentenceDetector.sentDetect(text);
+        sentences = Arrays.asList(sentenceDetector.sentDetect(text));
         return sentences;
     }
 
@@ -266,8 +262,7 @@ public class SWCDocument
     public void weightFilter(int maxWords, RankingAlgo rankingAlgo)
     {
         rankingAlgo.buildWeights(this);
-        Collections.sort(words);
-        Collections.reverse(words);
+        Collections.sort(words, Comparator.reverseOrder());
 
         if (words.size() > maxWords)
             words = words.subList(0, maxWords);

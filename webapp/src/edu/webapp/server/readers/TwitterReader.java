@@ -1,5 +1,6 @@
 package edu.webapp.server.readers;
 
+import edu.cloudy.nlp.ContextDelimiter;
 import twitter4j.Query;
 import twitter4j.Query.ResultType;
 import twitter4j.QueryResult;
@@ -22,7 +23,6 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
     private static final int DEFAULT_NUMBER_OF_TWEETS = 300;
 
     private String tweetsText;
-    private List<String> tweetsList;
 
     public boolean isConnected(String input)
     {
@@ -36,7 +36,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
 
         try
         {
-            tweetsList = searchTweets(sq);
+            List<String> tweetsList = searchTweets(sq);
             tweetsText = concatTweets(tweetsList);
             return true;
         }
@@ -50,15 +50,6 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
     public String getText(String input)
     {
         return tweetsText;
-    }
-
-    /**
-     * @return List of tweets. 
-     * So sentiment tool can be applied to each tweets instead of each sentence.
-     */
-    public List<String> getStrChunks()
-    {
-        return tweetsList;
     }
 
     private List<String> searchTweets(SearchQuery sq) throws TwitterException
@@ -86,7 +77,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
                     continue;
 
                 lowestTweetId = Math.min(lowestTweetId, tweet.getId());
-                resTweets.add(removeLinks(tweet.getText()) + ".\n");
+                resTweets.add(removeLinks(tweet.getText()) + "." + ContextDelimiter.SENTIMENT_DELIMITER_TEXT + "\n");
                 downloadCount++;
             }
 
@@ -102,9 +93,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
     private String concatTweets(List<String> tweets)
     {
         StringBuffer sb = new StringBuffer();
-        for (String s : tweets)
-            sb.append(s);
-
+        tweets.forEach(s -> sb.append(s));
         return sb.toString();
     }
 

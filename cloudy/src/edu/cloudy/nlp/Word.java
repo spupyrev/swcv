@@ -1,8 +1,7 @@
 package edu.cloudy.nlp;
 
-import java.awt.Point;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Word implements Comparable<Word>
 {
@@ -18,13 +17,7 @@ public class Word implements Comparable<Word>
 
     public DocIndex documentIndex;
 
-    // debug info
-    public int posCount, negCount, neuCount;
-    // debug info
-    public double totalCount;
-
-    private Set<Integer> sentences;
-    private Set<Point> coordinate;
+    private List<Integer> sentences;
 
     public Word(String word, double weight)
     {
@@ -33,18 +26,7 @@ public class Word implements Comparable<Word>
         this.weight = weight;
         this.sentimentValue = 0;
         this.documentIndex = DocIndex.First;
-        this.coordinate = new HashSet<Point>();
-        this.sentences = new HashSet<Integer>();
-    }
-
-    public void addCoordinate(Point id)
-    {
-        coordinate.add(id);
-    }
-
-    public void addCoordinate(Set<Point> id)
-    {
-        coordinate.addAll(id);
+        this.sentences = new ArrayList<Integer>();
     }
 
     public void addSentence(int id)
@@ -52,17 +34,7 @@ public class Word implements Comparable<Word>
         sentences.add(id);
     }
 
-    public void addSentences(Set<Integer> ids)
-    {
-        sentences.addAll(ids);
-    }
-
-    public Set<Point> getCoordinates()
-    {
-        return coordinate;
-    }
-
-    public Set<Integer> getSentences()
+    public List<Integer> getSentences()
     {
         return sentences;
     }
@@ -98,14 +70,6 @@ public class Word implements Comparable<Word>
     public double getSentimentValue()
     {
         return sentimentValue;
-    }
-
-    public void setSentimentCount(int posCount, int negCount, int neuCount, double totalCount)
-    {
-        this.posCount = posCount;
-        this.negCount = negCount;
-        this.neuCount = neuCount;
-        this.totalCount = totalCount;
     }
 
     public String toString()

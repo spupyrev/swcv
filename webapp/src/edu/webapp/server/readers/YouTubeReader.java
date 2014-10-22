@@ -1,20 +1,22 @@
 package edu.webapp.server.readers;
 
+import edu.cloudy.nlp.ContextDelimiter;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 /**
  * @author spupyrev
  * Nov 23, 2013
  */
-public class YouTubeReader implements IDocumentReader
+public class YouTubeReader implements IDocumentReader, ISentimentReader
 {
     private static final String pattern = "https?://(?:[0-9A-Z-]+\\.)?(?:youtu\\.be/|youtube\\.com\\S*[^\\w\\-\\s])([\\w\\-]{11})(?=‌​[^\\w\\-]|$)(?![?=&+%\\w]*(?:['\"][^<>]*>|</a>))[?=&+%\\w]*";
 
@@ -56,7 +58,7 @@ public class YouTubeReader implements IDocumentReader
                     JSONObject tmp = arr.getJSONObject(i).getJSONObject("content");
                     String en = tmp.getString("$t");
                     if (en.length() > 0)
-                        sb.append(en + ".\n");
+                        sb.append(en + "." + ContextDelimiter.SENTIMENT_DELIMITER_TEXT + "\n");
                 }
 
                 text = sb.toString();
