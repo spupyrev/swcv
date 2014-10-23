@@ -57,7 +57,7 @@ public class WordCloudDetailApp implements EntryPoint
         {
             public void onSuccess(WordCloud cloud)
             {
-                setting = cloud.getSettings();
+                setting = cloud.getSetting();
                 inputText = cloud.getSourceText();
                 
                 initializeContentPanel(cloud);

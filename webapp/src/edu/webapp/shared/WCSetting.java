@@ -35,6 +35,7 @@ public class WCSetting implements Serializable
     private boolean stemWords = true;
     private boolean removeNumbers = true;
     private int minWordLength = 3;
+    private String language = "en";
 
     public void setRandomSetting()
     {
@@ -48,7 +49,7 @@ public class WCSetting implements Serializable
 
         setFont(WCFontRegistry.getRandom());
 
-        setAspectRatio(WCAspectRatioRegistry.getRandom());
+        //setAspectRatio(WCAspectRatioRegistry.getRandom());
     }
 
     public WCColorScheme getColorScheme()
@@ -159,6 +160,16 @@ public class WCSetting implements Serializable
     public void setMinWordLength(int minWordLength)
     {
         this.minWordLength = minWordLength;
+    }
+
+    public String getLanguage()
+    {
+        return language;
+    }
+
+    public void setLanguage(String language)
+    {
+        this.language = language;
     }
 
     public String toString()

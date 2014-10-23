@@ -31,7 +31,7 @@ import java.util.Scanner;
  *  
  * create and visualize a wordcloud for a document
  */
-public class WCVisualizer
+public class SWCVisualizer
 {
     public static void main(String argc[])
     {
@@ -39,7 +39,7 @@ public class WCVisualizer
 
         try
         {
-            new WCVisualizer().run();
+            new SWCVisualizer().run();
         }
         catch (Exception e)
         {

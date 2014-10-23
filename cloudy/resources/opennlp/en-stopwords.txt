@@ -1,4 +1,4 @@
-a
+﻿a
 a's
 able
 about
@@ -785,8 +785,6 @@ homo
 homodumbshit
 honkey
 humping
-idiot
-idiots
 jackass
 jagoff
 jap

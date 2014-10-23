@@ -202,7 +202,7 @@ public class WordCloudGenerator
 
         cloud.setSourceText(text);
         cloud.setCreationDateAsDate(timestamp);
-        cloud.setSettings(setting);
+        cloud.setSetting(setting);
         cloud.setSvg(svg);
         cloud.setSvg2(svg2);
         cloud.setWidth(width);
@@ -221,6 +221,7 @@ public class WordCloudGenerator
         options.setRemoveNumbers(setting.isRemoveNumbers());
         options.setRemoveStopwords(setting.isRemoveStopwords());
         options.setStemWords(setting.isStemWords());
+        options.setLanguage(setting.getLanguage());
 
         return options;
     }

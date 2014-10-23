@@ -47,7 +47,7 @@ public class DBSpeedTests
         res.setCreationDateAsDate(wc.getCreationDateAsDate());
         res.setSvg(wc.getSvg());
         res.setCreatorIP(wc.getCreatorIP());
-        res.setSettings(wc.getSettings());
+        res.setSetting(wc.getSetting());
 
         DBUtils.addCloud(res);
 
@@ -68,7 +68,7 @@ public class DBSpeedTests
         wc.setCreationDateAsDate(Calendar.getInstance().getTime());
         wc.setSvg("<svg /> ><g style='fill:white; stroke:white;' /></g");
         wc.setCreatorIP("127.1.3.4");
-        wc.setSettings(new WCSetting());
+        wc.setSetting(new WCSetting());
         return wc;
     }
     

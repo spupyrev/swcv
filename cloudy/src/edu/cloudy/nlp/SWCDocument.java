@@ -1,8 +1,6 @@
 package edu.cloudy.nlp;
 
 import edu.cloudy.nlp.ranking.RankingAlgo;
-import edu.cloudy.nlp.stemming.BaseStemmer;
-import edu.cloudy.nlp.stemming.PorterStemmer;
 import edu.cloudy.utils.CommonUtils;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
@@ -10,21 +8,9 @@ import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
 
-import org.lemurproject.kstem.KrovetzStemmer;
-
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author spupyrev
@@ -70,14 +56,10 @@ public class SWCDocument
      */
     public void parse(ParseOptions parseOptions)
     {
-        text = TextUtils.splitSentences(text);
+        Tokenizer tokenizer = buildTokenizer(parseOptions);
+        List<String> sentences = buildSentences(parseOptions);
+        Set<String> stopwords = (parseOptions.isRemoveStopwords() ? buildStopwords(parseOptions) : Collections.EMPTY_SET);
 
-        Tokenizer tokenizer = buildTokenizer();
-        List<String> sentences = buildSentences();
-        Set<String> stopwords = (parseOptions.isRemoveStopwords() ? buildStopwords() : Collections.EMPTY_SET);
-
-        //LovinsStemmer stemmer = new LovinsStemmer();
-        BaseStemmer stemmer = new PorterStemmer();
         //stem => word
         Map<String, Word> wordMap = new HashMap<String, Word>();
         //stem => list of original words
@@ -97,7 +79,7 @@ public class SWCDocument
                 if (!isWord(currentWord, parseOptions))
                     continue;
 
-                String currentStem = getStemmedWord(currentWord, stemmer, parseOptions);
+                String currentStem = getStemmedWord(currentWord, parseOptions);
 
                 //skip stopwords
                 if (stopwords.contains(currentWord) || stopwords.contains(currentStem))
@@ -155,13 +137,13 @@ public class SWCDocument
         return true;
     }
 
-    private List<String> buildSentences()
+    private List<String> buildSentences(ParseOptions parseOptions)
     {
         if (sentences != null)
             return sentences;
 
         InputStream modelIn1;
-        modelIn1 = CommonUtils.getResourceAsStream("opennlp/en-sent.bin");
+        modelIn1 = CommonUtils.getResourceAsStream(parseOptions.getLanguage().getSentFile());
 
         SentenceModel model1 = null;
         try
@@ -190,13 +172,13 @@ public class SWCDocument
 
         // Split into sentences
         sentences = Arrays.asList(sentenceDetector.sentDetect(text));
+        sentences = TextUtils.splitSentences(sentences);
         return sentences;
     }
 
-    private Tokenizer buildTokenizer()
+    private Tokenizer buildTokenizer(ParseOptions parseOptions)
     {
-        InputStream modelIn2;
-        modelIn2 = CommonUtils.getResourceAsStream("opennlp/en-token.bin");
+        InputStream modelIn2 = CommonUtils.getResourceAsStream(parseOptions.getLanguage().getTokenFile());
         TokenizerModel model2 = null;
         try
         {
@@ -224,31 +206,30 @@ public class SWCDocument
         return tokenizer;
     }
 
-    private String getStemmedWord(String word, BaseStemmer stemmer, ParseOptions parseOptions)
+    private String getStemmedWord(String word, ParseOptions parseOptions)
     {
         if (!parseOptions.isStemWords())
             return word;
 
-        KrovetzStemmer krovetstem = new KrovetzStemmer();
-        String prestemmed = krovetstem.stem(word);
-        return stemmer.stem(prestemmed);
+        return TextUtils.stem(word, parseOptions);
     }
 
-    private Set<String> buildStopwords()
+    private Set<String> buildStopwords(ParseOptions parseOptions)
     {
         Set<String> stopWords = new HashSet<String>();
 
         try
         {
-            BufferedReader br = new BufferedReader(new InputStreamReader(CommonUtils.getResourceAsStream("opennlp/stopwords-en.txt")));
-            String line;
-            while ((line = br.readLine()) != null)
+            Scanner br = new Scanner(CommonUtils.getResourceAsStream(parseOptions.getLanguage().getStopwordsFile()), "UTF-8");
+            while (br.hasNext())
             {
-                stopWords.add(line.toLowerCase().trim());
+                String token = br.next();
+                String word = token.toLowerCase().trim();
+                stopWords.add(word);
             }
             br.close();
         }
-        catch (IOException e)
+        catch (IllegalArgumentException e)
         {
             throw new RuntimeException(e);
         }

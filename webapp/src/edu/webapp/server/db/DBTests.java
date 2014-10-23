@@ -45,7 +45,7 @@ public class DBTests
 		cloud.setCreationDateAsDate(Calendar.getInstance().getTime());
 		cloud.setSvg("meow meow meow");
 		cloud.setCreatorIP("127.1.3.4");
-		cloud.setSettings(new WCSetting());
+		cloud.setSetting(new WCSetting());
 		DBUtils.updateCloud(cloud);
 	}
 
@@ -63,7 +63,7 @@ public class DBTests
 		wc.setCreationDateAsDate(Calendar.getInstance().getTime());
 		wc.setSvg("<svg /> ><g style='fill:white; stroke:white;' /></g");
 		wc.setCreatorIP("127.1.3.4");
-		wc.setSettings(new WCSetting());
+		wc.setSetting(new WCSetting());
 
 		DBUtils.addCloud(wc);
 

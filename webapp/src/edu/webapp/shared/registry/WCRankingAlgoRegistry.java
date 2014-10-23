@@ -16,9 +16,9 @@ public class WCRankingAlgoRegistry
 
     static
     {
-        algorithms.add(new WCRankingAlgo("tf", "Term Frequency"));
-        algorithms.add(new WCRankingAlgo("tf-idf", "TF/ICF - BrownCorpus"));
-        algorithms.add(new WCRankingAlgo("lex", "Lexical Centrality"));
+        algorithms.add(new WCRankingAlgo("tf", "Term Frequency", false));
+        algorithms.add(new WCRankingAlgo("tf-idf", "TF/ICF - BrownCorpus", true));
+        algorithms.add(new WCRankingAlgo("lex", "Lexical Centrality", true));
     }
 
     public static List<WCRankingAlgo> list()

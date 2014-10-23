@@ -18,39 +18,7 @@ package edu.cloudy.nlp.stemming;
 
 public class PorterStemmer extends BaseStemmer {
 
-    /**
-	 * 
-	 */
-
 	private static final long serialVersionUID = 1L;
-	
-	public static void main(String args[]){
-		PorterStemmer ls = new PorterStemmer();
-
-	    try {
-	      int num;
-	      StringBuffer wordBuffer = new StringBuffer();
-	      while ((num = System.in.read()) != -1) {
-		char c = (char)num;
-		if (((num >= 'A') && (num <= 'Z')) ||
-		    ((num >= 'a') && (num <= 'z'))) {
-		  wordBuffer.append(c);
-		} else {
-		  if (wordBuffer.length() > 0) {
-		    System.out.print(ls.stem(wordBuffer.toString().
-					     toLowerCase()));
-		    wordBuffer = new StringBuffer();
-		  }
-		  System.out.print(c);
-		}
-	      }
-	    } catch (Exception e) {
-	      System.err.println(e.getMessage());
-	    }
-	  }		
-	
-	
-	
 	
 	public String stem(String str)  {
         // check for zero length

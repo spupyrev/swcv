@@ -18,7 +18,7 @@ public class WordCloud implements Serializable
 
     private String inputText;
     private String sourceText;
-    private WCSetting settings;
+    private WCSetting setting;
 
     private String creationDate;
     private String svg;
@@ -68,14 +68,14 @@ public class WordCloud implements Serializable
         this.inputText = inputText;
     }
 
-    public WCSetting getSettings()
+    public WCSetting getSetting()
     {
-        return settings;
+        return setting;
     }
 
-    public void setSettings(WCSetting settings)
+    public void setSetting(WCSetting settings)
     {
-        this.settings = settings;
+        this.setting = settings;
     }
 
     public String getCreationDate()

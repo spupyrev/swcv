@@ -1,6 +1,7 @@
 package edu.cloudy.utils;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * @author spupyrev
@@ -15,10 +16,15 @@ public class CommonUtils
     {
         return Thread.currentThread().getContextClassLoader().getResource(name).getFile();
     }
-
+    
     public static InputStream getResourceAsStream(String name)
     {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+    }
+
+    public static InputStreamReader getResourceAsReader(String name)
+    {
+        return new InputStreamReader(getResourceAsStream(name));
     }
 
 }

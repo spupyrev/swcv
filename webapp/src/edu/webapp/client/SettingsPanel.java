@@ -29,7 +29,6 @@ import edu.webapp.shared.registry.WCLayoutAlgoRegistry;
 import edu.webapp.shared.registry.WCRankingAlgoRegistry;
 import edu.webapp.shared.registry.WCSimilarityAlgoRegistry;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -87,7 +86,7 @@ public class SettingsPanel
         layout.setWidget(3, 3, createLanguageListBox());
 
         addParseOptions(layout, cf);
-        
+
         addTooltips(layout);
 
         // Wrap the content in a DecoratorPanel
@@ -127,70 +126,50 @@ public class SettingsPanel
         }
     }
 
-    private ListBox createLanguageListBox()
+    private void setNonEnglishText(boolean isEnglish)
     {
-        final ListBox box = new ListBox();
-        box.addItem("English");
-        box.addItem("Non-English");
-
-        box.addChangeHandler(new ChangeHandler()
-        {
-            public void onChange(ChangeEvent event)
-            {
-                setNonEnglishText(box.getSelectedIndex() != 1);
-            }
-        });
-
-        box.setTitle("Language of text");
-
-        return box;
-    }
-
-    private void setNonEnglishText(boolean checked)
-    {
-        //TODO
-        if (checked)
+        if (!isEnglish)
         { // non en setting
-            WCRankingAlgo rankval = WCRankingAlgoRegistry.getById(rankingWidget.getValue(rankingWidget.getSelectedIndex()));
-            List<Integer> enFonts = getEnOnlyFonts();
-
-            if (rankval.getId().equals("tf-idf"))
-            {
-                rankingWidget.setSelectedIndex(0);
-                setting.setFont(WCFontRegistry.getByName("Archer"));
-            }
-
-            if (enFonts.contains(fontWidget.getSelectedIndex()))
-            {
-                fontWidget.setSelectedIndex(1);
-                setting.setFont(WCFontRegistry.getByName("ComicSansMS"));
-            }
-
             for (int i = 0; i < fontWidget.getItemCount(); ++i)
-                if (enFonts.contains(i))
-                    setDisabled(fontWidget, i);
+            {
+                String value = fontWidget.getValue(i);
+                WCFont font = WCFontRegistry.getByName(value);
+                if (font.isEnglishOnly())
+                {
+                    if (fontWidget.getSelectedIndex() == i)
+                    {
+                        WCFont newFont = WCFontRegistry.getDefault();
+                        fontWidget.setSelectedIndex(findIndex(fontWidget, newFont.getName()));
+                        setting.setFont(newFont);
+                    }
+                    setItemEnabled(fontWidget, i, false);
+                }
+            }
 
-            setDisabled(rankingWidget, findIndex(rankingWidget, "tf-df"));
+            for (int i = 0; i < rankingWidget.getItemCount(); ++i)
+            {
+                String value = rankingWidget.getValue(i);
+                WCRankingAlgo rank = WCRankingAlgoRegistry.getById(value);
+                if (rank.isEnglishOnly())
+                {
+                    if (rankingWidget.getSelectedIndex() == i)
+                    {
+                        WCRankingAlgo newRank = WCRankingAlgoRegistry.getDefault();
+                        rankingWidget.setSelectedIndex(findIndex(rankingWidget, newRank.getId()));
+                        setting.setRankingAlgorithm(newRank);
+                    }
+                    setItemEnabled(rankingWidget, i, false);
+                }
+            }
         }
         else
         { // en setting
             for (int i = 0; i < fontWidget.getItemCount(); ++i)
-                removeDisabled(fontWidget, i);
+                setItemEnabled(fontWidget, i, true);
 
             for (int i = 0; i < rankingWidget.getItemCount(); ++i)
-                removeDisabled(rankingWidget, i);
+                setItemEnabled(rankingWidget, i, true);
         }
-    }
-
-    private List<Integer> getEnOnlyFonts()
-    {
-        List<Integer> indices = new ArrayList<Integer>();
-
-        for (WCFont font : WCFontRegistry.list())
-            if (font.isEnglishOnly())
-                indices.add(findIndex(fontWidget, font.getName()));
-
-        return indices;
     }
 
     private Widget createLabel(String text)
@@ -201,14 +180,12 @@ public class SettingsPanel
         return label;
     }
 
-    private void removeDisabled(ListBox b, int index)
+    private void setItemEnabled(ListBox b, int index, boolean enabled)
     {
-        b.getElement().getElementsByTagName("option").getItem(index).removeAttribute("disabled");
-    }
-
-    private void setDisabled(ListBox b, int index)
-    {
-        b.getElement().getElementsByTagName("option").getItem(index).setAttribute("disabled", "disabled");
+        if (enabled)
+            b.getElement().getElementsByTagName("option").getItem(index).removeAttribute("disabled");
+        else
+            b.getElement().getElementsByTagName("option").getItem(index).setAttribute("disabled", "disabled");
     }
 
     private int findIndex(ListBox box, String value)
@@ -217,6 +194,47 @@ public class SettingsPanel
             if (box.getValue(i).equals(value))
                 return i;
         return -1;
+    }
+
+    private ListBox createLanguageListBox()
+    {
+        final ListBox box = new ListBox();
+        box.addItem("Arabic", "ar");
+        box.addItem("Czech", "cs");
+        box.addItem("Danish", "da");
+        box.addItem("Dutch", "nl");
+        box.addItem("English", "en");
+        box.addItem("Finnish", "fi");
+        box.addItem("French", "fr");
+        box.addItem("German", "de");
+        box.addItem("Greek", "el");
+        box.addItem("Hungarian", "hu");
+        box.addItem("Italian", "it");
+        box.addItem("Japanese", "ja");
+        box.addItem("Norwegian", "no");
+        box.addItem("Polish", "pl");
+        box.addItem("Portuguese", "pt");
+        box.addItem("Russian", "ru");
+        box.addItem("Spanish", "es");
+        box.addItem("Swedish", "sv");
+        box.addItem("Turkish", "tr");
+
+        box.setSelectedIndex(findIndex(box, setting.getLanguage()));
+        setNonEnglishText("en".equals(setting.getLanguage()));
+        
+        box.addChangeHandler(new ChangeHandler()
+        {
+            public void onChange(ChangeEvent event)
+            {
+                String value = box.getValue(box.getSelectedIndex());
+                setting.setLanguage(value);
+                setNonEnglishText("en".equals(value));
+            }
+        });
+
+        box.setTitle("Language of text");
+
+        return box;
     }
 
     private Widget createAspectRatioListBox()

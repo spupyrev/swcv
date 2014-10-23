@@ -91,7 +91,28 @@ public class CommandLineArguments
         System.out.println("\t-pg      - do NOT group similar words");
         System.out.println("\t-pn      - do NOT remove numbers");
         System.out.println("\t-plv     - set minimum length of words to 'v' (3)");
-
+        
+        System.out.println("\t-llang   - set the language of the input text to 'lang' (en)");
+        System.out.println("\t      ar : Arabic");
+        System.out.println("\t      cs : Czech");
+        System.out.println("\t      da : Danish");
+        System.out.println("\t      nl : Dutch");
+        System.out.println("\t      en : English");
+        System.out.println("\t      fi : Finnish");
+        System.out.println("\t      fr : French");
+        System.out.println("\t      de : German");
+        System.out.println("\t      el : Greek");
+        System.out.println("\t      hu : Hungarian");
+        System.out.println("\t      it : Italian");
+        System.out.println("\t      ja : Japanese");
+        System.out.println("\t      no : Norwegian");
+        System.out.println("\t      pl : Polish");
+        System.out.println("\t      pt : Portuguese");
+        System.out.println("\t      ru : Russian");
+        System.out.println("\t      es : Spanish");
+        System.out.println("\t      sv : Swedish");
+        System.out.println("\t      tr : Turkish");
+        
         System.out.println("\t-ofile   - write output to 'file' (stdout)");
         System.out.println("\t-O       - automatically generate an output filename based on the input filename with a .'format' appended");
 
@@ -134,6 +155,7 @@ public class CommandLineArguments
         parsers.add(new StringArgumentParser("-pg", (cmd, value) -> cmd.parseOptions.setStemWords(false)));
         parsers.add(new StringArgumentParser("-pn", (cmd, value) -> cmd.parseOptions.setRemoveNumbers(false)));
         parsers.add(new IntegerArgumentParser("-pl", 1, 30, (cmd, value) -> cmd.parseOptions.setMinWordLength(value)));
+        parsers.add(new StringArgumentParser("-l", (cmd, value) -> cmd.parseOptions.setLanguage(value)));
         parsers.add(new StringArgumentParser("-f", (cmd, value) -> cmd.font = value));
         parsers.add(new StringArgumentParser("-?", (cmd, value) -> cmd.printUsage = true));
         parsers.add(new StringArgumentParser("-", (cmd, value) -> System.out.println("unrecosgnized option '-" + value + "'")));

@@ -9,18 +9,20 @@ import java.io.Serializable;
 public class WCRankingAlgo implements Serializable
 {
     private static final long serialVersionUID = 5057110536867524542L;
-    
+
     private String id;
     private String description;
+    private boolean englishOnly;
 
     public WCRankingAlgo()
     {
     }
 
-    public WCRankingAlgo(String id, String description)
+    public WCRankingAlgo(String id, String description, boolean englishOnly)
     {
         this.id = id;
         this.description = description;
+        this.englishOnly = englishOnly;
     }
 
     public String getId()
@@ -32,4 +34,10 @@ public class WCRankingAlgo implements Serializable
     {
         return description;
     }
+
+    public boolean isEnglishOnly()
+    {
+        return englishOnly;
+    }
+
 }

@@ -84,22 +84,24 @@ public class DBUtils
                         "LAYOUT_ALGO",
                         "FONT",
                         "COLOR_SCHEME",
-                        "ASPECT_RATIO" };
+                        "ASPECT_RATIO",
+                        "LANG" };
 
-                WCSetting settings = cloud.getSettings();
+                WCSetting setting = cloud.getSetting();
                 Object[] values = new Object[] {
                         cloud.getWidth(),
                         cloud.getHeight(),
                         cloud.getSvg(),
                         cloud.getSvg2(),
                         cloud.getCreatorIP(),
-                        settings.getWordCount(),
-                        settings.getSimilarityAlgorithm().getId(),
-                        settings.getRankingAlgorithm().getId(),
-                        settings.getLayoutAlgorithm().getId(),
-                        settings.getFont().getName(),
-                        settings.getColorScheme().getName(),
-                        settings.getAspectRatio().getId() };
+                        setting.getWordCount(),
+                        setting.getSimilarityAlgorithm().getId(),
+                        setting.getRankingAlgorithm().getId(),
+                        setting.getLayoutAlgorithm().getId(),
+                        setting.getFont().getName(),
+                        setting.getColorScheme().getName(),
+                        setting.getAspectRatio().getId(),
+                        setting.getLanguage() };
 
                 StringBuffer sql = new StringBuffer();
                 sql.append("UPDATE CLOUD SET ");
@@ -164,9 +166,10 @@ public class DBUtils
                         "LAYOUT_ALGO",
                         "FONT",
                         "COLOR_SCHEME",
-                        "ASPECT_RATIO" };
+                        "ASPECT_RATIO",
+                        "LANG" };
 
-                WCSetting settings = cloud.getSettings();
+                WCSetting setting = cloud.getSetting();
                 Object[] values = new Object[] {
                         cloud.getId(),
                         cloud.getInputText(),
@@ -179,13 +182,14 @@ public class DBUtils
                         cloud.getSvg(),
                         cloud.getSvg2(),
                         cloud.getCreatorIP(),
-                        settings.getWordCount(),
-                        settings.getSimilarityAlgorithm().getId(),
-                        settings.getRankingAlgorithm().getId(),
-                        settings.getLayoutAlgorithm().getId(),
-                        settings.getFont().getName(),
-                        settings.getColorScheme().getName(),
-                        settings.getAspectRatio().getId() };
+                        setting.getWordCount(),
+                        setting.getSimilarityAlgorithm().getId(),
+                        setting.getRankingAlgorithm().getId(),
+                        setting.getLayoutAlgorithm().getId(),
+                        setting.getFont().getName(),
+                        setting.getColorScheme().getName(),
+                        setting.getAspectRatio().getId(),
+                        setting.getLanguage() };
 
                 StringBuffer sql = new StringBuffer();
                 sql.append("INSERT INTO CLOUD (");
@@ -265,14 +269,15 @@ public class DBUtils
         cloud.setSvg2(rs.getString("SVG2"));
         cloud.setCreatorIP(rs.getString("CREATOR_IP"));
 
-        cloud.setSettings(new WCSetting());
-        cloud.getSettings().setWordCount(rs.getInt("WORD_COUNT"));
-        cloud.getSettings().setSimilarityAlgorithm(WCSimilarityAlgoRegistry.getById(rs.getString("SIMILARITY_ALGO")));
-        cloud.getSettings().setRankingAlgorithm(WCRankingAlgoRegistry.getById(rs.getString("RANKING_ALGO")));
-        cloud.getSettings().setLayoutAlgorithm(WCLayoutAlgoRegistry.getById(rs.getString("LAYOUT_ALGO")));
-        cloud.getSettings().setFont(WCFontRegistry.getByName(rs.getString("FONT")));
-        cloud.getSettings().setColorScheme(WCColorSchemeRegistry.getByName(rs.getString("COLOR_SCHEME")));
-        cloud.getSettings().setAspectRatio(WCAspectRatioRegistry.getById(rs.getString("ASPECT_RATIO")));
+        cloud.setSetting(new WCSetting());
+        cloud.getSetting().setWordCount(rs.getInt("WORD_COUNT"));
+        cloud.getSetting().setSimilarityAlgorithm(WCSimilarityAlgoRegistry.getById(rs.getString("SIMILARITY_ALGO")));
+        cloud.getSetting().setRankingAlgorithm(WCRankingAlgoRegistry.getById(rs.getString("RANKING_ALGO")));
+        cloud.getSetting().setLayoutAlgorithm(WCLayoutAlgoRegistry.getById(rs.getString("LAYOUT_ALGO")));
+        cloud.getSetting().setFont(WCFontRegistry.getByName(rs.getString("FONT")));
+        cloud.getSetting().setColorScheme(WCColorSchemeRegistry.getByName(rs.getString("COLOR_SCHEME")));
+        cloud.getSetting().setAspectRatio(WCAspectRatioRegistry.getById(rs.getString("ASPECT_RATIO")));
+        cloud.getSetting().setLanguage(rs.getString("LANG"));
     }
 
     private static void convertRSToCloudLight(final WordCloud cloud, ResultSet rs) throws SQLException
@@ -326,7 +331,8 @@ public class DBUtils
                     "LAYOUT_ALGO CHAR(50)",
                     "FONT CHAR(50)",
                     "COLOR_SCHEME CHAR(50)",
-                    "ASPECT_RATIO CHAR(50)" };
+                    "ASPECT_RATIO CHAR(50)",
+                    "LANG CHAR(10)" };
 
             StringBuffer sql = new StringBuffer();
             sql.append("CREATE TABLE CLOUD (");

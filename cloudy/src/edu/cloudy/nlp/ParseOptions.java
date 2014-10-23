@@ -1,5 +1,8 @@
 package edu.cloudy.nlp;
 
+import edu.cloudy.nlp.lang.Language;
+import edu.cloudy.nlp.lang.LanguageRegistry;
+
 /**
  * @author spupyrev
  * Oct 18, 2014
@@ -12,6 +15,7 @@ public class ParseOptions
     private boolean stemWords = true;
     private boolean removeNumbers = true;
     private int minWordLength = 3;
+    private Language language = LanguageRegistry.getById("en");
 
     public int getMinWordLength()
     {
@@ -51,6 +55,16 @@ public class ParseOptions
     public void setRemoveNumbers(boolean removeNumbers)
     {
         this.removeNumbers = removeNumbers;
+    }
+
+    public Language getLanguage()
+    {
+        return language;
+    }
+
+    public void setLanguage(String languageId)
+    {
+        this.language = LanguageRegistry.getById(languageId);
     }
 
 }

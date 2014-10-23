@@ -35,7 +35,7 @@ public class AlterTableUtils
             public void execute(Connection c, Statement stmt) throws Exception
             {
                 //stmt.execute("ALTER TABLE maps_task ALTER COLUMN contiguous_algorithm varchar(64)");
-                stmt.execute("ALTER TABLE CLOUD ADD COLUMN ASPECT_RATIO varchar(50) NOT NULL DEFAULT AR169");
+                stmt.execute("ALTER TABLE CLOUD ADD COLUMN LANG varchar(10) NOT NULL DEFAULT en");
                 //ResultSet rs = stmt.executeQuery("SELECT COUNT(*) As total FROM maps_task");
                 tmp.add(0);
             }
