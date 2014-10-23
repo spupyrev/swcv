@@ -2,8 +2,8 @@ package edu.cloudy.nlp.ranking;
 
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
+import edu.cloudy.utils.CommonUtils;
 
-import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -57,15 +57,14 @@ public class TFIDFRankingAlgo implements RankingAlgo
         Map<String, Double> cnt = new HashMap<String, Double>();
         try
         {
-            FileInputStream fin = new FileInputStream(getAbsoluteFileName("corpus/brown.bin"));
-            ObjectInputStream ois = new ObjectInputStream(fin);
+            ObjectInputStream ois = new ObjectInputStream(CommonUtils.getResourceAsStream("corpus/brown.bin"));
             cnt = (HashMap<String, Double>)ois.readObject();
-            fin.close();
             ois.close();
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            ex.printStackTrace();
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         Map<String, Double> idf = new HashMap<String, Double>();
@@ -76,13 +75,4 @@ public class TFIDFRankingAlgo implements RankingAlgo
         }
         return idf;
     }
-
-    /**
-     * Using the hack as my webapp loader can't handle relative paths :(
-     */
-    private String getAbsoluteFileName(String name)
-    {
-        return Thread.currentThread().getContextClassLoader().getResource(name).getFile();
-    }
-
 }
