@@ -12,13 +12,16 @@ import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Reads tweets by a given query
+ * Example:
+ *   twitter: query size:500 type:[recent,popular,mixed] lang:en include:retweets
+ */
 public class TwitterReader implements IDocumentReader, ISentimentReader
 {
-    private static final Logger log = Logger.getLogger(TwitterReader.class.getName());
     private static final String UNWANTED_PATTERN = "\\s*http[s]?://\\S+\\s*";
     private static final int DEFAULT_NUMBER_OF_TWEETS = 300;
 
@@ -42,7 +45,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
         }
         catch (TwitterException e)
         {
-            log.info(e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -114,7 +117,7 @@ public class TwitterReader implements IDocumentReader, ISentimentReader
         return tf.getInstance();
     }
 
-    public static class SearchQuery
+    static class SearchQuery
     {
         private String input;
         private String searchPhrase;

@@ -19,4 +19,6 @@ public interface WordCloudService extends RemoteService
     String getRandomTwitterUrl();
 
     String getRandomYoutubeUrl();
+    
+    String getRandomGoogleUrl();
 }

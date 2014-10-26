@@ -4,6 +4,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.webapp.client.WordCloudService;
 import edu.webapp.server.db.DBUtils;
+import edu.webapp.server.utils.RandomGoogleTrendExtractor;
 import edu.webapp.server.utils.RandomTwitterTrendExtractor;
 import edu.webapp.server.utils.RandomWikiUrlExtractor;
 import edu.webapp.server.utils.RandomYoutubeUrlExtractor;
@@ -42,5 +43,10 @@ public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCl
     public String getRandomYoutubeUrl()
     {
         return RandomYoutubeUrlExtractor.getRandomUrl();
+    }
+    
+    public String getRandomGoogleUrl()
+    {
+        return RandomGoogleTrendExtractor.getRandomTrend();
     }
 }

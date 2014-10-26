@@ -102,6 +102,7 @@ public class WordCloudApp implements EntryPoint
         createLuckyWikiButton();
         createLuckyTwitterButton();
         createLuckyYoutubeButton();
+        createLuckyGoogleButton();
     }
 
     private void createLuckyWikiButton()
@@ -146,7 +147,7 @@ public class WordCloudApp implements EntryPoint
 
                     public void onFailure(Throwable caught)
                     {
-                        textArea.setText("twitter: twitter");
+                        textArea.setText("twitter: hot trend");
                     }
                 });
 
@@ -172,6 +173,31 @@ public class WordCloudApp implements EntryPoint
                     public void onFailure(Throwable caught)
                     {
                         textArea.setText("https://www.youtube.com");
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void createLuckyGoogleButton()
+    {
+        Anchor rndGoogleButton = Anchor.wrap(Document.get().getElementById("btn_rnd_google"));
+        final TextArea textArea = TextArea.wrap(Document.get().getElementById("input_text"));
+        rndGoogleButton.addClickHandler(new ClickHandler()
+        {
+            public void onClick(ClickEvent event)
+            {
+                wcService.getRandomGoogleUrl(new AsyncCallback<String>()
+                {
+                    public void onSuccess(String result)
+                    {
+                        textArea.setText(result);
+                    }
+
+                    public void onFailure(Throwable caught)
+                    {
+                        textArea.setText("google: hot trend");
                     }
                 });
 

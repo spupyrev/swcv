@@ -17,4 +17,6 @@ public interface WordCloudServiceAsync
     void getRandomTwitterUrl(AsyncCallback<String> callback);
     
     void getRandomYoutubeUrl(AsyncCallback<String> callback);
+    
+    void getRandomGoogleUrl(AsyncCallback<String> callback);
 }
