@@ -62,7 +62,7 @@ public class Main
 
         //init fonts
         FontUtils.initialize(new AWTFontProvider(cmd.getFont()));
-        
+
         // rank the words
         List<Word> words = ranking(document, cmd);
 

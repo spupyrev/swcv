@@ -44,7 +44,7 @@ public class WCColorSchemeRegistry
         schemes.add(new WCColorScheme("SENTIMENT_GR", COLOR_SCHEME_TYPE_SENTIMENT, "Sentiment GREEN-RED"));
 
         schemes.add(new WCColorScheme("REDBLUEBLACK", COLOR_SCHEME_TYPE_CONTRAST, "RedBlueBlack"));
-        schemes.add(new WCColorScheme("BLUEREDBLACK", COLOR_SCHEME_TYPE_CONTRAST, "BlueRedBlack"));
+        schemes.add(new WCColorScheme("REDGREENBLACK", COLOR_SCHEME_TYPE_CONTRAST, "RedGreenBlack"));
     }
 
     public static List<WCColorScheme> list()

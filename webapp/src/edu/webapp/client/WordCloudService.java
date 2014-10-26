@@ -3,7 +3,7 @@ package edu.webapp.client;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSettings;
 import edu.webapp.shared.WordCloud;
 
 /**
@@ -12,7 +12,7 @@ import edu.webapp.shared.WordCloud;
 @RemoteServiceRelativePath("input")
 public interface WordCloudService extends RemoteService
 {
-    WordCloud buildWordCloud(String input, WCSetting setting);
+    WordCloud buildWordCloud(String input, WCSettings setting);
     
     String getRandomWikiUrl();
 

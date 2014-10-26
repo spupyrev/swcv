@@ -7,7 +7,7 @@ import edu.cloudy.nlp.Word;
 import edu.webapp.server.readers.IDocumentReader;
 import edu.webapp.server.readers.ISentimentReader;
 import edu.webapp.shared.WCColorScheme;
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSettings;
 import edu.webapp.shared.registry.WCColorSchemeRegistry;
 
 import java.util.List;
@@ -72,7 +72,7 @@ public class SentimentAnalysis
         return 2.0 * (posCount - negCount) / sum;
     }
 
-    public boolean accept(IDocumentReader reader, SWCDocument document, WCSetting setting)
+    public boolean accept(IDocumentReader reader, SWCDocument document, WCSettings setting)
     {
         WCColorScheme colorScheme = setting.getColorScheme();
         if (!WCColorSchemeRegistry.COLOR_SCHEME_TYPE_SENTIMENT.equals(colorScheme.getType()))

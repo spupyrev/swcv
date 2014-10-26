@@ -22,7 +22,6 @@ import java.util.List;
  */
 public class WordCloudRenderer
 {
-    private static final double ystretch = 1;
     private static final double offset = 10;
 
     private double scaleFactor;
@@ -32,7 +31,7 @@ public class WordCloudRenderer
     private boolean showRectangles = false;
     private boolean showText = true;
 
-    private volatile List<UIWord> words;
+    private List<UIWord> words;
 
     private double actualWidth;
     private double actualHeight;
@@ -147,38 +146,22 @@ public class WordCloudRenderer
 
     private double minX(List<SWCRectangle> rects)
     {
-        double minX = rects.get(0).getMinX();
-        for (SWCRectangle rect : rects)
-            minX = Math.min(minX, rect.getMinX());
-
-        return minX;
+        return rects.stream().mapToDouble(rect -> rect.getMinX()).min().getAsDouble();
     }
 
     private double maxX(List<SWCRectangle> rects)
     {
-        double maxX = rects.get(0).getMaxX();
-        for (SWCRectangle rect : rects)
-            maxX = Math.max(maxX, rect.getMaxX());
-
-        return maxX;
+        return rects.stream().mapToDouble(rect -> rect.getMaxX()).max().getAsDouble();
     }
 
     private double minY(List<SWCRectangle> rects)
     {
-        double minY = rects.get(0).getMinY();
-        for (SWCRectangle rect : rects)
-            minY = Math.min(minY, rect.getMinY());
-
-        return minY;
+        return rects.stream().mapToDouble(rect -> rect.getMinY()).min().getAsDouble();
     }
 
     private double maxY(List<SWCRectangle> rects)
     {
-        double maxY = rects.get(0).getMaxY();
-        for (SWCRectangle rect : rects)
-            maxY = Math.max(maxY, rect.getMaxY());
-
-        return maxY;
+        return rects.stream().mapToDouble(rect -> rect.getMaxY()).max().getAsDouble();
     }
 
     private double transformX(double x)
@@ -188,7 +171,7 @@ public class WordCloudRenderer
 
     private double transformY(double y)
     {
-        return ystretch * scaleFactor * (shiftY + y);
+        return scaleFactor * (shiftY + y);
     }
 
     public void setShowRectangles(boolean showRectangles)

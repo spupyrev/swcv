@@ -1,7 +1,7 @@
 package edu.webapp.server.db;
 
 import edu.webapp.shared.DBCloudNotFoundException;
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSettings;
 import edu.webapp.shared.WordCloud;
 
 import java.util.Calendar;
@@ -47,7 +47,7 @@ public class DBSpeedTests
         res.setCreationDateAsDate(wc.getCreationDateAsDate());
         res.setSvg(wc.getSvg());
         res.setCreatorIP(wc.getCreatorIP());
-        res.setSetting(wc.getSetting());
+        res.setSettings(wc.getSettings());
 
         DBUtils.addCloud(res);
 
@@ -68,7 +68,7 @@ public class DBSpeedTests
         wc.setCreationDateAsDate(Calendar.getInstance().getTime());
         wc.setSvg("<svg /> ><g style='fill:white; stroke:white;' /></g");
         wc.setCreatorIP("127.1.3.4");
-        wc.setSetting(new WCSetting());
+        wc.setSettings(new WCSettings());
         return wc;
     }
     

@@ -5,7 +5,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import edu.webapp.client.WordCloudDetailService;
 import edu.webapp.server.db.DBUtils;
 import edu.webapp.shared.DBCloudNotFoundException;
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSettings;
 import edu.webapp.shared.WordCloud;
 
 /**
@@ -20,7 +20,7 @@ public class WordCloudDetailServiceImpl extends RemoteServiceServlet implements 
 		return DBUtils.getCloud(id);
 	}
 
-	public WordCloud updateWordCloud(int id, String input, WCSetting setting) throws IllegalArgumentException
+	public WordCloud updateWordCloud(int id, String input, WCSettings setting) throws IllegalArgumentException
 	{
 		String ip = getThreadLocalRequest().getRemoteAddr();
 		

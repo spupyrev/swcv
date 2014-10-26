@@ -33,9 +33,8 @@ public abstract class ColorScheme
     }
 
     public abstract Color getColor(Word word);
-    
+
     public void initialize(List<Word> words, Map<WordPair, Double> similarity)
     {
     }
-    
 }

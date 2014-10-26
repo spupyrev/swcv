@@ -20,7 +20,7 @@ import edu.webapp.shared.WCColorScheme;
 import edu.webapp.shared.WCFont;
 import edu.webapp.shared.WCLayoutAlgo;
 import edu.webapp.shared.WCRankingAlgo;
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSettings;
 import edu.webapp.shared.WCSimilarityAlgo;
 import edu.webapp.shared.registry.WCAspectRatioRegistry;
 import edu.webapp.shared.registry.WCColorSchemeRegistry;
@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class SettingsPanel
 {
-    private WCSetting setting;
+    private WCSettings setting;
 
     private ListBox colorSchemeWidget;
     private ListBox rankingWidget;
@@ -48,7 +48,7 @@ public class SettingsPanel
     {
     }
 
-    public CaptionPanel create(WCSetting setting)
+    public CaptionPanel create(WCSettings setting)
     {
         this.setting = setting;
 
@@ -112,7 +112,7 @@ public class SettingsPanel
 
         cf.setStyleName(3, 4, "adv-cell-label");
         layout.setWidget(3, 4, createLabel("Minimum Word Length:"));
-        layout.setWidget(3, 5, createIntegerField());
+        layout.setWidget(3, 5, createMinLengthField());
 
     }
 
@@ -442,7 +442,7 @@ public class SettingsPanel
         return box;
     }
 
-    private Widget createIntegerField()
+    private Widget createMinLengthField()
     {
         final IntegerBox box = new IntegerBox();
         box.setValue(setting.getMinWordLength());

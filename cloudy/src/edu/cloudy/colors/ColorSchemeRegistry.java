@@ -21,7 +21,7 @@ public class ColorSchemeRegistry
         schemes.add(new MonoColorScheme("BLUE", "3", ColorSchemeConstants.BLUE));
 
         schemes.add(new DynamicColorScheme("REDBLUEBLACK", ColorSchemeConstants.redblueblack));
-        schemes.add(new DynamicColorScheme("BLUEREDBLACK", ColorSchemeConstants.blueredblack));
+        schemes.add(new DynamicColorScheme("REDGREENBLACK", ColorSchemeConstants.redgreenblack));
 
         schemes.add(new SentimentColorScheme("SENTIMENT_OB", ColorSchemeConstants.sentiment));
         schemes.add(new SentimentColorScheme("SENTIMENT_GR", ColorSchemeConstants.sentiment2));

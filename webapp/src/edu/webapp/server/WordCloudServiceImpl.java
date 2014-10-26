@@ -7,7 +7,7 @@ import edu.webapp.server.db.DBUtils;
 import edu.webapp.server.utils.RandomTwitterTrendExtractor;
 import edu.webapp.server.utils.RandomWikiUrlExtractor;
 import edu.webapp.server.utils.RandomYoutubeUrlExtractor;
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSettings;
 import edu.webapp.shared.WordCloud;
 
 /**
@@ -16,7 +16,7 @@ import edu.webapp.shared.WordCloud;
 @SuppressWarnings("serial")
 public class WordCloudServiceImpl extends RemoteServiceServlet implements WordCloudService
 {
-    public WordCloud buildWordCloud(String input, WCSetting setting) throws IllegalArgumentException
+    public WordCloud buildWordCloud(String input, WCSettings setting) throws IllegalArgumentException
     {
         String ip = getThreadLocalRequest().getRemoteAddr();
 

@@ -1,6 +1,9 @@
 package edu.cloudy.nlp;
 
+import edu.cloudy.colors.ColorScheme;
+import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.ranking.RankingAlgo;
+import edu.cloudy.render.UIWord;
 import edu.cloudy.utils.CommonUtils;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
@@ -247,13 +250,22 @@ public class SWCDocument
 
         if (words.size() > maxWords)
             words = words.subList(0, maxWords);
-        rescaleWeights(words, 5);
+
+        rescaleWeights();
+    }
+
+    /**
+     * scaling weights from 1 to 5
+     */
+    protected void rescaleWeights()
+    {
+        rescaleWeights(5);
     }
 
     /**
      * scaling weights from 1 to upper
      */
-    public void rescaleWeights(List<Word> words, double upper)
+    private void rescaleWeights(double upper)
     {
         if (words.size() <= 1)
             return;
@@ -274,4 +286,8 @@ public class SWCDocument
         }
     }
 
+    public List<UIWord> prepareUIWords(LayoutResult layout, ColorScheme colorScheme)
+    {
+        return UIWord.prepareUIWords(words, layout, colorScheme);
+    }
 }

@@ -3,19 +3,12 @@ package edu.cloudy.nlp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Word implements Comparable<Word>
+public class Word implements Comparable<Word>, Cloneable
 {
     public String word;
     public String stem;
     public double weight;
     public double sentimentValue;
-
-    public enum DocIndex
-    {
-        First, Second, Both
-    }
-
-    public DocIndex documentIndex;
 
     private List<Integer> sentences;
 
@@ -25,7 +18,6 @@ public class Word implements Comparable<Word>
         this.stem = null;
         this.weight = weight;
         this.sentimentValue = 0;
-        this.documentIndex = DocIndex.First;
         this.sentences = new ArrayList<Integer>();
     }
 
@@ -75,5 +67,18 @@ public class Word implements Comparable<Word>
     public String toString()
     {
         return stem;
+    }
+
+    @Override
+    public Object clone()
+    {
+        try
+        {
+            return super.clone();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }

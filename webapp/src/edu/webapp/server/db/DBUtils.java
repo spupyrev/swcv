@@ -2,7 +2,7 @@ package edu.webapp.server.db;
 
 import edu.cloudy.utils.CommonUtils;
 import edu.webapp.shared.DBCloudNotFoundException;
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSettings;
 import edu.webapp.shared.WordCloud;
 import edu.webapp.shared.registry.WCAspectRatioRegistry;
 import edu.webapp.shared.registry.WCColorSchemeRegistry;
@@ -76,7 +76,6 @@ public class DBUtils
                         "WIDTH",
                         "HEIGHT",
                         "SVG",
-                        "SVG2",
                         "CREATOR_IP",
                         "WORD_COUNT",
                         "SIMILARITY_ALGO",
@@ -87,12 +86,11 @@ public class DBUtils
                         "ASPECT_RATIO",
                         "LANG" };
 
-                WCSetting setting = cloud.getSetting();
+                WCSettings setting = cloud.getSettings();
                 Object[] values = new Object[] {
                         cloud.getWidth(),
                         cloud.getHeight(),
                         cloud.getSvg(),
-                        cloud.getSvg2(),
                         cloud.getCreatorIP(),
                         setting.getWordCount(),
                         setting.getSimilarityAlgorithm().getId(),
@@ -155,10 +153,7 @@ public class DBUtils
                         "CREATION_DATE",
                         "WIDTH",
                         "HEIGHT",
-                        "WIDTH2",
-                        "HEIGHT2",
                         "SVG",
-                        "SVG2",
                         "CREATOR_IP",
                         "WORD_COUNT",
                         "SIMILARITY_ALGO",
@@ -169,7 +164,7 @@ public class DBUtils
                         "ASPECT_RATIO",
                         "LANG" };
 
-                WCSetting setting = cloud.getSetting();
+                WCSettings setting = cloud.getSettings();
                 Object[] values = new Object[] {
                         cloud.getId(),
                         cloud.getInputText(),
@@ -177,10 +172,7 @@ public class DBUtils
                         cloud.getCreationDate(),
                         cloud.getWidth(),
                         cloud.getHeight(),
-                        cloud.getWidth2(),
-                        cloud.getHeight2(),
                         cloud.getSvg(),
-                        cloud.getSvg2(),
                         cloud.getCreatorIP(),
                         setting.getWordCount(),
                         setting.getSimilarityAlgorithm().getId(),
@@ -262,22 +254,19 @@ public class DBUtils
         cloud.setSourceText(rs.getString("SOURCE_TEXT"));
         cloud.setHeight(rs.getInt("HEIGHT"));
         cloud.setWidth(rs.getInt("WIDTH"));
-        cloud.setHeight2(rs.getInt("HEIGHT2"));
-        cloud.setWidth2(rs.getInt("WIDTH2"));
         cloud.setCreationDate(rs.getString("CREATION_DATE"));
         cloud.setSvg(rs.getString("SVG"));
-        cloud.setSvg2(rs.getString("SVG2"));
         cloud.setCreatorIP(rs.getString("CREATOR_IP"));
 
-        cloud.setSetting(new WCSetting());
-        cloud.getSetting().setWordCount(rs.getInt("WORD_COUNT"));
-        cloud.getSetting().setSimilarityAlgorithm(WCSimilarityAlgoRegistry.getById(rs.getString("SIMILARITY_ALGO")));
-        cloud.getSetting().setRankingAlgorithm(WCRankingAlgoRegistry.getById(rs.getString("RANKING_ALGO")));
-        cloud.getSetting().setLayoutAlgorithm(WCLayoutAlgoRegistry.getById(rs.getString("LAYOUT_ALGO")));
-        cloud.getSetting().setFont(WCFontRegistry.getByName(rs.getString("FONT")));
-        cloud.getSetting().setColorScheme(WCColorSchemeRegistry.getByName(rs.getString("COLOR_SCHEME")));
-        cloud.getSetting().setAspectRatio(WCAspectRatioRegistry.getById(rs.getString("ASPECT_RATIO")));
-        cloud.getSetting().setLanguage(rs.getString("LANG"));
+        cloud.setSettings(new WCSettings());
+        cloud.getSettings().setWordCount(rs.getInt("WORD_COUNT"));
+        cloud.getSettings().setSimilarityAlgorithm(WCSimilarityAlgoRegistry.getById(rs.getString("SIMILARITY_ALGO")));
+        cloud.getSettings().setRankingAlgorithm(WCRankingAlgoRegistry.getById(rs.getString("RANKING_ALGO")));
+        cloud.getSettings().setLayoutAlgorithm(WCLayoutAlgoRegistry.getById(rs.getString("LAYOUT_ALGO")));
+        cloud.getSettings().setFont(WCFontRegistry.getByName(rs.getString("FONT")));
+        cloud.getSettings().setColorScheme(WCColorSchemeRegistry.getByName(rs.getString("COLOR_SCHEME")));
+        cloud.getSettings().setAspectRatio(WCAspectRatioRegistry.getById(rs.getString("ASPECT_RATIO")));
+        cloud.getSettings().setLanguage(rs.getString("LANG"));
     }
 
     private static void convertRSToCloudLight(final WordCloud cloud, ResultSet rs) throws SQLException
@@ -320,10 +309,7 @@ public class DBUtils
                     "CREATION_DATE CHAR(50) NOT NULL",
                     "WIDTH INT NOT NULL",
                     "HEIGHT INT NOT NULL",
-                    "WIDTH2 INT NOT NULL",
-                    "HEIGHT2 INT NOT NULL",
                     "SVG TEXT NOT NULL",
-                    "SVG2 TEXT NOT NULL",
                     "CREATOR_IP CHAR(50)",
                     "WORD_COUNT INT NOT NULL",
                     "SIMILARITY_ALGO CHAR(50)",

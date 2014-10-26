@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSettings;
 import edu.webapp.shared.WordCloud;
 
 /**
@@ -31,7 +31,7 @@ public class WordCloudDetailApp implements EntryPoint
     /**
      * used for get new setting from a generated word cloud
      */
-    private WCSetting setting;
+    private WCSettings setting;
     private String inputText;
     private int id;
 
@@ -57,13 +57,16 @@ public class WordCloudDetailApp implements EntryPoint
         {
             public void onSuccess(WordCloud cloud)
             {
-                setting = cloud.getSetting();
+                setting = cloud.getSettings();
                 inputText = cloud.getSourceText();
                 
                 initializeContentPanel(cloud);
                 initializeSettingPanel(cloud);
 
                 addSaveAsLinks(cloud);
+                
+                createUpdateWordCloudButton();
+                createRandomWordCloudButton();
             }
 
             public void onFailure(Throwable caught)
@@ -74,8 +77,6 @@ public class WordCloudDetailApp implements EntryPoint
             }
         });
         
-        createUpdateWordCloudButton();
-        createRandomWordCloudButton();
     }
 
     private void initializeContentPanel(WordCloud cloud)
@@ -86,16 +87,6 @@ public class WordCloudDetailApp implements EntryPoint
         rPanel.add(panel);
         rPanel.setPixelSize(cloud.getWidth() + 20, cloud.getHeight() + 20);
         rPanel.addStyleName("center");
-
-        if (cloud.isDynamic())
-        {
-            SimplePanel panel2 = createPanel(cloud.getSvg2(), cloud.getWidth2() + 20, cloud.getHeight2() + 20);
-            RootPanel rPanel2 = RootPanel.get("cloud-div2");
-            rPanel2.clear();
-            rPanel2.add(panel2);
-            rPanel2.setPixelSize(cloud.getWidth2() + 20, cloud.getHeight2() + 20);
-            rPanel2.addStyleName("center");
-        }
     }
 
     private void initializeSettingPanel(WordCloud cloud)
@@ -154,7 +145,6 @@ public class WordCloudDetailApp implements EntryPoint
                 
                 initializeContentPanel(cloud);
                 initializeSettingPanel(cloud);
-                //Window.Location.assign("/cloud.html?id=" + result.getId());
             }
 
             public void onFailure(Throwable caught)

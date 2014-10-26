@@ -1,7 +1,7 @@
 package edu.webapp.server.db;
 
 import edu.webapp.shared.DBCloudNotFoundException;
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSettings;
 import edu.webapp.shared.WordCloud;
 
 import java.util.Calendar;
@@ -17,7 +17,7 @@ public class DBTests
 	{
 		try
 		{
-			//DBUtils.createDB();
+			DBUtils.createDB();
 			//testAddCloud();
 			//testListClouds();
 			//testUpdateClouds();
@@ -45,7 +45,7 @@ public class DBTests
 		cloud.setCreationDateAsDate(Calendar.getInstance().getTime());
 		cloud.setSvg("meow meow meow");
 		cloud.setCreatorIP("127.1.3.4");
-		cloud.setSetting(new WCSetting());
+		cloud.setSettings(new WCSettings());
 		DBUtils.updateCloud(cloud);
 	}
 
@@ -63,7 +63,7 @@ public class DBTests
 		wc.setCreationDateAsDate(Calendar.getInstance().getTime());
 		wc.setSvg("<svg /> ><g style='fill:white; stroke:white;' /></g");
 		wc.setCreatorIP("127.1.3.4");
-		wc.setSetting(new WCSetting());
+		wc.setSettings(new WCSettings());
 
 		DBUtils.addCloud(wc);
 

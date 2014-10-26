@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 
-import edu.webapp.shared.WCSetting;
+import edu.webapp.shared.WCSettings;
 import edu.webapp.shared.WordCloud;
 
 import java.util.Date;
@@ -35,7 +35,7 @@ public class WordCloudApp implements EntryPoint
      * service.
      */
     private final WordCloudServiceAsync wcService = GWT.create(WordCloudService.class);
-    private WCSetting setting = new WCSetting();
+    private WCSettings setting = new WCSettings();
 
     /**
      * This is the entry point method.

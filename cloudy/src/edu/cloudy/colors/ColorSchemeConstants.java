@@ -18,26 +18,26 @@ public interface ColorSchemeConstants
             new Color(0, 51, 102) };
 
     static final Color[] orange_sequential = {
-        new Color(127,39,4),    // 9
-        new Color(166,54,3),    // 8
-        new Color(217,72,1),    // 7
-        new Color(241,105,19),  // 6
-        new Color(253,141,60) };// orange class 5
-        
+            new Color(127, 39, 4), // 9
+            new Color(166, 54, 3), // 8
+            new Color(217, 72, 1), // 7
+            new Color(241, 105, 19), // 6
+            new Color(253, 141, 60) };// orange class 5
+
     static final Color[] blue_sequential = {
-        new Color(8,48,107),    // 9
-        new Color(8,81,156),    // 8
-        new Color(33,113,181),  // 7
-        new Color(66,146,198),  // 6
-        new Color(107,174,214)};// blue class 5
-        
+            new Color(8, 48, 107), // 9
+            new Color(8, 81, 156), // 8
+            new Color(33, 113, 181), // 7
+            new Color(66, 146, 198), // 6
+            new Color(107, 174, 214) };// blue class 5
+
     static final Color[] green_sequential = {
-        new Color(0,68,27),     // 9
-        new Color(0,109,44),    // 8
-        new Color(35,139,69),   // 7
-        new Color(65,171,93),   // 6
-        new Color(116,196,118)};// green class 5
-        
+            new Color(0, 68, 27), // 9
+            new Color(0, 109, 44), // 8
+            new Color(35, 139, 69), // 7
+            new Color(65, 171, 93), // 6
+            new Color(116, 196, 118) };// green class 5
+
     static final Color[] colorbrewer_1 = {
             new Color(166, 206, 227),
             new Color(31, 120, 180),
@@ -111,22 +111,20 @@ public interface ColorSchemeConstants
             new Color(33, 113, 181) }; // Blue Class7   
 
     static final Color[] sentiment2 = {
-            new Color(35,139,69), // Green Class7
-            new Color(116,196,118), // Green Class5
+            new Color(35, 139, 69), // Green Class7
+            new Color(116, 196, 118), // Green Class5
             new Color(150, 150, 150), // Grey Class5
-            new Color(251,106,74), // Red Class5
-            new Color(203,24,29) }; // Red Class7
-    
+            new Color(251, 106, 74), // Red Class5
+            new Color(203, 24, 29) }; // Red Class7
+
     static final Color[] redblueblack = {
-            new Color(255,0,0),
-            new Color(0,0,255),
-            new Color(0,0,0)
-    };
-    
-    static final Color[] blueredblack = {
-            new Color(33,113,181),  
-            new Color(203,24,29),
-            new Color(0,0,0)
-    };
+            new Color(255, 0, 0),
+            new Color(0, 0, 255),
+            new Color(0, 0, 0) };
+
+    static final Color[] redgreenblack = {
+            new Color(203, 24, 29),
+            new Color(35, 139, 69),
+            new Color(0, 0, 0) };
 
 }

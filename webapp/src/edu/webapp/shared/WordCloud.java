@@ -18,21 +18,14 @@ public class WordCloud implements Serializable
 
     private String inputText;
     private String sourceText;
-    private WCSetting setting;
+    private WCSettings settings;
 
     private String creationDate;
     private String svg;
-    private String svg2;
     private int width;
     private int height;
 
-    private WCMetrics metrics;
-
     private String creatorIP;
-
-    private int width2;
-
-    private int height2;
 
     public WordCloud()
     {
@@ -68,14 +61,14 @@ public class WordCloud implements Serializable
         this.inputText = inputText;
     }
 
-    public WCSetting getSetting()
+    public WCSettings getSettings()
     {
-        return setting;
+        return settings;
     }
 
-    public void setSetting(WCSetting settings)
+    public void setSettings(WCSettings settings)
     {
-        this.setting = settings;
+        this.settings = settings;
     }
 
     public String getCreationDate()
@@ -98,16 +91,6 @@ public class WordCloud implements Serializable
         this.svg = svg;
     }
 
-    public String getSvg2()
-    {
-        return svg2;
-    }
-
-    public void setSvg2(String svg)
-    {
-        this.svg2 = svg;
-    }
-
     public int getWidth()
     {
         return width;
@@ -126,16 +109,6 @@ public class WordCloud implements Serializable
     public void setHeight(int height)
     {
         this.height = height;
-    }
-
-    public WCMetrics getMetrics()
-    {
-        return metrics;
-    }
-
-    public void setMetrics(WCMetrics metrics)
-    {
-        this.metrics = metrics;
     }
 
     private static final String DATE_FORMAT = "yyyyMMddHHmmssS";
@@ -162,30 +135,5 @@ public class WordCloud implements Serializable
     public void setSourceText(String sourceText)
     {
         this.sourceText = sourceText;
-    }
-
-    public void setWidth2(int width2)
-    {
-        this.width2 = width2;
-    }
-
-    public int getWidth2()
-    {
-        return this.width2;
-    }
-
-    public void setHeight2(int height2)
-    {
-        this.height2 = height2;
-    }
-
-    public int getHeight2()
-    {
-        return this.height2;
-    }
-
-    public boolean isDynamic()
-    {
-        return width2 != 0;
     }
 }

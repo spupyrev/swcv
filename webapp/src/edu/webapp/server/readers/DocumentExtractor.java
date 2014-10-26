@@ -19,7 +19,8 @@ public class DocumentExtractor
 		readers.add(new RedditReader());
 		readers.add(new DotReader());
 		readers.add(new PDFReader());
-		readers.add(new YouTubeReader());
+        readers.add(new YouTubeReader());
+        readers.add(new WikipediaReader());
 		readers.add(new HtmlReader());
 		readers.add(new DefaultReader());
 	}

@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 /**
@@ -95,6 +96,19 @@ public class RenderUtils
             return writer.toString().getBytes("UTF-8");
         }
         catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String createSVGAsString(WordCloudRenderer renderer, SVGTextStyleHandler styleHandler)
+    {
+        try
+        {
+            byte[] content = createSVG(renderer, styleHandler);
+            return new String(content, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
         {
             throw new RuntimeException(e);
         }

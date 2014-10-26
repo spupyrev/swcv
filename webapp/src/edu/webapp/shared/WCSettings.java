@@ -13,11 +13,11 @@ import java.io.Serializable;
  * @author spupyrev
  *         Aug 17, 2013
  */
-public class WCSetting implements Serializable
+public class WCSettings implements Serializable
 {
     private static final long serialVersionUID = 5465297978880066047L;
 
-    public WCSetting()
+    public WCSettings()
     {
     }
 
