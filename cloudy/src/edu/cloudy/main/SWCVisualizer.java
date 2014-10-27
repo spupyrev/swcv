@@ -4,13 +4,13 @@ import edu.cloudy.colors.ColorScheme;
 import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.layout.TagCloudRankAlgo;
+import edu.cloudy.layout.MDSWithFDPackingAlgo;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
-import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
+import edu.cloudy.nlp.similarity.LexicalSimilarityAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
 import edu.cloudy.ui.WordCloudFrame;
 import edu.cloudy.utils.Logger;
@@ -51,8 +51,6 @@ public class SWCVisualizer
     {
         // 1. read a document
         SWCDocument document = readDocument();
-        //WCVDocument document = readURL();
-        //WCVDocument document = readYoutube();
 
         // 2. build similarities, words etc
         List<Word> words = new ArrayList<Word>();
@@ -70,7 +68,7 @@ public class SWCVisualizer
     private SWCDocument readDocument() throws FileNotFoundException
     {
         //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
-        Scanner scanner = new Scanner(new File("data/papers"));
+        Scanner scanner = new Scanner(new File("data/test"));
         StringBuilder sb = new StringBuilder();
         while (scanner.hasNextLine())
         {
@@ -89,12 +87,12 @@ public class SWCVisualizer
         return doc;
     }
 
-    private void extractSimilarities(SWCDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity)
+    private void extractSimilarities(SWCDocument document, List<Word> words, final Map<WordPair, Double> similarity)
     {
-        SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();
-        Map<WordPair, Double> sim = coOccurenceAlgo.computeSimilarity(wordifier);
+        SimilarityAlgo coOccurenceAlgo = new LexicalSimilarityAlgo();
+        Map<WordPair, Double> sim = coOccurenceAlgo.computeSimilarity(document);
 
-        for (Word w : wordifier.getWords())
+        for (Word w : document.getWords())
             words.add(w);
 
         List<WordPair> topPairs = new ArrayList<WordPair>();
@@ -130,7 +128,7 @@ public class SWCVisualizer
         //LayoutAlgo algo = new SeamCarvingAlgo(words, similarity);
         //LayoutAlgo algo = new WordleAlgo(words, similarity);
         //LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
-        LayoutAlgo algo = new TagCloudRankAlgo();
+        LayoutAlgo algo = new MDSWithFDPackingAlgo();
 
         return TimeMeasurer.execute("layout", () -> algo.layout(words, similarity));
     }

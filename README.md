@@ -5,9 +5,9 @@ Semantic Word Cloud Visualization
 Basic Setup and Usage Information
 --------
 
-The system can be accessed via command-line or web interfaces. It can also be used as a java library.
+The system comes as a command line tool or via web interface. It can also be used as a java library.
 
-###Command-line usage:
+###Command line usage:
 
 1. Install [Java SE Runtime Environment 8+](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 

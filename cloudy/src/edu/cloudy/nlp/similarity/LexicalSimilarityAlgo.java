@@ -27,14 +27,13 @@ public class LexicalSimilarityAlgo extends BaseSimilarityAlgo
     {
         List<Word> words = wordifier.getWords();
         similarity = new HashMap<WordPair, Double>();
+        
         for (int i = 0; i < words.size(); i++)
             for (int j = i + 1; j < words.size(); j++)
             {
                 Word x = words.get(i);
-                Word y = words.get(i);
+                Word y = words.get(j);
 
-                if (x.stem.equals(y.stem))
-                    continue;
                 WordPair xyPair = new WordPair(x, y);
 
                 double sim = rc.calcRelatednessOfWords(x.word, y.word);
@@ -47,7 +46,7 @@ public class LexicalSimilarityAlgo extends BaseSimilarityAlgo
     @Override
     protected Map<WordPair, Double> getSimilarity()
     {
-        return this.similarity;
+        return similarity;
 
     }
 

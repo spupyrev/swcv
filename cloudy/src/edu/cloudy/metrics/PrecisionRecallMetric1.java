@@ -67,7 +67,7 @@ public class PrecisionRecallMetric1 implements QualityMetric
         double precision = 0;
         for (Word close : closeWords)
         {
-            precision += similarity.get(new WordPair(w, close));
+            precision += similarity.getOrDefault(new WordPair(w, close), 0.0);
         }
         return precision;
     }

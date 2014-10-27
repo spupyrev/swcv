@@ -94,8 +94,7 @@ public class PrecisionRecallMetric2 implements QualityMetric
 
     private boolean shouldBeClose(Word one, Word two, Map<WordPair, Double> similarity)
     {
-        WordPair temp = new WordPair(one, two);
-        if (similarity.get(temp) > threshold)
+        if (similarity.getOrDefault(new WordPair(one, two), 0.0) > threshold)
             return true;
         return false;
     }

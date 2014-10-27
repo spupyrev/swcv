@@ -39,7 +39,7 @@ public class WCLayoutAlgoRegistry
 
     public static WCLayoutAlgo getDefault()
     {
-        return getById("cp");
+        return getById("mds");
     }
 
     public static WCLayoutAlgo getById(String id)

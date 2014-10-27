@@ -202,6 +202,9 @@ public class KMeansPlusPlus implements IClusterAlgo
                     }
                 }
 
+                if (bestIndex == -1)
+                    bestIndex = 0;
+
                 assert (bestIndex != -1);
                 assert (minDis < 1234567.0);
                 groups.put(words.get(i), bestIndex);

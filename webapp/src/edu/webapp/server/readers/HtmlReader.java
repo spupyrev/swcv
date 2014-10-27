@@ -63,7 +63,7 @@ public class HtmlReader implements IDocumentReader
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
     }

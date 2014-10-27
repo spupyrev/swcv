@@ -176,7 +176,7 @@ public class SettingsPanel
     {
         Label label = new Label(text);
         label.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-        label.addStyleName("small");
+        //label.addStyleName("small");
         return label;
     }
 
