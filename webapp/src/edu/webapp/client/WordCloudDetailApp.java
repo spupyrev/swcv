@@ -102,6 +102,7 @@ public class WordCloudDetailApp implements EntryPoint
     private void createUpdateWordCloudButton()
     {
         Button sendButton = Button.wrap(Document.get().getElementById("btn_create_new_wc"));
+        sendButton.removeStyleName("invisible");
         sendButton.addClickHandler(new ClickHandler()
         {
             public void onClick(ClickEvent event)
@@ -114,6 +115,7 @@ public class WordCloudDetailApp implements EntryPoint
     private void createRandomWordCloudButton()
     {
         Button sendButton = Button.wrap(Document.get().getElementById("btn_create_random_wc"));
+        sendButton.removeStyleName("invisible");
         sendButton.addClickHandler(new ClickHandler()
         {
             public void onClick(ClickEvent event)

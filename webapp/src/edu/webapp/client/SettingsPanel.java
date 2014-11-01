@@ -40,7 +40,7 @@ public class SettingsPanel
 {
     private WCSettings setting;
 
-    private ListBox colorSchemeWidget;
+    private Widget colorSchemeWidget;
     private ListBox rankingWidget;
     private ListBox fontWidget;
 
@@ -58,12 +58,12 @@ public class SettingsPanel
         // Add some standard form options
         layout.setWidget(0, 0, createLabel("Number of Words:"));
         layout.setWidget(0, 1, createNumberListBox());
-        layout.setWidget(1, 0, createLabel("Layout Algorithm:"));
+        layout.setWidget(1, 0, createLabel("Layout:"));
         layout.setWidget(1, 1, createLayoutListBox());
-        layout.setWidget(2, 0, createLabel("Similarity Algorithm:"));
+        layout.setWidget(2, 0, createLabel("Similarity:"));
         layout.setWidget(2, 1, createSimilarityListBox());
 
-        layout.setWidget(3, 0, createLabel("Ranking Algorithm:"));
+        layout.setWidget(3, 0, createLabel("Ranking:"));
         rankingWidget = createRankingListBox();
         layout.setWidget(3, 1, rankingWidget);
 
@@ -99,19 +99,19 @@ public class SettingsPanel
     private void addParseOptions(FlexTable layout, CellFormatter cf)
     {
         cf.setStyleName(0, 4, "adv-cell-label");
-        layout.setWidget(0, 4, createLabel("Remove Common Words:"));
+        layout.setWidget(0, 4, createLabel("Remove Stop Words:"));
         layout.setWidget(0, 5, createCheckboxStopwords());
 
         cf.setStyleName(1, 4, "adv-cell-label");
-        layout.setWidget(1, 4, createLabel("Group Similar Words:"));
-        layout.setWidget(1, 5, createCheckboxStem());
+        layout.setWidget(1, 4, createLabel("Remove Numbers:"));
+        layout.setWidget(1, 5, createCheckboxRemoveNumbers());
 
         cf.setStyleName(2, 4, "adv-cell-label");
-        layout.setWidget(2, 4, createLabel("Remove Numbers:"));
-        layout.setWidget(2, 5, createCheckboxRemoveNumbers());
+        layout.setWidget(2, 4, createLabel("Group Similar Words:"));
+        layout.setWidget(2, 5, createCheckboxStem());
 
         cf.setStyleName(3, 4, "adv-cell-label");
-        layout.setWidget(3, 4, createLabel("Minimum Word Length:"));
+        layout.setWidget(3, 4, createLabel("Shortest Word:"));
         layout.setWidget(3, 5, createMinLengthField());
 
     }
@@ -221,7 +221,7 @@ public class SettingsPanel
 
         box.setSelectedIndex(findIndex(box, setting.getLanguage()));
         setNonEnglishText("en".equals(setting.getLanguage()));
-        
+
         box.addChangeHandler(new ChangeHandler()
         {
             public void onChange(ChangeEvent event)
@@ -346,7 +346,7 @@ public class SettingsPanel
         return box;
     }
 
-    private ListBox createColorListBox()
+    private Widget createColorListBox()
     {
         final GroupedListBox box = new GroupedListBox();
         for (WCColorScheme scheme : WCColorSchemeRegistry.list())

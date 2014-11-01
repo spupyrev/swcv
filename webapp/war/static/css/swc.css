@@ -1,6 +1,6 @@
 body {
 	margin: 0;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
     font-size: 14px;
 
 	background-image: url('../imgs/Sky.png');
@@ -8,29 +8,45 @@ body {
 	background-size: 100%;
 }
 
-#baseContainer {
-	width: 80%;
-	margin: 1% 0% 10px 10%;
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  margin: 20px 0 10px 0;
+  position: relative;
+}
+h1 {
+  font-size: 20px;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+h2 {
+  font-size: 20px;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+h3 {
+  font-size: 20px;
+  margin-top: 32px;
+  margin-bottom: 10px;
+}
+h4 {
+  font-size: 16px;
+  margin-top: 29px;
+  margin-bottom: 7px;
+}
+h5 {
+  font-size: 16px;
+  margin-top: 29px;
+  margin-bottom: 7px;
+}
+
+.baseContainer {
+	margin: 0 auto;
+	max-width: 800px;
 	text-align: center;
 }
 
-#header {
-	font-family: InconsolataMedium;
-	font-size: 14px;
-}
-
-.actionmanNormal {
-	font-family: ActionManRegular;
-	font-size: 15px;
-}
-
-.inconsolataNormal {
-	font-family: InconsolataMedium;
-	font-size: 15px;
-}
-
 .webTitle {
-	margin: -10px 0px 10px 0px;
+	margin: 10px 0px 10px 0px;
 	text-align: center;
 }
 
@@ -41,15 +57,18 @@ body {
   	font-size: 14px;
 }
 
-.urlAreaStyle {
-	resize: none;
-	width: 648px;
-	height: 30px;
-	position: relative;
+.settingFont {
+  	font-size: 14px;
+  	margin-bottom: 10px;
+	font-family: "Arial Black", Gadget, sans-serif;
+}
+
+#settingContainer > select {
+  	margin-bottom: 0px;
 }
 
 .wide {
-	width: 800px;
+	width: 750px;
 }
 
 .center {
@@ -84,11 +103,11 @@ body {
 }
 
 .buttonWidth {
-	width:240px;
+	width:220px;
 }
 
 .buttonWidth-double {
-	width:500px;
+	width:470px;
 }
 
 .small {
@@ -101,16 +120,6 @@ body {
 	max-height: 300px;
 	max-width: 500px;
 }
-
-.gallery-imgholder {
-/*	width: 50%; 
-	max-height: 350px;*/
-}
-
-/*.gallery-imgholder:hover {
-	width: 125%; 
-	margin: 15px auto 15px;
-}*/
 
 .row {
     width:80%;
@@ -125,7 +134,7 @@ body {
 }
 
 .photo {
-    max-height: 180px;
+    max-height: 200px;
     float: left;
     margin-right:20px;
 }
@@ -137,17 +146,27 @@ body {
     vertical-align: middle;
 }
 
+.faqContainer {
+	margin: 0 auto;
+	max-width: 800px;
+}
+
 .faq-question {
-    text-align: left;
+	text-align:justify;
 }
 
 .faq-info {
-    margin-top:-10px;
 }
 
+.faq-subsection {
+    color: #333;
+}
+
+
 .description {
-	width: 80%;
-	margin: 1% 0% 10px 10%;
+	margin: 0 auto;
+	max-width: 800px;
+	text-align:justify;
 }
 
 .latest {
@@ -162,11 +181,17 @@ body {
 	padding: 5px;
 }
 
+.statContainer {
+	margin: 0 auto;
+	max-width: 1200px;
+	text-align: center;
+}
+
 .stat {
 	border-collapse:collapse;
 	text-align: left;
 	margin: 0 auto;
-	width: 45%;
+	width: 50%;
 }
 
 .stat:after {
@@ -210,3 +235,16 @@ svg {
 	-moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;
 	-moz-box-shadow:0 0 5px #999; -webkit-box-shadow:0 0 5px #999; box-shadow:0 0 5px #999;
 }
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+.invisible {
+  visibility: hidden;
+}
+

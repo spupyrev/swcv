@@ -48,11 +48,12 @@
 		In linguistics and in natural language processing if a pair of words often appears together in a sentence,
 		then this is seen as evidence that this pair of words is linked semantically. When visualizing the given
 		text with a word cloud, it makes sense to place such related pair of words close to each other.
+		It helps to visually identify major topics in the input text.
 		</p>
 
 		<div style="text-align:center">
-			<img src="static/imgs/wc_focs.png"  style="max-height: 250px"/>
-			<p>	Word clouds generated from titles of papers from FOCS, 1993-2013. <i>left:</i> The result produced by
+			<img src="static/imgs/wc_focs.png"  style="max-width: 800px"/>
+			<p style="text-align:justify">Word clouds generated from titles of papers from FOCS, 1993-2013. <i>left:</i> The result produced by
 			the Wordle tool: word placement, orientation, and colors are chosen arbitrarily; <i>right:</i> Semantics-preserving
 			word cloud: semantically related words are drawn together and colored according to the automatically
 			extracted clusters.</p>
@@ -61,7 +62,7 @@
 		<h4>Word Cloud Generation</h4>
 		<p>The system creates word clouds using several sources of textual data. The simpliest source is a text
 		document entered by a user. Users may also specify the URL of a webpage or the link to a PDF document. In this case, 
-		a word cloud is constructed based on the extracted text. Another option is to specify the link to a YouTube video.
+		a word cloud is constructed based on the extracted text. Another option is to specify the link to a YouTube video or a Reddit discussion.
 		For the scenario, the system parses all comments for the video and produces a "comment cloud". 
 		<br>
 		Before constructing a word cloud, the input text is preprocessed using the following steps:
@@ -83,10 +84,10 @@
 			method for computing relative importance of textual units using eigenvector centrality.</li>
 
 			<li><b>Similarity Computation:</b> Given the ranked list of words, we calculate a matrix of pairwise similarities
-			so that related words receive high similarity values. We use two similarity functions depending on
-			the input text: the <a href="http://en.wikipedia.org/wiki/Cosine_similarity">Cosine Similarity</a> and 
-			the <a href="http://en.wikipedia.org/wiki/Jaccard_index">Jaccard Similarity</a> coefficients.
-			In both cases for all pairs of words, the similarity function produces a value between 0,
+			so that related words receive high similarity values. We use three similarity functions depending on
+			the input text: <a href="http://en.wikipedia.org/wiki/Cosine_similarity">Cosine Similarity</a>, 
+			<a href="http://en.wikipedia.org/wiki/Jaccard_index">Jaccard Similarity</a>, and <a href="http://webdocs.cs.ualberta.ca/~lindek/papers/sim.pdf">Lexical Similarity</a>.
+			In all cases for all pairs of words, the similarity function produces a value between 0,
 			indicating that a pair of words is not related, and 1, indicating that words are very similar.</li>
 		</ul>
 		Once terms, rankings, and similarities are extracted, we create an edge-weghted graph in which vertices correspond to

@@ -27,11 +27,50 @@
 		</div>
 	</div>
 
-	<div id="baseContainer">
-		<h2>Frequently Asked Questions:</h2>
+	<div class="faqContainer">
+		<h2 style="text-align: center">Frequently Asked Questions</h2>
+
+		<div>
+			<p><a href="#general-questions" class="faq-subsection"><strong>General</strong></a></p>
+			<ul>
+				<li><a href="#q-what-is-this">What is this?</a></li>
+				<li><a href="#q-how-is-different">How is it different from Wordle?</a></li>
+				<li><a href="#q-how-it-works">How do you make a word cloud?</a></li>
+			</ul>
+			<p><a href="#basic" class="faq-subsection"><strong>Basic usage</strong></a></p>
+			<ul>
+				<li><a href="#q-save-as">Can I save the word cloud as jpeg/gif/png/svg/pdf?</a></li>
+				<li><a href="#q-edit-once-created">Is there a way to edit the cloud once it is created?</a></li>
+				<li><a href="#q-webpage-blog">Can you visualize a webpage or a blog?</a></li>
+				<li><a href="#q-document">What about my document? How about Twitter? Reddit? Google? YouTube?</a></li>
+				<li><a href="#q-non-english">Does it work for non-English languages?</a></li>
+			</ul>
+			<p><a href="#advanced" class="faq-subsection"><strong>Deeper questions</strong></a></p>
+			<ul>
+				<li><a href="#q-similarities">How do you compute similarities between the words?</a></li>
+				<li><a href="#q-rank">How do you determine sizes of the words?</a></li>
+				<li><a href="#q-layout">How do you position the words?</a></li>
+				<li><a href="#q-coloring">How do you color the words?</a></li>
+				<li><a href="#q-papers">I want to know more about your algorithms!</a></li>
+				<li><a href="#q-source-code">May I see the source code?</a></li>
+			</ul>
+			<p><a href="#other" class="faq-subsection"><strong>Troubleshooting</strong></a></p>
+			<ul>
+				<li><a href="#q-who-are-the-people-behind">Who are the people behind the system?</a></li>
+				<li><a href="#q-contact">How can I contact you?</a></li>
+			</ul>
+		</div>
+
+		<hr>
+
+		<!-- ############################################### -->
+
+		<h3 id="general-questions">
+			General Questions
+		</h3>
 
 		<div class="faq-question">
-			<h4>What is this?</h4>
+			<h4 id="q-what-is-this">Q: What is this?</h4>
 			<p class="faq-info">Semantics-preserving word cloud visulization tool. A word cloud consists of the most important 
 			words in that document. Each word is printed in a given font and scaled by a factor roughly proportional to its importance.
 			The printed words are arranged without overlap and tightly packed into rectangular shape. Your word clouds can be tweaked with 
@@ -39,35 +78,165 @@
 		</div>
 
 		<div class="faq-question">
-			<h4>What documents can you visualize?</h4>
-			<p class="faq-info">You may enter any textual document, the URL of a blog or webpage, or a link to a pdf document.
-			The system can also visualize a "comment cloud" of YouTube videos.</p>
-		</div>
-		
-		<div class="faq-question">
-			<h4>Can i visualize Twitter?</h4>
-			<p class="faq-info">Enter "twitter: search_query" (without quotes) to parse and create a word cloud for 100 most recent tweets returned by 
-			 Twitter Search for a given query. You may customize the results by specifying search operators. The query
-			 "twitter: graph drawing size:500 type:popular lang:en include:retweets" builds a word cloud for
-			 500 most popular tweets and retweets written in English containing the words 'graph' and 'drawing'.</p>
+			<h4 id="q-how-is-different">How is it different from Wordle?</h4>
+			<p class="faq-info">Our clouds are <i>semantics-aware</i>. In Wordle (or other similar tool), the placement of the words is 
+			completely independent of their context and the coloring is random. However, when visualizing the given text with a word cloud, 
+			it is possible to automatically identify groups of <a href="http://en.wikipedia.org/wiki/Semantic_similarity">semantically related</a> words, 
+			or the major topics in the input text. Our system places similar words close to each other and assigns them the same color.
+			This simplifies visual analysis of the text.
+			See an <a href="static/imgs/wc_focs.png">example</a> of a random (left) and	semantic (right) word placement.</p>
 		</div>
 
 		<div class="faq-question">
-			<h4>Can i save my word cloud as jpeg/gif/png/pdf?</h4>
-			<p class="faq-info">At the moment, a cloud is generated as SVG file, which can be downloaded by using a link at the top-right corner of the cloud. 
-			In order to convert it to
-			another format, use a vector graphics editor, like <a href="http://www.inkscape.org">Inkscape</a>.</p>
+			<h4 id="q-how-it-works">How do you make a word cloud?</h4>
+			<p class="faq-info">The input text is parsed and tokenized into a collection of words. The common stop-words ("a", "the", "is")
+			are removed, while the remaining words are grouped by their stems. Then the words are ranked in order of their importance
+			in the text and the font size for every word is calculated. Next semantic similarities between pairs of the words are
+			computed, based on co-occurrence in the same sentences. Then similar words are grouped together and the groups get different colors.
+			Finally, we layout the words with an algorithm, which employs a <a href="http://arxiv.org/abs/1311.4778">theoretical model</a> 
+			for computing semantic word clouds.</p>
+		</div>
+
+		<!-- ############################################### -->
+
+		<h3 id="basic">
+			Basic usage
+		</h3>
+
+		<div class="faq-question">
+			<h4 id="q-save-as">Q: Can I save the word cloud as jpeg/gif/png/svg/pdf?</h4>
+			<p class="faq-info">A cloud is generated as <tt>SVG</tt> file, which can be downloaded by using a link at the top-right corner of the cloud. 
+			You may also download <tt>PNG</tt> and <tt>PDF</tt> versions of the file.
+			In order to convert it to another format, use a vector graphics editor, like <a href="http://www.inkscape.org">Inkscape</a>.</p>
 		</div>
 
 		<div class="faq-question">
-			<h4>May i see your source code?</h4>
-			<p class="faq-info">Yes! Source code for the entire system is available on <a href="https://github.com/spupyrev/swcv">Github</a>.</p>
+			<h4 id="q-edit-once-created">Q: Is there a way to edit the cloud once it is created?</h4>
+			<p class="faq-info">Yes! You may drag and reposition the words on the screen. Actually, you can even remove words, 
+			by right-clicking on them and using the popup menu. It is also possible to re-layout the cloud by
+			pressing Apply New Options button.</p>
 		</div>
 
 		<div class="faq-question">
-			<h4>Can i contact you?</h4>
-			<p class="faq-info">Email at <a href="mailto:team1@cs.arizona.edu">team1@cs.arizona.edu</a> for questions.</p>
+			<h4 id="q-webpage-blog">Q: Can you visualize a webpage or a blog?</h4>
+			<p class="faq-info">You may enter any text, URL of a blog or a webpage. Maximum size for pasting is 500 kilobytes but mostly depends on your 
+			browser and computer.</p>
 		</div>
+
+		<div class="faq-question">
+			<h4 id="q-document">Q: What about my document? How about Twitter? Reddit? Google? YouTube?</h4>
+			<p class="faq-info">We can create a cloud using several sources of the input text: 
+			<ul>
+				<li><i>URL of a document</i> - Link to the file posted on the web. Plain text and <tt>PDF</tt> documents are accepted.</li>
+				<li><i>Twitter</i> - Enter <tt>"twitter: search_query"</tt> (without quotes) to parse and create a word cloud for 100 most recent tweets returned by 
+					 Twitter Search for a given query. You may customize the results by specifying search operators. The query
+					 <tt>"twitter: graph drawing size:500 type:popular lang:en include:retweets"</tt> builds a word cloud for
+					 500 most popular tweets and retweets written in English containing the words 'graph' and 'drawing'.</li>
+				<li><i>Google search results</i> - Enter <tt>"google: search_query"</tt> (without quotes) to parse and visualize search results. 
+				Use <i>"google: query size:50"</i> to specify the number of results.</li>
+				<li><i>YouTube video comments</i> - Use a link to a YouTube video to get a cloud for the comments.</li>
+				<li><i>Reddit comments</i> - Give us a link to a Reddit thread and we'll parse, extract, and visualize the top 500 comments.</li>
+			</ul>
+			</p>
+		</div>
+
+		<div class="faq-question">
+			<h4 id="q-non-english">Q: Does it work for non-English languages?</h4>
+			<p class="faq-info">The tool supports Unicode and many languages. You may choose the language of your source text
+			in the Advanced Options section. The chosen language affects the way how the input text is parsed: splitting into sentences, tokenization 
+			into words, and stop-word removal. Please note that some of the features are not supported for non-English languages; for example, 
+			the TF-IDF ranking can only work for English, as it utilizes <a href="http://en.wikipedia.org/wiki/Brown_Corpus">Brown corpus</a>.</p>
+		</div>
+
+		<!-- ############################################### -->
+
+		<h3 id="advanced">
+			Deeper questions
+		</h3>
+
+		<div class="faq-question">
+			<h4 id="q-similarities">Q: How do you compute similarities between the words?</h4>
+			<p class="faq-info">Given the list of words, we calculate a matrix of pairwise similarities
+			so that related words receive high similarity values. We use three similarity functions: 
+			<a href="http://en.wikipedia.org/wiki/Cosine_similarity">Cosine Similarity</a>, 
+			<a href="http://en.wikipedia.org/wiki/Jaccard_index">Jaccard Similarity</a>, and 
+			<a href="http://webdocs.cs.ualberta.ca/~lindek/papers/sim.pdf">Lexical Similarity</a>.</p>
+		</div>
+
+		<div class="faq-question">
+			<h4 id="q-rank">Q: How do you determine sizes of the words?</h4>
+			<p class="faq-info">We rank the words in order of their importance in the input text. We use three different
+			ranking functions.
+			<a href="http://en.wikipedia.org/wiki/Frequency_(statistics)">Term Frequency</a> is the 
+			most basic ranking function and one used in most traditional
+			word cloud visualizations. Term frequency tends to rank highly
+			many semantically meaningless words. <a href="http://en.wikipedia.org/wiki/Tf-idf">Term Frequency-Inverse Document Frequency</a> addresses this
+			problem by normalizing the frequency of a word by its frequency in a larger text collection. The third ranking function 
+			is based on the <a href="http://en.wikipedia.org/wiki/Automatic_summarization#Unsupervised_approaches:_TextRank_and_LexRank">LexRank</a> algorithm, 
+			which is a graph-based method for computing relative importance of textual units using eigenvector centrality.</p>
+		</div>
+
+		<div class="faq-question">
+			<h4 id="q-layout">Q: How do you position the words?</h4>
+			<p class="faq-info">We provide several algorithms for computing a layout of the words:
+			<ul>
+				<li><i>Wordle</i> - the traditional <a href="http://hint.fm/papers/wordle_final2.pdf">heuristic</a> for creating word clouds</li>
+				<li><i>Tag Cloud</i> - the grid-based <a href="http://en.wikipedia.org/wiki/Tag_cloud">method</a> for arranging words, that can be sorted by their importance or alphabetically</li>
+				<li><i>Force-Directed</i> - the <a href="ftp://ftp.cs.arizona.edu/reports/2013/TR13-02.pdf">method</a> for positioning the words based on <a href="http://en.wikipedia.org/wiki/Multidimensional_scaling">multidimensional scaling</a></li>
+				<li><i>Context Preserving</i> - the <a href="http://research.microsoft.com/en-us/um/people/weiweicu/images/wordpv.pdf">algorithm</a> suggested by Cui et al. based on modifying <a href="http://en.wikipedia.org/wiki/Delaunay_triangulation">Delaunay triangulation</a></li>
+				<li><i>Inflate and Push</i> - the simpler <a href="ftp://ftp.cs.arizona.edu/reports/2013/TR13-02.pdf">version</a> of the above method</li>
+				<li><i>Seam Carving</i> - the <a href="http://research.microsoft.com/en-us/um/people/shliu/wu_semantic-preserving-word-cloud.pdf">algorithm</a> designed by Wu et al., which is based on an image resizing technique</li>
+				<li><i>Star Forest</i> - the theoretical <a href="http://arxiv.org/abs/1403.4861">approximation algorithm</a> for computing semantic word clouds</li>
+				<li><i>Cycle Cover</i> - another theoretical <a href="http://arxiv.org/abs/1403.4861">approximation algorithm</a> for computing semantic word clouds</li>
+			</ul>
+			Note that the last two algorithms always produce <a href="http://en.wikipedia.org/wiki/Approximation_algorithm">provably near-optimal</a> results,
+			though sometimes the clouds are not as pleasant as the clouds generated with heuristics.
+			</p>
+		</div>
+
+		<div class="faq-question">
+			<h4 id="q-coloring">Q: How do you color the words?</h4>
+			<p class="faq-info">We cluster the words according to their <a href="http://en.wikipedia.org/wiki/Semantic_similarity">semantic meaning</a>, 
+			and then use different colors for the computed clusters. Thus, semantically related groups of words (e.g., gene, protein, disease, metabolism)
+			are likely to have the same coloring. This is an intuitive way to visually identify major topics in the input text.
+			To identify the clusters, we employ the <a href="http://en.wikipedia.org/wiki/Modularity_(networks)">modularity-based</a> algorithm.</p>
+		</div>
+
+		<div class="faq-question">
+			<h4 id="q-papers">Q: I want to know more about your algorithms!</h4>
+			<p class="faq-info">The system relies on a geometric problem behind drawing word clouds, which is described in a series of research papers:
+			<ul>
+				<li><a href="http://arxiv.org/abs/1311.4778">Semantic Word Cloud Representations: Hardness and Approximation Algorithms</a>, <i>Latin American Theoretical INformatics (LATIN'14)</i>, pp. 514-525, 2014.</li>
+				<li><a href="ftp://ftp.cs.arizona.edu/reports/2013/TR13-02.pdf">Experimental Comparison of Semantic Word Clouds</a>, <i>Symposium on Experimental Algorithms (SEA'14)</i>, pp. 247-258, 2014.</li>
+				<li><a href="http://arxiv.org/abs/1403.4861">Improved Approximation Algorithms for Semantic Word Clouds</a>, <i>European Symposium on Algorithms (ESA'14)</i>, pp. 87-99, 2014.</li>
+			</ul></p>
+		</div>
+
+		<div class="faq-question">
+			<h4 id="q-source-code">Q: May I see the source code?</h4>
+			<p class="faq-info">Yes! Source code for the entire system is available on <a href="https://github.com/spupyrev/swcv">Github</a>.
+			The system also comes as a command-line tool: download <a href="https://github.com/spupyrev/swcv/blob/master/lib/cloudy.jar">cloudy.jar</a> and invoke <tt>"java -jar cloudy.jar [options] [input file]"</tt> (without quotes).
+			The available options can be printed by running <tt>"java -jar cloudy.jar -?"</tt>.</p>
+		</div>
+
+		<!-- ############################################### -->
+
+		<h3 id="other">
+			Troubleshooting
+		</h3>
+
+		<div class="faq-question">
+			<h4 id="q-who-are-the-people-behind">Q: Who are the people behind the system?</h4>
+			<p class="faq-info">The tool is supported by a <a href="about.html">group</a> of researchers and developers at the University of Arizona.</p>
+		</div>
+
+		<div class="faq-question">
+			<h4 id="q-contact">Q: How can I contact you?</h4>
+			<p class="faq-info">Email at <a href="mailto:team1@cs.arizona.edu">team1@cs.arizona.edu</a> for questions and suggestions.</p>
+		</div>
+
+		<hr>
+
 	</div>
 
 </body>

@@ -36,8 +36,8 @@ import java.util.Map;
  */
 public class WordCloudGenerator
 {
-    private static final int SCR_WIDTH = 1280;
-    private static final int SCR_HEIGHT = 800;
+    private static final int SCR_WIDTH = 1024;
+    private static final int SCR_HEIGHT = 600;
 
     private static final int MINIMUM_NUMBER_OF_WORDS = 10;
 

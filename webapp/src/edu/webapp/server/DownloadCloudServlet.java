@@ -99,7 +99,7 @@ public class DownloadCloudServlet extends HttpServlet implements Servlet
 
     private byte[] convertToPNG(WordCloud cloud) throws TranscoderException, IOException
     {
-        // Create a JPEG transcoder
+        // Create a PNG transcoder
         PNGTranscoder t = new PNGTranscoder();
 
         // Set the transcoding hints

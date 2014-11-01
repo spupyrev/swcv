@@ -86,13 +86,6 @@ textarea {
   line-height: 20px;
 }
 
-input,
-button,
-select,
-textarea {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
 select,
 input[type="text"],
 input[type="password"],
@@ -112,7 +105,7 @@ input[type="color"],
   display: inline-block;
   height: 20px;
   padding: 4px 6px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   font-size: 14px;
   line-height: 20px;
   color: #555555;
@@ -177,9 +170,10 @@ input[type="color"]:focus,
 
 
 select {
-  width: 160px;
+  width: 156px;
   background-color: #ffffff;
   border: 1px solid #cccccc;
+  margin-bottom: 2px;
 }
 
 select,
@@ -1228,18 +1222,6 @@ a.badge:focus {
   top: 0;
 }
 
-.hide {
-  display: none;
-}
-
-.show {
-  display: block;
-}
-
-.invisible {
-  visibility: hidden;
-}
-
 .row:before,
 .row:after {
   display: table;
@@ -1249,4 +1231,11 @@ a.badge:focus {
 
 .row:after {
   clear: both;
+}
+
+hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #ffffff;
 }
