@@ -1,6 +1,6 @@
 package edu.cloudy.layout;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 
 /**
@@ -15,7 +15,7 @@ public class TagCloudRankAlgo extends TagCloudAlgo
 
     protected void sortWords()
     {
-        Collections.sort(words, Comparator.reverseOrder());
+        Arrays.sort(words, Comparator.reverseOrder());
     }
 
 }

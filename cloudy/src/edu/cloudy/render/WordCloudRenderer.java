@@ -63,7 +63,7 @@ public class WordCloudRenderer
         {
             SWCRectangle positionOnScreen = transformRect(w.getRectangle());
             allRects.add(positionOnScreen);
-
+            
             if (showRectangles)
             {
                 Rectangle2D rect2D = createRectangle2D(positionOnScreen);

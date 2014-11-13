@@ -2,15 +2,16 @@ package edu.cloudy.main;
 
 import edu.cloudy.colors.ColorScheme;
 import edu.cloudy.colors.ColorSchemeRegistry;
+import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.layout.MDSWithFDPackingAlgo;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
-import edu.cloudy.nlp.similarity.LexicalSimilarityAlgo;
+import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
 import edu.cloudy.ui.WordCloudFrame;
 import edu.cloudy.utils.Logger;
@@ -20,7 +21,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -35,7 +35,7 @@ public class SWCVisualizer
 {
     public static void main(String argc[])
     {
-        Logger.doLogging = false;
+        Logger.doLogging = true;
 
         try
         {
@@ -54,21 +54,25 @@ public class SWCVisualizer
 
         // 2. build similarities, words etc
         List<Word> words = new ArrayList<Word>();
-        Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
-        extractSimilarities(document, words, similarity);
+        Map<WordPair, Double> similarity = extractSimilarities(document, words);
+        WordGraph wordGraph = new WordGraph(words, similarity);
 
         // 3. run a layout algorithm
-        LayoutResult algo = runLayout(words, similarity);
+        LayoutResult algo = runLayout(wordGraph);
 
         // 4. visualize it
-        visualize(words, similarity, algo);
-        //visualize(words, similarity, algo, null);
+        visualize(wordGraph, algo);
+        
+        //new JFrame().setVisible(true);;
     }
 
+    /**
+     * @return
+     * @throws FileNotFoundException
+     */
     private SWCDocument readDocument() throws FileNotFoundException
     {
-        //List<WCVDocument> alldocs = ALENEXPaperEvalulator.readDocuments(ALENEXPaperEvalulator.FILES_WIKI);
-        Scanner scanner = new Scanner(new File("data/test"));
+        Scanner scanner = new Scanner(new File("data/kob.txt"), "UTF-8");
         StringBuilder sb = new StringBuilder();
         while (scanner.hasNextLine())
         {
@@ -80,63 +84,72 @@ public class SWCVisualizer
         doc.parse(new ParseOptions());
 
         System.out.println("#words: " + doc.getWords().size());
+
         //doc.weightFilter(15, new TFIDFRankingAlgo());
-        doc.weightFilter(50, new TFRankingAlgo());
+        doc.weightFilter(100, new TFRankingAlgo());
         //doc.weightFilter(15, new LexRankingAlgo());
 
         return doc;
     }
 
-    private void extractSimilarities(SWCDocument document, List<Word> words, final Map<WordPair, Double> similarity)
+    private Map<WordPair, Double> extractSimilarities(SWCDocument document, List<Word> words)
     {
-        SimilarityAlgo coOccurenceAlgo = new LexicalSimilarityAlgo();
-        Map<WordPair, Double> sim = coOccurenceAlgo.computeSimilarity(document);
+        SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();
+        Map<WordPair, Double> similarity = coOccurenceAlgo.computeSimilarity(document);
 
         for (Word w : document.getWords())
             words.add(w);
 
         List<WordPair> topPairs = new ArrayList<WordPair>();
-        for (WordPair wp : sim.keySet())
+        for (WordPair wp : similarity.keySet())
         {
-            similarity.put(wp, sim.get(wp));
             topPairs.add(wp);
         }
 
         Collections.sort(topPairs, (o1, o2) -> similarity.get(o2).compareTo(similarity.get(o1)));
 
-        /*System.out.println("top words:");
-        for (int i = 0; i < words.size(); i++) {
-        	Word w = words.get(i);
-        	System.out.println(w.word + " (" + w.stem + ")  " + w.weight);
+        /*for (String s : doc.getSentences())
+            System.out.println(s);
+        
+        System.out.println("top words:");
+        for (int i = 0; i < words.size(); i++)
+        {
+            Word w = words.get(i);
+            System.out.println(w.word + " (" + w.stem + ")  " + w.weight);
         }
 
         System.out.println("===================");
         System.out.println("top pairs:");
-        for (int i = 0; i < 20; i++) {
-        	WordPair wp = topPairs.get(i);
-        	System.out.println(wp.getFirst().word + " " + wp.getSecond().word + "  " + similarity.get(wp));
+        for (int i = 0; i < 1000 && i < topPairs.size(); i++)
+        {
+            WordPair wp = topPairs.get(i);
+            double simV = similarity.get(wp);
+            double dist = LayoutUtils.idealDistanceConverter(simV);
+            System.out.println(wp.getFirst().word + " " + wp.getSecond().word + "  sim: " + simV + "  dist: " + dist);
         }*/
+
+        return similarity;
     }
 
-    private LayoutResult runLayout(List<Word> words, Map<WordPair, Double> similarity)
+    private LayoutResult runLayout(WordGraph wordGraph)
     {
-        //LayoutAlgo algo = new ContextPreservingAlgo(words, similarity);
+        LayoutAlgo algo = new ContextPreservingAlgo();
         //LayoutAlgo algo = new InflateAndPushAlgo();
-        //LayoutAlgo algo = new MDSAlgo(words, similarity);
-        //LayoutAlgo algo = new StarForestAlgo(words, similarity);
-        //LayoutAlgo algo = new CycleCoverAlgo(words, similarity);
-        //LayoutAlgo algo = new SeamCarvingAlgo(words, similarity);
-        //LayoutAlgo algo = new WordleAlgo(words, similarity);
-        //LayoutAlgo algo = new MDSWithFDPackingAlgo(words, similarity);
-        LayoutAlgo algo = new MDSWithFDPackingAlgo();
+        //LayoutAlgo algo = new MDSAlgo(false);
+        //LayoutAlgo algo = new StarForestAlgo();
+        //LayoutAlgo algo = new CycleCoverAlgo();
+        //LayoutAlgo algo = new SeamCarvingAlgo();
+        //LayoutAlgo algo = new WordleAlgo();
+        //LayoutAlgo algo = new MDSWithFDPackingAlgo();
 
-        return TimeMeasurer.execute("layout", () -> algo.layout(words, similarity));
+        return TimeMeasurer.execute("layout", () -> algo.layout(wordGraph));
     }
 
-    private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout)
+    private void visualize(WordGraph wordGraph, LayoutResult layout)
     {
         ColorScheme colorScheme = ColorSchemeRegistry.getDefault();
-        colorScheme.initialize(words, similarity);
-        new WordCloudFrame(words, similarity, layout, colorScheme);
+        //ColorScheme colorScheme = ColorSchemeRegistry.getByName("TRISCHEME_2");
+        colorScheme.initialize(wordGraph);
+        new WordCloudFrame(wordGraph, layout, colorScheme);
     }
 }

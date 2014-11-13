@@ -47,8 +47,7 @@ public class BoundingBoxPlacer implements WordPlacer
     @Override
     public boolean contains(Word w)
     {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     private void run()

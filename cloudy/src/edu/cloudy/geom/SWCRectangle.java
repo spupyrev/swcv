@@ -136,13 +136,21 @@ public class SWCRectangle
 
     public boolean intersects(SWCRectangle rect)
     {
-        if (width <= 0 || height <= 0 || rect.getWidth() <= 0 || rect.getHeight() <= 0)
+        return intersects(rect, 0.0);
+    }
+
+    /**
+     * returns true only if the intresction along both axes is more than EPS  
+     */
+    public boolean intersects(SWCRectangle rect, double eps)
+    {
+        if (width <= 0 || height <= 0 || rect.width <= 0 || rect.height <= 0)
             return false;
 
-        double x0 = getX();
-        double y0 = getY();
+        boolean xIntersection = (x + eps < rect.x + rect.width && rect.x + eps < x + width);
+        boolean yIntersection = (y + eps < rect.y + rect.height && rect.y + eps < y + height);
 
-        return (rect.x + rect.getWidth() > x0 && rect.y + rect.getHeight() > y0 && rect.x < x0 + getWidth() && rect.y < y0 + getHeight());
+        return (xIntersection && yIntersection);
     }
 
     public void add(SWCRectangle rect)
@@ -185,7 +193,7 @@ public class SWCRectangle
     {
         double cenX = getCenterX();
         double cenY = getCenterY();
-        
+
         width -= w;
         height -= h;
         setCenter(cenX, cenY);

@@ -3,10 +3,10 @@ package edu.cloudy.graph;
 import java.util.HashSet;
 
 public class CycleDetector {
-	private WordGraph g;
+	private Graph g;
 	private HashSet<Vertex> seen;
 
-	public CycleDetector(WordGraph g) {
+	public CycleDetector(Graph g) {
 		this.g = g;
 	}
 

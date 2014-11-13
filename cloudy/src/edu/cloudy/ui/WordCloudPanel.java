@@ -22,7 +22,7 @@ public class WordCloudPanel extends JPanel implements ActionListener
 
     public WordCloudPanel(List<UIWord> words)
     {
-        renderer = new WordCloudRenderer(words, 1280, 1024);
+        renderer = new WordCloudRenderer(words, 1024, 800);
         setBackground(Color.WHITE);
         timer = new Timer(100, this);
     }

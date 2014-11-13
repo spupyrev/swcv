@@ -3,11 +3,8 @@ package edu.cloudy.layout;
 import edu.cloudy.geom.BoundingBoxGenerator;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * @author spupyrev
@@ -15,17 +12,17 @@ import java.util.Map;
  */
 public abstract class BaseLayoutAlgo implements LayoutAlgo
 {
-    protected List<Word> words;
-    protected Map<WordPair, Double> similarity;
-    
+    protected WordGraph wordGraph;
+    protected Word[] words;
+    protected double[][] similarity;
+    protected SWCRectangle[] wordPositions;
+
     protected BoundingBoxGenerator bbGenerator;
     protected double aspectRatio;
-    protected Map<Word, SWCRectangle> wordPositions;
 
     public BaseLayoutAlgo()
     {
         bbGenerator = new BoundingBoxGenerator();
-        wordPositions = new HashMap<Word, SWCRectangle>();
         aspectRatio = 16.0 / 9.0;
     }
 
@@ -41,22 +38,34 @@ public abstract class BaseLayoutAlgo implements LayoutAlgo
         this.aspectRatio = aspectRatio;
     }
 
-    public SWCRectangle getBoundingBox(Word word)
+    @Override
+    public final LayoutResult layout(WordGraph wordGraph)
+    {
+        this.wordGraph = wordGraph;
+        this.words = wordGraph.convertWordsToArray();
+        this.similarity = wordGraph.convertSimilarityToArray();
+        this.wordPositions = new SWCRectangle[words.length];
+
+        run();
+
+        return createResult();
+    }
+
+    protected abstract void run();
+
+    protected LayoutResult createResult()
+    {
+        return new LayoutResult(words, wordPositions);
+    }
+
+    protected void generateBoundingBoxes()
+    {
+        IntStream.range(0, words.length).forEach(i -> wordPositions[i] = getBoundingBox(words[i]));
+    }
+    
+    private SWCRectangle getBoundingBox(Word word)
     {
         return bbGenerator.getBoundingBox(word);
     }
-    
-    @Override
-    public LayoutResult layout(List<Word> words, Map<WordPair, Double> similarity)
-    {
-        this.words = words;
-        this.similarity = similarity;
-        
-        run();
-        
-        return new LayoutResult(wordPositions);
-    }
-    
-    protected abstract void run();
-    
+
 }

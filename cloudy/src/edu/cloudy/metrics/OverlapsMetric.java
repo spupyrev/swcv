@@ -2,11 +2,10 @@ package edu.cloudy.metrics;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author spupyrev
@@ -18,8 +17,9 @@ public class OverlapsMetric implements QualityMetric
     private static double EPS = 0.005;
 
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    public double getValue(WordGraph wordGraph, LayoutResult algo)
     {
+        List<Word> words = wordGraph.getWords();
         SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
 
         for (int i = 0; i < words.size(); i++)

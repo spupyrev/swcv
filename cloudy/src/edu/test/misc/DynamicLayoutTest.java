@@ -1,7 +1,8 @@
-package edu.test;
+package edu.test.misc;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDynamicDocument;
@@ -71,7 +72,7 @@ public class DynamicLayoutTest
 
     private static LayoutResult runLayout(List<Word> words, Map<WordPair, Double> similarity)
     {
-        return new WordleAlgo().layout(words, similarity);
+        return new WordleAlgo().layout(new WordGraph(words, similarity));
     }
 
 }

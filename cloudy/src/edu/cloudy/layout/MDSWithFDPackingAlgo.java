@@ -7,10 +7,10 @@ import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.utils.Logger;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * June 21, 2014
- * 
  * @author spupyrev 
  */
 public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
@@ -28,14 +28,14 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
     protected void run()
     {
         //initial layout
-        LayoutResult initialLayout = new MDSAlgo(false).layout(words, similarity);
-        words.forEach(w -> wordPositions.put(w, initialLayout.getWordPosition(w)));
+        LayoutResult initialLayout = new MDSAlgo(false).layout(wordGraph);
+        IntStream.range(0, words.length).forEach(i -> wordPositions[i] = initialLayout.getWordPosition(words[i]));
 
         runFDAdjustments();
 
         //postprocessing
-        new ForceDirectedOverlapRemoval<SWCRectangle>(5000).run(words, wordPositions);
-        new ForceDirectedUniformity<SWCRectangle>().run(words, wordPositions);
+        new ForceDirectedOverlapRemoval<SWCRectangle>(5000).run(wordPositions);
+        new ForceDirectedUniformity<SWCRectangle>().run(wordPositions);
     }
 
     private void runFDAdjustments()
@@ -43,9 +43,9 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
         double step = MAX_STEP;
         double energy = Double.MAX_VALUE;
 
-        SWCRectangle[] x = new SWCRectangle[words.size()];
+        SWCRectangle[] x = new SWCRectangle[words.length];
         for (int i = 0; i < x.length; i++)
-            x[i] = wordPositions.get(words.get(i));
+            x[i] = wordPositions[i];
 
         PackingCostCalculator.bbox = computeBoundingBox(x);
         PackingCostCalculator.depXGraph = computeDependencyGraph(x, true);
@@ -85,7 +85,7 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
         //System.out.println("last step: " + tryMoveNodes(x, step));
 
         for (int i = 0; i < x.length; i++)
-            wordPositions.put(words.get(i), x[i]);
+            wordPositions[i] = x[i];
     }
 
     private SWCRectangle computeBoundingBox(SWCRectangle[] x)
@@ -141,7 +141,7 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
     private boolean tryMoveNodes(SWCRectangle[] x, double step)
     {
         boolean coordinatesChanged = false;
-        for (int i = 0; i < words.size(); i++)
+        for (int i = 0; i < words.length; i++)
         {
             if (tryMoveNode(x, i, step))
             {

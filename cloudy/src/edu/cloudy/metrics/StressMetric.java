@@ -3,6 +3,7 @@ package edu.cloudy.metrics;
 import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -16,13 +17,16 @@ import java.util.Map;
 public class StressMetric implements QualityMetric
 {
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    public double getValue(WordGraph wordGraph, LayoutResult layout)
     {
+        List<Word> words = wordGraph.getWords();
+        Map<WordPair, Double> similarity = wordGraph.getSimilarity();
+        
         if (words.isEmpty())
             return 0;
 
-        double[][] matrixDissimilarity = getDissimilarityMatrix(words, similarity, algo);
-        double[][] matrixGeomDistance = getGeomDistance(words, similarity, algo);
+        double[][] matrixDissimilarity = getDissimilarityMatrix(words, similarity, layout);
+        double[][] matrixGeomDistance = getGeomDistance(words, similarity, layout);
 
         double dist = computeStress(matrixDissimilarity, matrixGeomDistance);
         return Math.max(0, 1 - dist);

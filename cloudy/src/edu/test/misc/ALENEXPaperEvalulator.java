@@ -1,14 +1,6 @@
-package edu.test;
+package edu.test.misc;
 
-import edu.cloudy.layout.ContextPreservingAlgo;
-import edu.cloudy.layout.CycleCoverAlgo;
-import edu.cloudy.layout.InflateAndPushAlgo;
-import edu.cloudy.layout.LayoutAlgo;
-import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.layout.MDSAlgo;
-import edu.cloudy.layout.SeamCarvingAlgo;
-import edu.cloudy.layout.StarForestAlgo;
-import edu.cloudy.layout.WordleAlgo;
+import edu.cloudy.layout.*;
 import edu.cloudy.metrics.AdjacenciesMetric;
 import edu.cloudy.metrics.AspectRatioMetric;
 import edu.cloudy.metrics.DistortionMetric;
@@ -19,7 +11,6 @@ import edu.cloudy.metrics.TotalWeightMetric;
 import edu.cloudy.metrics.UniformAreaMetric;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
-import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.nlp.ranking.RankingAlgo;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
@@ -111,18 +102,19 @@ public class ALENEXPaperEvalulator
                 // OK, give me the similarity
                 SimilarityAlgo coOccurenceAlgo = similarityAlgo;
                 Map<WordPair, Double> similarity = coOccurenceAlgo.computeSimilarity(document);
+                WordGraph wordGraph = new WordGraph(document.getWords(), similarity);
 
                 int runCount = 3;
                 for (int j = 0; j < runCount; j++)
                 {
-                    wordleResult.add(computeMetrics(new WordleAlgo(), document.getWords(), similarity));
-                    cpResults.add(computeMetrics(new ContextPreservingAlgo(), document.getWords(), similarity));
+                    wordleResult.add(computeMetrics(wordGraph, new WordleAlgo()));
+                    cpResults.add(computeMetrics(wordGraph, new ContextPreservingAlgo()));
                     if (i % 5 == 0)
-                        seamResult.add(computeMetrics(new SeamCarvingAlgo(), document.getWords(), similarity));
-                    inflateResult.add(computeMetrics(new InflateAndPushAlgo(), document.getWords(), similarity));
-                    starsResult.add(computeMetrics(new StarForestAlgo(), document.getWords(), similarity));
-                    cyclesResult.add(computeMetrics(new CycleCoverAlgo(), document.getWords(), similarity));
-                    mdsResult.add(computeMetrics(new MDSAlgo(), document.getWords(), similarity));
+                        seamResult.add(computeMetrics(wordGraph, new SeamCarvingAlgo()));
+                    inflateResult.add(computeMetrics(wordGraph, new InflateAndPushAlgo()));
+                    starsResult.add(computeMetrics(wordGraph, new StarForestAlgo()));
+                    cyclesResult.add(computeMetrics(wordGraph, new CycleCoverAlgo()));
+                    mdsResult.add(computeMetrics(wordGraph, new MDSAlgo()));
                 }
 
                 takeAverage(wordleResult, runCount);
@@ -218,14 +210,14 @@ public class ALENEXPaperEvalulator
 
     }
 
-    private static RunResult computeMetrics(LayoutAlgo algo, List<Word> words, Map<WordPair, Double> similarity)
+    private static RunResult computeMetrics(WordGraph wordGraph, LayoutAlgo algo)
     {
         //System.out.print("running " + algo + " ...");
         long startTime = System.currentTimeMillis();
         LayoutResult layout = null;
         try
         {
-            layout = algo.layout(words, similarity);
+            layout = algo.layout(wordGraph);
         }
         catch (Exception e)
         {
@@ -238,16 +230,14 @@ public class ALENEXPaperEvalulator
         long stopTime = System.currentTimeMillis();
         RunResult result = new RunResult();
         result.runningTime = (stopTime - startTime) / 1000.0;
-        result.uniformity = new UniformAreaMetric().getValue(words, similarity, layout);
-        result.aspectRatio = new AspectRatioMetric().getValue(words, similarity, layout);
-        result.distortion = new DistortionMetric().getValue(words, similarity, layout);
-        result.stress = new StressMetric().getValue(words, similarity, layout);
-        result.adjacencies = new AdjacenciesMetric().getValue(words, similarity, layout)
-                / new TotalWeightMetric().getValue(words, similarity, layout);
-        result.compactnessBB = new SpaceMetric(false).getValue(words, similarity, layout);
-        result.compactnessCH = new SpaceMetric(true).getValue(words, similarity, layout);
-        result.approxomation = new AdjacenciesMetric().getValue(words, similarity, layout)
-                / new MaxPlanarSubgraphMetric().getValue(words, similarity, layout);
+        result.uniformity = new UniformAreaMetric().getValue(wordGraph, layout);
+        result.aspectRatio = new AspectRatioMetric().getValue(wordGraph, layout);
+        result.distortion = new DistortionMetric().getValue(wordGraph, layout);
+        result.stress = new StressMetric().getValue(wordGraph, layout);
+        result.adjacencies = new AdjacenciesMetric().getValue(wordGraph, layout) / new TotalWeightMetric().getValue(wordGraph, layout);
+        result.compactnessBB = new SpaceMetric(false).getValue(wordGraph, layout);
+        result.compactnessCH = new SpaceMetric(true).getValue(wordGraph, layout);
+        result.approxomation = new AdjacenciesMetric().getValue(wordGraph, layout) / new MaxPlanarSubgraphMetric().getValue(wordGraph, layout);
 
         return result;
     }

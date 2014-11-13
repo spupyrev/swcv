@@ -1,12 +1,8 @@
 package edu.cloudy.metrics;
 
-import edu.cloudy.graph.WordGraph;
+import edu.cloudy.graph.Graph;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-
-import java.util.List;
-import java.util.Map;
+import edu.cloudy.layout.WordGraph;
 
 /**
  * @author spupyrev
@@ -14,12 +10,10 @@ import java.util.Map;
  */
 public class TotalWeightMetric implements QualityMetric
 {
-
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    public double getValue(WordGraph wordGraph, LayoutResult layout)
     {
-        WordGraph wg = new WordGraph(words, similarity);
-        return wg.totalWeight();
+        return new Graph(wordGraph).totalWeight();
     }
 
 }

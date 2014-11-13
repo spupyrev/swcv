@@ -4,7 +4,8 @@ import edu.cloudy.geom.BoundingBoxGenerator;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
-import edu.cloudy.nlp.Word;
+
+import java.util.stream.IntStream;
 
 /**
  * @author spupyrev
@@ -31,11 +32,11 @@ public class InflateAndPushAlgo extends BaseLayoutAlgo
             scale = newScale;
 
             //remove overlaps
-            new ForceDirectedOverlapRemoval<SWCRectangle>().run(words, wordPositions);
+            new ForceDirectedOverlapRemoval<SWCRectangle>().run(wordPositions);
         }
 
-        new ForceDirectedOverlapRemoval<SWCRectangle>(5000).run(words, wordPositions);
-        new ForceDirectedUniformity<SWCRectangle>().run(words, wordPositions);
+        new ForceDirectedOverlapRemoval<SWCRectangle>(5000).run(wordPositions);
+        new ForceDirectedUniformity<SWCRectangle>().run(wordPositions);
     }
 
     private void initialPlacement(double scale)
@@ -43,22 +44,22 @@ public class InflateAndPushAlgo extends BaseLayoutAlgo
         //find initial placement by mds layout
         MDSAlgo algo = new MDSAlgo();
         algo.setBoundingBoxGenerator(new BoundingBoxGenerator(scale));
-        LayoutResult initialLayout = algo.layout(words, similarity);
-        
-        words.forEach(w -> wordPositions.put(w, initialLayout.getWordPosition(w)));
+        LayoutResult initialLayout = algo.layout(wordGraph);
+
+        IntStream.range(0, words.length).forEach(i -> wordPositions[i] = initialLayout.getWordPosition(words[i]));
     }
 
     private void inflateRectangles(double scaleFactor)
     {
-        for (Word w : wordPositions.keySet())
+        for (int i = 0; i < wordPositions.length; i++)
         {
-            SWCRectangle rect = wordPositions.get(w);
+            SWCRectangle rect = wordPositions[i];
             double newWidth = rect.getWidth() * scaleFactor;
             double newHeight = rect.getHeight() * scaleFactor;
             SWCRectangle newRect = new SWCRectangle(rect.getX(), rect.getY(), newWidth, newHeight);
             newRect.setCenter(rect.getCenterX(), rect.getCenterY());
 
-            wordPositions.get(w).setRect(newRect);
+            wordPositions[i].setRect(newRect);
         }
     }
 }

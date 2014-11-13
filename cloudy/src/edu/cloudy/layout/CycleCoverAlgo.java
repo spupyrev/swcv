@@ -3,9 +3,9 @@ package edu.cloudy.layout;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.graph.CycleCoverExtractor;
 import edu.cloudy.graph.Edge;
+import edu.cloudy.graph.Graph;
 import edu.cloudy.graph.GreedyCycleCoverExtractor;
 import edu.cloudy.graph.Vertex;
-import edu.cloudy.graph.WordGraph;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.layout.packing.ClusterForceDirectedPlacer;
 import edu.cloudy.layout.packing.WordPlacer;
@@ -19,10 +19,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 public class CycleCoverAlgo extends BaseLayoutAlgo
 {
-    private WordGraph graph;
+    private Graph graph;
     private List<Edge> edgesInMatching;
     private boolean useGreedy = false;
 
@@ -39,8 +40,8 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
     @Override
     protected void run()
     {
-        graph = new WordGraph(words, similarity);
-        
+        graph = new Graph(wordGraph);
+
         if (!useGreedy)
         {
             CycleCoverExtractor tme = new CycleCoverExtractor(graph);
@@ -70,20 +71,16 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
             else
                 algo = new SinglePathAlgo();
 
-            cycleLayouts.add(algo.layout(getCycleWords(c), getCycleWeights(c)));
+            cycleLayouts.add(algo.layout(new WordGraph(getCycleWords(c), getCycleWeights(c))));
         }
 
         Logger.println("#cycles: " + cycles.size());
         Logger.println("weight: " + getRealizedWeight());
 
-        WordPlacer wordPlacer = new ClusterForceDirectedPlacer(graph.getWords(), graph.getSimilarities(), cycleLayouts, bbGenerator);
+        WordPlacer wordPlacer = new ClusterForceDirectedPlacer(wordGraph, cycleLayouts, bbGenerator);
+        IntStream.range(0, words.length).forEach(i -> wordPositions[i] = wordPlacer.getRectangleForWord(words[i]));
 
-        for (Word w : graph.getWords())
-        {
-            wordPositions.put(w, wordPlacer.getRectangleForWord(w));
-        }
-
-        new ForceDirectedUniformity<SWCRectangle>().run(graph.getWords(), wordPositions);
+        new ForceDirectedUniformity<SWCRectangle>().run(wordPositions);
     }
 
     private List<List<Vertex>> breakLongCycles(List<List<Vertex>> cycles, int cycleSizeLimit)
@@ -170,6 +167,15 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
     private Map<WordPair, Double> getCycleWeights(List<Vertex> cycle)
     {
         Map<WordPair, Double> res = new HashMap<WordPair, Double>();
+        for (int i = 0; i < cycle.size(); i++)
+            for (int j = 0; j < cycle.size(); j++)
+            {
+                Vertex u = cycle.get(i);
+                Vertex v = cycle.get(j);
+
+                WordPair wp = new WordPair(u, v);
+                res.put(wp, (i == j ? 1.0 : 0));
+            }
 
         for (int i = 0; i < cycle.size(); i++)
         {
@@ -203,7 +209,7 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
             degree.put(v, currentV + 1);
         }
     }
-    
+
     public double getRealizedWeight()
     {
         double realizedWeight = 0;

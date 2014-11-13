@@ -2,6 +2,7 @@ package edu.cloudy.metrics;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -18,10 +19,10 @@ public class AdjacenciesMetric implements QualityMetric, AdjacentMetric
 	//rectangles that are closer than EPS are considered as touching 
 	private static double EPS = 0.01;
 
-	@Override
-	public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
-	{
-		//SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
+    @Override
+    public double getValue(WordGraph wordGraph, LayoutResult layout)
+    {
+        Map<WordPair, Double> similarity = wordGraph.getSimilarity();
 
 		double res = 0;
 		for (WordPair wp : similarity.keySet())
@@ -29,7 +30,7 @@ public class AdjacenciesMetric implements QualityMetric, AdjacentMetric
 			if (wp.getFirst().equals(wp.getSecond()))
 				continue;
 
-			if (close(algo, wp.getFirst(), wp.getSecond()))
+			if (close(layout, wp.getFirst(), wp.getSecond()))
 			{
 				res += similarity.get(wp);
 			}

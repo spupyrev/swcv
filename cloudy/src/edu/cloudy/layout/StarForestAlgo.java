@@ -2,8 +2,8 @@ package edu.cloudy.layout;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.graph.Edge;
+import edu.cloudy.graph.Graph;
 import edu.cloudy.graph.Vertex;
-import edu.cloudy.graph.WordGraph;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.layout.packing.ClusterForceDirectedPlacer;
 import edu.cloudy.layout.packing.WordPlacer;
@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * @author spupyrev 
@@ -31,21 +32,17 @@ public class StarForestAlgo extends BaseLayoutAlgo
     @Override
     public void run()
     {
-        WordGraph g = new WordGraph(words, similarity);
+        Graph g = new Graph(wordGraph);
 
         List<LayoutResult> forest = greedyExtractStarForest(g);
 
-        WordPlacer wordPlacer = new ClusterForceDirectedPlacer(words, similarity, forest, bbGenerator);
+        WordPlacer wordPlacer = new ClusterForceDirectedPlacer(wordGraph, forest, bbGenerator);
+        IntStream.range(0, words.length).forEach(i -> wordPositions[i] = wordPlacer.getRectangleForWord(words[i]));
 
-        for (Word w : words)
-        {
-            wordPositions.put(w, wordPlacer.getRectangleForWord(w));
-        }
-
-        new ForceDirectedUniformity<SWCRectangle>().run(words, wordPositions);
+        new ForceDirectedUniformity<SWCRectangle>().run(wordPositions);
     }
 
-    private List<LayoutResult> greedyExtractStarForest(WordGraph g)
+    private List<LayoutResult> greedyExtractStarForest(Graph g)
     {
         List<LayoutResult> result = new ArrayList<LayoutResult>();
         Set<Vertex> usedVertices = new HashSet<Vertex>();
@@ -83,12 +80,12 @@ public class StarForestAlgo extends BaseLayoutAlgo
             assert (!usedVertices.contains(bestStarCenter));
 
             //run FPTAS on the star
-            WordGraph star = createStar(bestStarCenter, usedVertices, g);
+            Graph star = createStar(bestStarCenter, usedVertices, g);
             SingleStarAlgo ssa = new SingleStarAlgo();
             ssa.setGraph(star);
 
             //take the star
-            result.add(ssa.layout(words, similarity));
+            result.add(ssa.layout(wordGraph));
             //update used
             usedVertices.addAll(ssa.getRealizedVertices());
         }
@@ -96,7 +93,7 @@ public class StarForestAlgo extends BaseLayoutAlgo
         return result;
     }
 
-    private WordGraph createStar(Vertex center, Set<Vertex> usedVertices, WordGraph g)
+    private Graph createStar(Vertex center, Set<Vertex> usedVertices, Graph g)
     {
         List<Word> words = new ArrayList<Word>();
         for (Vertex v : g.vertexSet())
@@ -118,7 +115,7 @@ public class StarForestAlgo extends BaseLayoutAlgo
             weights.put(wp, g.getEdgeWeight(edge));
         }
 
-        return new WordGraph(words, weights);
+        return new Graph(words, weights);
     }
 
 }

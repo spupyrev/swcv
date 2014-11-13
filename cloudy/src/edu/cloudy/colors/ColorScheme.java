@@ -1,11 +1,9 @@
 package edu.cloudy.colors;
 
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 
 import java.awt.Color;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author spupyrev
@@ -34,7 +32,7 @@ public abstract class ColorScheme
 
     public abstract Color getColor(Word word);
 
-    public void initialize(List<Word> words, Map<WordPair, Double> similarity)
+    public void initialize(WordGraph wordGraph)
     {
     }
 }

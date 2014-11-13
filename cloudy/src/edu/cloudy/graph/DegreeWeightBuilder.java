@@ -3,11 +3,11 @@ package edu.cloudy.graph;
 import java.util.Iterator;
 
 public class DegreeWeightBuilder {
-	private WordGraph original;
-	private WordGraph g;
+	private Graph original;
+	private Graph g;
 	private int curDegree;
 
-	public DegreeWeightBuilder(WordGraph g) {
+	public DegreeWeightBuilder(Graph g) {
 		this.original = g;
 		//this.g = new WordGraph(new ArrayList<Vertex>(this.original.vertexSet()), new HashMap<UnorderedPair<Vertex, Vertex>, Double>());
 		this.curDegree = 0;

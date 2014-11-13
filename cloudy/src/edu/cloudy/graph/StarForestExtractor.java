@@ -14,9 +14,9 @@ import java.util.Set;
  */
 public class StarForestExtractor
 {
-    private WordGraph g;
+    private Graph g;
 
-    public StarForestExtractor(WordGraph g)
+    public StarForestExtractor(Graph g)
     {
         this.g = g;
     }
@@ -26,19 +26,19 @@ public class StarForestExtractor
         List<StarForest> result = new ArrayList<StarForest>();
 
         // partition into 3 trees
-        List<WordGraph> trees = extract3Trees();
+        List<Graph> trees = extract3Trees();
 
         // odd-even stars
-        for (WordGraph tree : trees)
+        for (Graph tree : trees)
             result.addAll(extractOddEvenForests(tree));
 
         return result;
     }
 
-    private List<WordGraph> extract3Trees()
+    private List<Graph> extract3Trees()
     {
-        WordGraph graph = (WordGraph)g.clone();
-        List<WordGraph> trees = new ArrayList<WordGraph>();
+        Graph graph = (Graph)g.clone();
+        List<Graph> trees = new ArrayList<Graph>();
 
         // this can be anything!!
         int maxTrees = 3;
@@ -51,7 +51,7 @@ public class StarForestExtractor
             }
 
             Set<Edge> mstEdges = new HashSet<Edge>();
-            WordGraph mst = new MaxSpanningTreeBuilder(graph).getTree(mstEdges);
+            Graph mst = new MaxSpanningTreeBuilder(graph).getTree(mstEdges);
             trees.add(mst);
             graph.removeAllEdges(mstEdges);
         }
@@ -59,7 +59,7 @@ public class StarForestExtractor
         return trees;
     }
 
-    private List<StarForest> extractOddEvenForests(final WordGraph tree)
+    private List<StarForest> extractOddEvenForests(final Graph tree)
     {
         final Set<Edge> oddEdges = new HashSet<Edge>();
         final Set<Edge> evenEdges = new HashSet<Edge>();
@@ -90,9 +90,9 @@ public class StarForestExtractor
             if (!taggedVertices.contains(v))
                 new TreeTagger().tagVertex(v, false);
 
-        WordGraph oddTree = (WordGraph)tree.clone();
+        Graph oddTree = (Graph)tree.clone();
         oddTree.removeAllEdges(evenEdges);
-        WordGraph evenTree = (WordGraph)tree.clone();
+        Graph evenTree = (Graph)tree.clone();
         evenTree.removeAllEdges(oddEdges);
 
         List<StarForest> result = new ArrayList<StarForest>();

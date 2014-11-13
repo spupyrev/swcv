@@ -36,16 +36,16 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
         //run seam carving
         wordPositions = removeSeams(zones, initialWordPositions);
 
-        new ForceDirectedOverlapRemoval<SWCRectangle>().run(words, wordPositions);
-        new ForceDirectedUniformity<SWCRectangle>().run(words, wordPositions);
+        new ForceDirectedOverlapRemoval<SWCRectangle>().run(wordPositions);
+        new ForceDirectedUniformity<SWCRectangle>().run(wordPositions);
     }
 
     private SWCRectangle[] initialPlacement()
     {
         //initial layout
-        LayoutResult initialLayout = new MDSAlgo(false).layout(words, similarity);
+        LayoutResult initialLayout = new MDSAlgo(false).layout(wordGraph);
         
-        SWCRectangle[] wordPositions = new SWCRectangle[words.size()];
+        SWCRectangle[] wordPositions = new SWCRectangle[words.length];
         int i = 0;
         for (Word w : words)
         {
@@ -195,7 +195,7 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
      * 
      * @return -- Map of words to rectangle2D's
      */
-    private Map<Word, SWCRectangle> removeSeams(Zone[][] zones, SWCRectangle[] wordPositions)
+    private SWCRectangle[] removeSeams(Zone[][] zones, SWCRectangle[] wordPositions)
     {
         //calculate the largest word
         double maxWordSize = computeMaxWordSizes(wordPositions);
@@ -259,11 +259,7 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
         }
 
         //Logger.println("done " + iter + " iterations");
-        Map<Word, SWCRectangle> wordPositionsMap = new HashMap<Word, SWCRectangle>();
-        for (int i = 0; i < words.size(); i++)
-            wordPositionsMap.put(words.get(i), wordPositions[i]);
-
-        return wordPositionsMap;
+        return wordPositions;
     }
 
     private void removeHorizontalSeamByFullReconstruction(Zone[][] zones, SWCRectangle[] wordPositions, List<Zone> zonePath)

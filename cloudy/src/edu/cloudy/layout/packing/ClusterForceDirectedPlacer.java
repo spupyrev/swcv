@@ -5,6 +5,7 @@ import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.LayoutUtils;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.layout.mds.DistanceScaling;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.nlp.Word;
@@ -27,6 +28,7 @@ public class ClusterForceDirectedPlacer implements WordPlacer
     private static final double TOTAL_ITERATIONS = 500;
     private double T = 1;
 
+    private WordGraph wordGraph;
     private List<Word> words;
     private Map<WordPair, Double> similarities;
     private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
@@ -34,10 +36,11 @@ public class ClusterForceDirectedPlacer implements WordPlacer
 
     private BoundingBoxGenerator bbGenerator;
 
-    public ClusterForceDirectedPlacer(List<Word> words, Map<WordPair, Double> similarities, List<? extends LayoutResult> singlePlacers, BoundingBoxGenerator bbGenerator)
+    public ClusterForceDirectedPlacer(WordGraph wordGraph, List<? extends LayoutResult> singlePlacers, BoundingBoxGenerator bbGenerator)
     {
-        this.words = words;
-        this.similarities = similarities;
+        this.wordGraph = wordGraph;
+        this.words = wordGraph.getWords();
+        this.similarities = wordGraph.getSimilarity();
         this.singlePlacers = singlePlacers;
         this.bbGenerator = bbGenerator;
 
@@ -54,8 +57,7 @@ public class ClusterForceDirectedPlacer implements WordPlacer
     @Override
     public boolean contains(Word w)
     {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     private List<Cluster> clusters;
@@ -309,7 +311,11 @@ public class ClusterForceDirectedPlacer implements WordPlacer
             for (Word w : c.wordPositions.keySet())
                 wordPositions.put(w, c.actualWordPosition(w));
 
-        new ForceDirectedOverlapRemoval<SWCRectangle>().run(words, wordPositions);
+        SWCRectangle[] rects = new SWCRectangle[words.size()];
+        for (int i = 0; i < words.size(); i++)
+            rects[i] = wordPositions.get(words.get(i));
+
+        new ForceDirectedOverlapRemoval<SWCRectangle>().run(rects);
     }
 
     private class Cluster
@@ -359,7 +365,7 @@ public class ClusterForceDirectedPlacer implements WordPlacer
                     SWCRectangle rect1 = actualWordPosition(w1);
                     SWCRectangle rect2 = other.actualWordPosition(w2);
 
-                    if (overlap(rect1, rect2))
+                    if (rect1.intersects(rect2, 1.0))
                         return true;
                 }
 
@@ -370,24 +376,6 @@ public class ClusterForceDirectedPlacer implements WordPlacer
         {
             SWCRectangle r1 = wordPositions.get(word);
             return new SWCRectangle(r1.getX() + center.x(), r1.getY() + center.y(), r1.getWidth(), r1.getHeight());
-        }
-
-        //TODO: change to overlaps metric!!!
-        private boolean overlap(SWCRectangle rect1, SWCRectangle rect2)
-        {
-            if (rect1.intersects(rect2))
-            {
-                double hix = Math.min(rect1.getMaxX(), rect2.getMaxX());
-                double lox = Math.max(rect1.getMinX(), rect2.getMinX());
-                double hiy = Math.min(rect1.getMaxY(), rect2.getMaxY());
-                double loy = Math.max(rect1.getMinY(), rect2.getMinY());
-                double dx = hix - lox; // hi > lo
-                double dy = hiy - loy;
-                if (Math.min(dx, dy) > 1)
-                    return true;
-            }
-
-            return false;
         }
 
         SWCPoint computeRepulsiveForce(SWCRectangle bb, Cluster other)

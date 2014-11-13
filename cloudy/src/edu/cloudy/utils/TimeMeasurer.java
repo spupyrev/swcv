@@ -17,7 +17,7 @@ public class TimeMeasurer
     {
         long startTime = System.currentTimeMillis();
         T result = function.get();
-        System.out.printf(description + " done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
+        Logger.printf(description + " done in %.3f sec\n", (System.currentTimeMillis() - startTime) / 1000.0);
         return result;
     }
 }

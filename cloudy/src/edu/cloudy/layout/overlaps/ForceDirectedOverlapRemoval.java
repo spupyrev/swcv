@@ -2,10 +2,6 @@ package edu.cloudy.layout.overlaps;
 
 import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.nlp.Word;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author spupyrev
@@ -26,18 +22,11 @@ public class ForceDirectedOverlapRemoval<T extends SWCRectangle> implements Over
     }
 
     @Override
-    public void run(List<Word> words, Map<Word, T> wordPositions)
+    public void run(T[] rect)
     {
+        int n = rect.length;
         int iter = 0;
-
-        int n = words.size();
-        SWCRectangle[] rect = new SWCRectangle[n];
-        for (int i = 0; i < n; i++)
-        {
-            rect[i] = wordPositions.get(words.get(i));
-        }
-
-        while (overlaps(words, rect) && iter++ < MAX_ITER)
+        while (overlaps(rect) && iter++ < MAX_ITER)
         {
             // compute the displacement for all words in this time step
             for (int i = 0; i < n; i++)
@@ -105,29 +94,14 @@ public class ForceDirectedOverlapRemoval<T extends SWCRectangle> implements Over
         return dir;
     }
 
-    private boolean overlaps(List<Word> words, SWCRectangle[] pos)
+    public static boolean overlaps(SWCRectangle[] pos)
     {
-        for (int i = 0; i < words.size(); i++)
-        {
-            for (int j = i + 1; j < words.size(); j++)
+        for (int i = 0; i < pos.length; i++)
+            for (int j = i + 1; j < pos.length; j++)
             {
-                SWCRectangle iRect = pos[i];
-                SWCRectangle jRect = pos[j];
-
-                if (iRect.intersects(jRect))
-                {
-                    double hix = Math.min(iRect.getMaxX(), jRect.getMaxX());
-                    double lox = Math.max(iRect.getMinX(), jRect.getMinX());
-                    double hiy = Math.min(iRect.getMaxY(), jRect.getMaxY());
-                    double loy = Math.max(iRect.getMinY(), jRect.getMinY());
-                    double dx = hix - lox; // hi > lo
-                    double dy = hiy - loy;
-
-                    if (Math.min(dx, dy) > 1)
-                        return true;
-                }
+                if (pos[i].intersects(pos[j], 1.0))
+                    return true;
             }
-        }
 
         return false;
     }

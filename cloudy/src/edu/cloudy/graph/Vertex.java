@@ -4,9 +4,9 @@ import edu.cloudy.nlp.Word;
 
 public class Vertex extends Word
 {
-    private WordGraph g;
+    private Graph g;
 
-    public Vertex(String word, double weight, WordGraph g)
+    public Vertex(String word, double weight, Graph g)
     {
         super(word, weight);
         this.g = g;
@@ -15,10 +15,5 @@ public class Vertex extends Word
     public int getDegree()
     {
         return this.g.degreeOf(this);
-    }
-
-    public String toString()
-    {
-        return word;
     }
 }

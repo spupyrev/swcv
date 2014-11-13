@@ -5,10 +5,10 @@ import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
-import edu.cloudy.nlp.Word;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * May 12, 2013
@@ -21,8 +21,6 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
     private static final double TOTAL_ITERATIONS = 1000;
     private double T = 1;
 
-    private Word[] lWords;
-
     public ContextPreservingAlgo()
     {
         super();
@@ -31,11 +29,9 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
     @Override
     protected void run()
     {
-        lWords = words.toArray(new Word[words.size()]);
-        
         //initial layout
-        LayoutResult initialLayout = new MDSAlgo(false).layout(words, similarity);
-        words.forEach(w -> wordPositions.put(w, initialLayout.getWordPosition(w)));
+        LayoutResult initialLayout = new MDSAlgo(false).layout(wordGraph);
+        IntStream.range(0, words.length).forEach(i -> wordPositions[i] = initialLayout.getWordPosition(words[i]));
 
         //compute Delaunay
         delaunayEdges = computeDelaunay();
@@ -46,21 +42,20 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
     int[][] delaunayEdges;
 
     /**
-     * TODO
-     * now the format is terrible
+     * TODO: the format is terrible
      */
     private int[][] computeDelaunay()
     {
-        SWCPoint[] points2D = new SWCPoint[lWords.length];
+        SWCPoint[] points2D = new SWCPoint[words.length];
         List<List<Integer>> edges = new ArrayList<List<Integer>>();
         GeometryUtils.computeDelaunayTriangulation(words, wordPositions, points2D, edges);
 
-        SWCPoint[] points = new SWCPoint[lWords.length];
-        for (int i = 0; i < lWords.length; i++)
+        SWCPoint[] points = new SWCPoint[words.length];
+        for (int i = 0; i < words.length; i++)
             points[i] = new SWCPoint(points2D[i].x(), points2D[i].y());
 
-        int res[][] = new int[lWords.length][];
-        for (int i = 0; i < lWords.length; i++)
+        int res[][] = new int[words.length][];
+        for (int i = 0; i < words.length; i++)
         {
             List<Integer> arr = new ArrayList<Integer>();
 
@@ -121,8 +116,8 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
                 T *= 0.95;
         }
 
-        new ForceDirectedOverlapRemoval<SWCRectangle>().run(words, wordPositions);
-        new ForceDirectedUniformity<SWCRectangle>().run(words, wordPositions);
+        new ForceDirectedOverlapRemoval<SWCRectangle>().run(wordPositions);
+        new ForceDirectedUniformity<SWCRectangle>().run(wordPositions);
     }
 
     /**
@@ -155,11 +150,11 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
 
         double avgStep = 0;
         // compute the displacement for the word in this time step
-        for (int i = 0; i < lWords.length; i++)
+        for (int i = 0; i < words.length; i++)
         {
-            SWCRectangle rect = wordPositions.get(lWords[i]);
+            SWCRectangle rect = wordPositions[i];
             SWCPoint dxy = new SWCPoint(0, 0);
-            
+
             if (!overlap(i))
             {
                 //attractive force (compact principle)
@@ -184,7 +179,7 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
             avgStep += dxy.distance(0, 0);
         }
 
-        avgStep /= lWords.length;
+        avgStep /= words.length;
         return avgStep > Math.max(bb.getWidth(), bb.getHeight()) / 10000.0;
     }
 
@@ -193,22 +188,22 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
         SWCPoint dxy = new SWCPoint(0, 0);
 
         double cnt = 0;
-        for (int j = 0; j < lWords.length; j++)
+        for (int j = 0; j < words.length; j++)
         {
             if (i == j)
                 continue;
 
-            SWCRectangle rectJ = wordPositions.get(lWords[j]);
+            SWCRectangle rectJ = wordPositions[j];
 
-            double wi = Math.max(lWords[i].weight, maxWeight / 5.0);
-            double wj = Math.max(lWords[j].weight, maxWeight / 5.0);
+            double wi = Math.max(words[i].weight, maxWeight / 5.0);
+            double wj = Math.max(words[j].weight, maxWeight / 5.0);
             double dist = GeometryUtils.rectToRectDistance(rectI, rectJ);
             double force = wi * wj * dist / (maxWeight * maxWeight);
             if (T < 0.5)
                 force *= T;
 
             SWCPoint dir = new SWCPoint(rectJ.getCenterX() - rectI.getCenterX(), rectJ.getCenterY() - rectI.getCenterY());
-            
+
             double len = dir.distance(0, 0);
             if (len < EPS)
                 continue;
@@ -221,7 +216,7 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
         }
 
         if (cnt == 0.0)
-        	cnt = 1;
+            cnt = 1;
         dxy.scale(1.0 / cnt);
         return dxy;
     }
@@ -231,13 +226,13 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
         SWCPoint dxy = new SWCPoint(0, 0);
 
         double cnt = 0;
-        for (int j = 0; j < lWords.length; j++)
+        for (int j = 0; j < words.length; j++)
         {
             if (i == j)
                 continue;
 
             // compute the displacement due to the overlap repulsive force
-            SWCRectangle rectJ = wordPositions.get(lWords[j]);
+            SWCRectangle rectJ = wordPositions[j];
 
             if (rectI.intersects(rectJ))
             {
@@ -253,7 +248,7 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
                 double force = KR * Math.min(dx, dy);
 
                 SWCPoint dir = new SWCPoint(rectJ.getCenterX() - rectI.getCenterX(), rectJ.getCenterY() - rectI.getCenterY());
-                
+
                 double len = dir.distance(0, 0);
                 if (len < EPS)
                     continue;
@@ -265,9 +260,9 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
                 cnt++;
             }
         }
-        
+
         if (cnt == 0.0)
-        	cnt = 1;
+            cnt = 1;
         dxy.scale(1.0 / cnt);
         return dxy;
     }
@@ -320,30 +315,19 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
 
     private SWCPoint getCenter(int index)
     {
-        return wordPositions.get(lWords[index]).getCenter();
+        return wordPositions[index].getCenter();
     }
 
     private boolean overlap(int i)
     {
-        SWCRectangle rectI = wordPositions.get(lWords[i]);
-        for (int j = 0; j < lWords.length; j++)
-        {
-            if (i == j)
-                continue;
-
-            SWCRectangle rectJ = wordPositions.get(lWords[j]);
-            if (rectI.intersects(rectJ))
+        SWCRectangle rectI = wordPositions[i];
+        for (int j = 0; j < words.length; j++)
+            if (i != j)
             {
-                double hix = Math.min(rectI.getMaxX(), rectJ.getMaxX());
-                double lox = Math.max(rectI.getMinX(), rectJ.getMinX());
-                double hiy = Math.min(rectI.getMaxY(), rectJ.getMaxY());
-                double loy = Math.max(rectI.getMinY(), rectJ.getMinY());
-                double dx = hix - lox; // hi > lo
-                double dy = hiy - loy;
-                if (Math.min(dx, dy) > 1)
+                SWCRectangle rectJ = wordPositions[j];
+                if (rectI.intersects(rectJ, 1.0))
                     return true;
             }
-        }
 
         return false;
     }
@@ -368,7 +352,7 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
         double minY = Double.POSITIVE_INFINITY;
         double maxY = Double.NEGATIVE_INFINITY;
 
-        for (SWCRectangle rect : wordPositions.values())
+        for (SWCRectangle rect : wordPositions)
         {
             minX = Math.min(minX, rect.getMinX());
             maxX = Math.max(maxX, rect.getMaxX());
@@ -382,10 +366,10 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
     private double computeMaxWeight()
     {
         double maxWeight = 0;
-        for (int i = 0; i < lWords.length; i++)
+        for (int i = 0; i < words.length; i++)
         {
-            maxWeight = Math.max(maxWeight, lWords[i].weight);
-            assert (lWords[i].weight > 0.001);
+            maxWeight = Math.max(maxWeight, words[i].weight);
+            assert (words[i].weight > 0.001);
         }
 
         return maxWeight;
@@ -394,12 +378,12 @@ public class ContextPreservingAlgo extends BaseLayoutAlgo
     public List<SWCRectangle> getDelaunay()
     {
         List<SWCRectangle> res = new ArrayList<SWCRectangle>();
-        for (int i = 0; i < lWords.length; i++)
+        for (int i = 0; i < words.length; i++)
         {
             for (int t = 0; t < delaunayEdges[i].length; t++)
             {
-                res.add(wordPositions.get(lWords[i]));
-                res.add(wordPositions.get(lWords[delaunayEdges[i][t]]));
+                res.add(wordPositions[i]);
+                res.add(wordPositions[delaunayEdges[i][t]]);
             }
         }
 

@@ -1,7 +1,8 @@
-package edu.test;
+package edu.test.misc;
 
 import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.SingleStarAlgo;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.Logger;
@@ -92,7 +93,7 @@ public class MatchingTest
         algorithm.setUseGreedy(useGreedy);
 
         // Run it!
-        algorithm.layout(words, similarity);
+        algorithm.layout(new WordGraph(words, similarity));
         return algorithm.getRealizedWeight();
     }
 
@@ -111,7 +112,7 @@ public class MatchingTest
         SingleStarAlgo starsAlgo = new SingleStarAlgo();
 
         // Run it!
-        starsAlgo.layout(words, similarity);
+        starsAlgo.layout(new WordGraph(words, similarity));
         return starsAlgo.getRealizedWeight();
     }
 

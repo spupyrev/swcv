@@ -1,10 +1,6 @@
 package edu.cloudy.layout.overlaps;
 
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.nlp.Word;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author spupyrev
@@ -12,5 +8,5 @@ import java.util.Map;
  */
 public interface OverlapRemoval<T extends SWCRectangle>
 {
-    public void run(List<Word> words, Map<Word, T> wordPositions);
+    public void run(T[] wordPositions);
 }

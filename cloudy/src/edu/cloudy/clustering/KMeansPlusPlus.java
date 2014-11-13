@@ -1,16 +1,14 @@
 package edu.cloudy.clustering;
 
-import edu.cloudy.layout.LayoutUtils;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * @author spupyrev
@@ -21,13 +19,11 @@ public class KMeansPlusPlus implements IClusterAlgo
     private Random rnd = new Random(123);
 
     private int K;
-    private Map<Word, Integer> clusters;
 
     private List<Word> words;
     private Map<WordPair, Double> similarities;
-    private Map<WordPair, Double> distances;
 
-    private ShortestPathCalculator spCalculator;
+    private WordGraph wordGraph;
 
     public KMeansPlusPlus(int K)
     {
@@ -35,60 +31,46 @@ public class KMeansPlusPlus implements IClusterAlgo
     }
 
     @Override
-    public void run(List<Word> words, Map<WordPair, Double> similarity)
+    public ClusterResult run(WordGraph wordGraph)
     {
+        this.wordGraph = wordGraph;
+        this.words = wordGraph.getWords();
+        this.similarities = wordGraph.getSimilarity();
+
         if (words.isEmpty())
-            return;
+            return null;
 
-        this.words = words;
-        this.similarities = similarity;
-        this.distances = extractDistances(similarity);
-
-        spCalculator = new ShortestPathCalculator(words, distances);
-        clusters = runInternal();
+        return runInternal();
     }
 
-    private Map<WordPair, Double> extractDistances(Map<WordPair, Double> similarity)
-    {
-        Map<WordPair, Double> res = new HashMap<WordPair, Double>();
-        for (WordPair wp : similarity.keySet())
-        {
-            double sim = similarity.get(wp);
-            double dist = LayoutUtils.idealDistanceConverter(sim);
-
-            res.put(wp, dist);
-        }
-
-        return res;
-    }
-
-    private Map<Word, Integer> runInternal()
+    private ClusterResult runInternal()
     {
         assert (K >= 1);
 
-        Map<Word, Integer> res = null;
+        ClusterResult res = null;
         double bestValue = -1;
 
-        for (int attempt = 0; attempt < 10; attempt++)
+        int maxAttempts = 600 / words.size();
+        maxAttempts = Math.min(maxAttempts, 10);
+        maxAttempts = Math.max(maxAttempts, 2);
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
         {
             List<Word> centers = chooseCenters(K);
 
-            Map<Word, Integer> groups = groupPoints(centers);
-            updateGroups(groups);
+            ClusterResult clusterInfo = groupPoints(centers);
+            updateClusters(clusterInfo);
 
-            double value = ClusterQuality.compute(words, similarities, groups);
-            //System.out.println("cluster quality: " + value);
-            if (bestValue == -1 || bestValue < value)
+            if (bestValue == -1 || bestValue < clusterInfo.getModularity())
             {
-                bestValue = value;
-                res = groups;
+                bestValue = clusterInfo.getModularity();
+                res = clusterInfo;
             }
         }
 
         assert (res != null);
-        //for (int i = 0; i < K; i++)
-        //    System.out.println(i + ": " + getGroup(res, i).size());
-        //System.out.println("final cluster quality: " + bestValue);
+        //System.out.println("final cluster quality: " + res.getModularity());
+        //System.out.println("K=" + K + ";  #clusters=" + res.getClusterCount());
+        res.compress();
         return res;
     }
 
@@ -117,21 +99,21 @@ public class KMeansPlusPlus implements IClusterAlgo
             double minD = 123456789.0;
             for (int j = 0; j < means.size(); j++)
             {
-                double d = spCalculator.compute(words.get(i), means.get(j));
+                double d = wordGraph.distance(words.get(i), means.get(j));
                 minD = Math.min(minD, d);
             }
 
             minDist.add(minD * minD);
         }
 
-        int p = chooseRandomWithProbability(minDist);
+        int p = randomWithProbability(minDist);
         if (minDist.get(p) < 1e-6)
             return null;
 
         return words.get(p);
     }
 
-    private int chooseRandomWithProbability(List<Double> prob)
+    private int randomWithProbability(List<Double> prob)
     {
         double sum = 0;
         for (double d : prob)
@@ -154,6 +136,8 @@ public class KMeansPlusPlus implements IClusterAlgo
 
     private Word computeMedian(List<Word> group)
     {
+        assert (group.size() > 0);
+
         double dmin = -1;
         int bestIndex = -1;
         for (int i = 0; i < group.size(); i++)
@@ -161,7 +145,7 @@ public class KMeansPlusPlus implements IClusterAlgo
             double mx = -1;
             for (int j = 0; j < group.size(); j++)
             {
-                double d = spCalculator.compute(group.get(i), group.get(j));
+                double d = wordGraph.distance(group.get(i), group.get(j));
                 if (mx == -1 || mx < d)
                     mx = d;
             }
@@ -176,7 +160,7 @@ public class KMeansPlusPlus implements IClusterAlgo
         return group.get(bestIndex);
     }
 
-    private Map<Word, Integer> groupPoints(List<Word> means)
+    private ClusterResult groupPoints(List<Word> means)
     {
         Map<Word, Integer> groups = new HashMap();
         List<Word> median = new ArrayList<Word>();
@@ -194,16 +178,13 @@ public class KMeansPlusPlus implements IClusterAlgo
 
                 for (int j = 0; j < means.size(); j++)
                 {
-                    double d = spCalculator.compute(words.get(i), means.get(j));
+                    double d = wordGraph.distance(words.get(i), means.get(j));
                     if (minDis > d)
                     {
                         minDis = d;
                         bestIndex = j;
                     }
                 }
-
-                if (bestIndex == -1)
-                    bestIndex = 0;
 
                 assert (bestIndex != -1);
                 assert (minDis < 1234567.0);
@@ -214,7 +195,7 @@ public class KMeansPlusPlus implements IClusterAlgo
             for (int i = 0; i < median.size(); i++)
             {
                 Word newMedian = computeMedian(getGroup(groups, i));
-                if (median.get(i).equals(newMedian))
+                if (!median.get(i).equals(newMedian))
                     progress = true;
                 median.set(i, newMedian);
             }
@@ -223,10 +204,10 @@ public class KMeansPlusPlus implements IClusterAlgo
                 break;
         }
 
-        return groups;
+        return new ClusterResult(words, similarities, groups, wordGraph);
     }
 
-    public static List<Word> getGroup(Map<Word, Integer> groups, int index)
+    private List<Word> getGroup(Map<Word, Integer> groups, int index)
     {
         List<Word> res = new ArrayList<Word>();
         for (Word w : groups.keySet())
@@ -235,13 +216,8 @@ public class KMeansPlusPlus implements IClusterAlgo
         return res;
     }
 
-    private void updateGroups(Map<Word, Integer> groups)
+    private void updateClusters(ClusterResult ci)
     {
-        Set<Integer> clusters = new HashSet(groups.values());
-        int[] clusterSize = new int[clusters.size()];
-        for (Word w : groups.keySet())
-            clusterSize[groups.get(w)]++;
-
         //reassign clusters
         boolean progress = true;
         for (int t = 0; t < 30 && progress; t++)
@@ -250,58 +226,34 @@ public class KMeansPlusPlus implements IClusterAlgo
             for (int i = 0; i < words.size(); i++)
             {
                 Word v = words.get(i);
-                //weight in i-th cluster
-                double[] wSum = new double[clusters.size()];
-                for (int j = 0; j < words.size(); j++)
-                    if (i != j)
+                double oldModularity = ci.getModularity();
+
+                //try to find the best new cluster
+                int bestCluster = ci.getCluster(v);
+                double bestModularity = oldModularity;
+                for (int j = 0; j < ci.getClusterCount(); j++)
+                {
+                    if (j == ci.getCluster(v))
+                        continue;
+
+                    ci.moveVertex(v, j);
+                    double newModularity = ci.getModularity();
+
+                    if (newModularity > bestModularity)
                     {
-                        Word u = words.get(j);
-                        WordPair wp = new WordPair(v, u);
-                        if (!similarities.containsKey(wp))
-                            continue;
-
-                        wSum[groups.get(u)] += similarities.get(wp);
+                        bestModularity = newModularity;
+                        bestCluster = j;
                     }
-
-                //find best cluster
-                int bestNewCluster = groups.get(v);
-                for (int j = 0; j < clusters.size(); j++)
-                {
-                    if (j == groups.get(v))
-                        continue;
-                    if (clusterSize[j] == 0)
-                        continue;
-
-                    //double wj = 1.0 / Math.sqrt(clusterSize[j]);
-                    //double wb = 1.0 / Math.sqrt(clusterSize[bestNewCluster]);
-                    double wj = 1.0 / clusterSize[j];
-                    double wb = 1.0 / clusterSize[bestNewCluster];
-
-                    if (wSum[j] * wj > wSum[bestNewCluster] * wb)
-                        bestNewCluster = j;
                 }
 
-                if (bestNewCluster != groups.get(v))
+                if (bestCluster != ci.getCluster(v))
                 {
-                    clusterSize[groups.get(v)]--;
-                    clusterSize[bestNewCluster]++;
+                    ci.moveVertex(v, bestCluster);
+                }
 
-                    groups.put(v, bestNewCluster);
+                if (bestModularity > oldModularity)
                     progress = true;
-                }
             }
         }
-    }
-
-    @Override
-    public int getCluster(Word word)
-    {
-        return clusters.get(word);
-    }
-
-    @Override
-    public int getClusterNumber()
-    {
-        return K;
     }
 }

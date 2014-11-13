@@ -4,12 +4,11 @@ import edu.cloudy.geom.GeometryUtils;
 import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * May 3, 2013
@@ -27,15 +26,11 @@ public class SpaceMetric implements QualityMetric
     }
 
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    public double getValue(WordGraph wordGraph, LayoutResult layout)
     {
-        double area = computeTotalArea(words, algo);
-
-        double usedArea = computeUsedArea(words, algo);
+        double area = computeTotalArea(wordGraph.getWords(), layout);
+        double usedArea = computeUsedArea(wordGraph.getWords(), layout);
         //assert (usedArea <= area);
-
-        //System.out.println("area = " + area);
-        //System.out.println("usedArea = " + usedArea);
 
         return Math.min(1, usedArea / area);
     }

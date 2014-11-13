@@ -5,6 +5,7 @@ import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutAlgorithmRegistry;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.ContextDelimiter;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
@@ -98,15 +99,17 @@ public class WordCloudGenerator
         // similarity
         SimilarityAlgo similarityAlgo = SimilarityAlgorithmRegistry.getById(setting.getSimilarityAlgorithm().getId());
         Map<WordPair, Double> similarity = similarityAlgo.computeSimilarity(document);
+        
+        WordGraph wordGraph = new WordGraph(document.getWords(), similarity);
 
         // layout
         LayoutAlgo layoutAlgo = LayoutAlgorithmRegistry.getById(setting.getLayoutAlgorithm().getId());
         layoutAlgo.setAspectRatio(setting.getAspectRatio().getValue());
-        LayoutResult layout = layoutAlgo.layout(document.getWords(), similarity);
+        LayoutResult layout = layoutAlgo.layout(wordGraph);
 
         // coloring
         ColorScheme colorScheme = ColorSchemeRegistry.getByName(setting.getColorScheme().getName());
-        colorScheme.initialize(document.getWords(), similarity);
+        colorScheme.initialize(wordGraph);
 
         List<UIWord> uiWords = document.prepareUIWords(layout, colorScheme);
         return new WordCloudRenderer(uiWords, SCR_WIDTH, SCR_HEIGHT);

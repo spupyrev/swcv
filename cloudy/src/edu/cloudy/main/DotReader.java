@@ -3,6 +3,7 @@ package edu.cloudy.main;
 import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.ui.WordCloudFrame;
@@ -12,6 +13,7 @@ import edu.cloudy.utils.TimeMeasurer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +24,6 @@ import java.util.Scanner;
  */
 public class DotReader
 {
-
     public static void main(String argc[])
     {
         Logger.doLogging = false;
@@ -38,18 +39,18 @@ public class DotReader
 
         words = filterWords(words, similarity, 50);
         similarity = filterSimilarities(words, similarity);
+        WordGraph wordGraph = new WordGraph(words, similarity);
 
         // 3. run a layout algorithm
-        LayoutResult layout = runLayout(words, similarity);
+        LayoutResult layout = runLayout(wordGraph);
 
         // 4. visualize it
-        visualize(words, similarity, layout);
+        visualize(wordGraph, layout);
     }
 
     private List<Word> filterWords(List<Word> words, Map<WordPair, Double> similarity, int maxWords)
     {
-        Collections.sort(words);
-        Collections.reverse(words);
+        Collections.sort(words, Comparator.reverseOrder());
 
         if (maxWords > words.size())
             return words;
@@ -177,16 +178,15 @@ public class DotReader
         return new Word(s1, Double.parseDouble(s2));
     }
 
-    private LayoutResult runLayout(List<Word> words, Map<WordPair, Double> similarity)
+    private LayoutResult runLayout(WordGraph wordGraph)
     {
         LayoutAlgo algo = new ContextPreservingAlgo();
-        return TimeMeasurer.execute(() -> algo.layout(words, similarity));
+        return TimeMeasurer.execute(() -> algo.layout(wordGraph));
     }
 
-    private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout)
+    private void visualize(WordGraph wordGraph, LayoutResult layout)
     {
-        if (words.size() > 0 && words.size() <= 50)
-            new WordCloudFrame(words, similarity, layout, null);
+        new WordCloudFrame(wordGraph, layout, null);
     }
 
 }

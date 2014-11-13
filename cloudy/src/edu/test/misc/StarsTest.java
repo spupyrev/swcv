@@ -1,7 +1,8 @@
-package edu.test;
+package edu.test.misc;
 
-import edu.cloudy.graph.WordGraph;
+import edu.cloudy.graph.Graph;
 import edu.cloudy.layout.SingleStarAlgo;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.Logger;
@@ -42,11 +43,11 @@ public class StarsTest
     private static double getStarsResult(List<Word> words, Map<WordPair, Double> similarity)
     {
         SingleStarAlgo starsAlgo = new SingleStarAlgo();
-        WordGraph graph = new WordGraph(words, similarity);
+        Graph graph = new Graph(words, similarity);
         starsAlgo.setGraph(graph);
 
         // Run it!
-        starsAlgo.layout(words, similarity);
+        starsAlgo.layout(new WordGraph(words, similarity));
         return starsAlgo.getRealizedWeight();
     }
 

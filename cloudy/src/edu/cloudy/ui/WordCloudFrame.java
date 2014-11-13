@@ -2,8 +2,7 @@ package edu.cloudy.ui;
 
 import edu.cloudy.colors.ColorScheme;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.render.UIWord;
 
 import javax.swing.JFrame;
@@ -11,18 +10,16 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import java.awt.BorderLayout;
-import java.util.List;
-import java.util.Map;
 
 public class WordCloudFrame extends JFrame
 {
     private static final long serialVersionUID = 6602115306287717309L;
 
-    public WordCloudFrame(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout, ColorScheme colorScheme)
+    public WordCloudFrame(WordGraph wordGraph, LayoutResult layout, ColorScheme colorScheme)
     {
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
-        initPanel(words, similarity, layout, colorScheme);
+        initPanel(wordGraph, layout, colorScheme);
         setTitle("WordCloud");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -43,13 +40,13 @@ public class WordCloudFrame extends JFrame
         setVisible(true);
     }
 
-    private void initPanel(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout, ColorScheme colorScheme)
+    private void initPanel(WordGraph wordGraph, LayoutResult layout, ColorScheme colorScheme)
     {
         setLayout(new BorderLayout());
 
-        WordCloudPanel panel = new WordCloudPanel(UIWord.prepareUIWords(words, layout, colorScheme));
+        WordCloudPanel panel = new WordCloudPanel(UIWord.prepareUIWords(wordGraph.getWords(), layout, colorScheme));
         add(BorderLayout.CENTER, panel);
-        add(BorderLayout.EAST, new MetricsPanel(words, similarity, layout));
+        add(BorderLayout.EAST, new MetricsPanel(wordGraph, layout));
 
         setJMenuBar(new WordCloudMenuBar(panel));
     }

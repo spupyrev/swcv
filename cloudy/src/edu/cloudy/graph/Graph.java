@@ -1,5 +1,6 @@
 package edu.cloudy.graph;
 
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.utils.UnorderedPair;
@@ -15,40 +16,50 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class WordGraph extends SimpleWeightedGraph<Vertex, Edge>
+public class Graph extends SimpleWeightedGraph<Vertex, Edge>
 {
     private static final long serialVersionUID = -2417190563746825008L;
 
-    public class EdgeComparator implements Comparator<Edge>
+    public Graph()
     {
-        private boolean reverse = false;
+        super(Edge.class);
+    }
 
-        public EdgeComparator(boolean reverse)
+    public Graph(WordGraph wordGraph)
+    {
+        this(wordGraph.getWords(), wordGraph.getSimilarity());
+    }
+
+    public Graph(List<Word> words, Map<WordPair, Double> weights)
+    {
+        super(Edge.class);
+
+        List<Vertex> vertices = new ArrayList<Vertex>();
+        Map<Word, Vertex> wordToVertex = new HashMap<Word, Vertex>();
+
+        for (Word w : words)
         {
-            this.reverse = reverse;
+            Vertex v = new Vertex(w.word, w.weight, this);
+            vertices.add(v);
+            wordToVertex.put(w, v);
         }
 
-        @Override
-        public int compare(Edge o1, Edge o2)
+        Map<UnorderedPair<Vertex, Vertex>, Double> vertexWeights = new HashMap<UnorderedPair<Vertex, Vertex>, Double>();
+        for (WordPair cur : weights.keySet())
         {
-            Double w1 = WordGraph.this.getEdgeWeight(o1);
-            Double w2 = WordGraph.this.getEdgeWeight(o2);
+            Vertex v1 = wordToVertex.get(cur.getFirst());
+            Vertex v2 = wordToVertex.get(cur.getSecond());
 
-            if (!reverse)
-            {
-                return w1.compareTo(w2);
-            }
-            else
-            {
-                return w2.compareTo(w1);
-            }
+            UnorderedPair<Vertex, Vertex> newPair = new UnorderedPair<Vertex, Vertex>(v1, v2);
+            vertexWeights.put(newPair, weights.get(cur));
         }
 
+        construct(vertices, vertexWeights);
     }
 
     public List<Word> getWords()
     {
-        return new ArrayList<Word>(this.vertexSet());
+        return new ArrayList<Word>(vertexSet());
     }
 
     public Map<WordPair, Double> getSimilarities()
@@ -83,38 +94,6 @@ public class WordGraph extends SimpleWeightedGraph<Vertex, Edge>
             System.out.println(getEdgeWeight(e));
     }
 
-    public WordGraph()
-    {
-        super(Edge.class);
-    }
-
-    public WordGraph(List<Word> words, Map<WordPair, Double> weights)
-    {
-        super(Edge.class);
-
-        List<Vertex> vertices = new ArrayList<Vertex>();
-        Map<Word, Vertex> wordToVertex = new HashMap<Word, Vertex>();
-
-        for (Word w : words)
-        {
-            Vertex v = new Vertex(w.word, w.weight, this);
-            vertices.add(v);
-            wordToVertex.put(w, v);
-        }
-
-        Map<UnorderedPair<Vertex, Vertex>, Double> vertexWeights = new HashMap<UnorderedPair<Vertex, Vertex>, Double>();
-        for (WordPair cur : weights.keySet())
-        {
-            Vertex v1 = wordToVertex.get(cur.getFirst());
-            Vertex v2 = wordToVertex.get(cur.getSecond());
-
-            UnorderedPair<Vertex, Vertex> newPair = new UnorderedPair<Vertex, Vertex>(v1, v2);
-            vertexWeights.put(newPair, weights.get(cur));
-        }
-
-        construct(vertices, vertexWeights);
-    }
-
     private void construct(List<Vertex> vertices, Map<UnorderedPair<Vertex, Vertex>, Double> weights)
     {
         //adding vertices
@@ -134,14 +113,14 @@ public class WordGraph extends SimpleWeightedGraph<Vertex, Edge>
         }
     }
 
-    public List<WordGraph> getComponents()
+    public List<Graph> getComponents()
     {
-        final WordGraph decompose = (WordGraph)this.clone();
-        final List<WordGraph> ret = new LinkedList<WordGraph>();
+        final Graph decompose = (Graph)this.clone();
+        final List<Graph> ret = new LinkedList<Graph>();
 
         class ComponentCutter
         {
-            void cutComponent(Vertex v, WordGraph out)
+            void cutComponent(Vertex v, Graph out)
             {
                 out.addVertex(v);
 
@@ -168,7 +147,7 @@ public class WordGraph extends SimpleWeightedGraph<Vertex, Edge>
         while (decompose.vertexSet().size() > 0)
         {
             Vertex seed = decompose.vertexSet().iterator().next();
-            WordGraph component = new WordGraph();
+            Graph component = new Graph();
             new ComponentCutter().cutComponent(seed, component);
             ret.add(component);
 
@@ -193,8 +172,12 @@ public class WordGraph extends SimpleWeightedGraph<Vertex, Edge>
 
     public Iterator<Edge> weightOrderedEdgeIterator(boolean reverse)
     {
-        LinkedList<Edge> list = new LinkedList<Edge>(this.edgeSet());
-        Collections.sort(list, new EdgeComparator(reverse));
+        List<Edge> list = new ArrayList<Edge>(edgeSet());
+        Comparator<Edge> comparator = (e1, e2) -> Double.compare(getEdgeWeight(e1), getEdgeWeight(e2));
+        if (!reverse)
+            Collections.sort(list, comparator);
+        else
+            Collections.sort(list, comparator.reversed());
         return list.iterator();
     }
 

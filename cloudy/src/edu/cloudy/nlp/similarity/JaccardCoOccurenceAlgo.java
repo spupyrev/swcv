@@ -24,25 +24,30 @@ public class JaccardCoOccurenceAlgo extends BaseSimilarityAlgo
 
         similarity = new HashMap<WordPair, Double>();
 
-        for (Word x : words)
+        for (int i = 0; i < words.size(); i++)
         {
-            for (Word y : words)
+            Word x = words.get(i);
+            Set<Integer> xSentences = new HashSet<Integer>(x.getSentences());
+
+            for (int j = i + 1; j < words.size(); j++)
             {
-                if (x.stem.equals(y.stem))
-                    continue;
+                Word y = words.get(j);
+                Set<Integer> ySentences = new HashSet<Integer>(y.getSentences());
 
-                Set<Integer> sharedSentences = new HashSet<Integer>(x.getSentences());
-                sharedSentences.retainAll(y.getSentences());
+                Set<Integer> sharedSentences = new HashSet<Integer>(xSentences);
+                sharedSentences.retainAll(ySentences);
 
-                Set<Integer> unionSentences = new HashSet<Integer>(x.getSentences());
-                unionSentences.addAll(y.getSentences());
+                Set<Integer> unionSentences = new HashSet<Integer>(xSentences);
+                unionSentences.addAll(ySentences);
 
                 // just count how many times those two occur in the same sentence
-                WordPair xyPair = new WordPair(x, y);
                 double xySimilarity = ((double)sharedSentences.size()) / (double)(unionSentences.size());
                 assert (0 <= xySimilarity && xySimilarity <= 1.0);
-                similarity.put(xyPair, xySimilarity);
+
+                similarity.put(new WordPair(x, y), xySimilarity);
             }
+
+            similarity.put(new WordPair(x, x), 1.0);
         }
 
     }

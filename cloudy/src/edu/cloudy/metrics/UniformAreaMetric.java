@@ -2,6 +2,7 @@ package edu.cloudy.metrics;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -18,9 +19,11 @@ import java.util.Map;
 public class UniformAreaMetric implements QualityMetric
 {
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    public double getValue(WordGraph wordGraph, LayoutResult layout)
     {
-        SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
+        List<Word> words = wordGraph.getWords();
+        
+        SWCRectangle bb = SpaceMetric.computeBoundingBox(words, layout);
 
         //number of cells
         int W = (int)Math.sqrt(words.size() + 1.0);
@@ -35,7 +38,7 @@ public class UniformAreaMetric implements QualityMetric
                 SWCRectangle cell = new SWCRectangle(bb.getX() + cellWidth * i, bb.getY() + cellHeight * j, cellWidth, cellHeight);
 
                 //observed frequency
-                double O = computeWordsInsideCell(cell, words, algo);
+                double O = computeWordsInsideCell(cell, words, layout);
                 //expected frequency
                 double E = (double)words.size() / (W * H);
 

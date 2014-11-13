@@ -5,6 +5,7 @@ import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutAlgorithmRegistry;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.main.cmd.CommandLineArguments;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
@@ -69,14 +70,17 @@ public class Main
         // calculate pairwise similarities
         Map<WordPair, Double> similarity = computeSimilarity(document, cmd);
 
+        //create graph
+        WordGraph wordGraph = new WordGraph(words, similarity);
+        
         // layout the words in the plane
-        LayoutResult layout = layout(words, similarity, cmd);
+        LayoutResult layout = layout(wordGraph, cmd);
 
         // coloring
-        ColorScheme colorScheme = coloring(words, similarity, cmd);
+        ColorScheme colorScheme = coloring(wordGraph, cmd);
 
         // draw the result
-        visualize(words, similarity, layout, colorScheme, cmd);
+        visualize(wordGraph, layout, colorScheme, cmd);
     }
 
     private SWCDocument readDocument(CommandLineArguments cmd) throws FileNotFoundException
@@ -113,23 +117,23 @@ public class Main
         return algo.computeSimilarity(document);
     }
 
-    private LayoutResult layout(List<Word> words, Map<WordPair, Double> similarity, CommandLineArguments cmd)
+    private LayoutResult layout(WordGraph wordGraph, CommandLineArguments cmd)
     {
         LayoutAlgo algo = LayoutAlgorithmRegistry.getById(cmd.getLayoutAlgorithm());
         algo.setAspectRatio(cmd.getAspectRatio());
-        return algo.layout(words, similarity);
+        return algo.layout(wordGraph);
     }
 
-    private ColorScheme coloring(List<Word> words, Map<WordPair, Double> similarity, CommandLineArguments cmd)
+    private ColorScheme coloring(WordGraph wordGraph, CommandLineArguments cmd)
     {
         ColorScheme colorScheme = ColorSchemeRegistry.getByCmdIndex(cmd.getColor());
-        colorScheme.initialize(words, similarity);
+        colorScheme.initialize(wordGraph);
         return colorScheme;
     }
 
-    private void visualize(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout, ColorScheme colorScheme, CommandLineArguments cmd) throws FileNotFoundException
+    private void visualize(WordGraph wordGraph, LayoutResult layout, ColorScheme colorScheme, CommandLineArguments cmd) throws FileNotFoundException
     {
-        List<UIWord> uiWords = UIWord.prepareUIWords(words, layout, colorScheme);
+        List<UIWord> uiWords = UIWord.prepareUIWords(wordGraph.getWords(), layout, colorScheme);
         WordCloudRenderer renderer = new WordCloudRenderer(uiWords, cmd.getMaxWidth(), cmd.getMaxHeight());
         byte[] content = RenderUtils.createCloud(renderer, cmd.getOutputFormat());
 

@@ -1,7 +1,6 @@
 package edu.cloudy.layout;
 
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.nlp.Word;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +20,11 @@ public class SpiralCycleAlgo extends BaseLayoutAlgo
     {
         generateBoundingBoxes();
 
-        //compute MAX_WIDTH and MAX_HEIGHT
-        //computeCloudDimensions();
-
         //try to layout words
         SWCRectangle prev = null;
-        for (Word w : words)
+        for (int k = 0; k < words.length; k++)
         {
-            SWCRectangle rect = wordPositions.get(w);
+            SWCRectangle rect = wordPositions[k];
             if (prev == null)
             {
                 rect.setRect(0, 0, rect.getWidth(), rect.getHeight());
@@ -41,7 +37,7 @@ public class SpiralCycleAlgo extends BaseLayoutAlgo
             int i = 0;
             List<Double> successXs = new ArrayList<Double>();
             List<Double> successYs = new ArrayList<Double>();
-            while (intersects(w))
+            while (intersects(k))
             {
                 spiralOut(rect, i);
                 i++;
@@ -54,7 +50,7 @@ public class SpiralCycleAlgo extends BaseLayoutAlgo
             {
                 spiralOut(rect, i);
                 i++;
-                if (!intersects(w))
+                if (!intersects(k))
                 {
                     successXs.add(rect.getCenterX());
                     successYs.add(rect.getCenterY());
@@ -95,19 +91,13 @@ public class SpiralCycleAlgo extends BaseLayoutAlgo
         r.setRect(r.getX() + i * Math.cos(i + rand.nextDouble() * 0.5), r.getY() + i * Math.sin(i + rand.nextDouble() * 0.5), r.getWidth(), r.getHeight());
     }
 
-    private void generateBoundingBoxes()
+    private boolean intersects(int wordIndex)
     {
-        for (Word w : words)
-            wordPositions.put(w, getBoundingBox(w));
-    }
+        SWCRectangle rect = wordPositions[wordIndex];
 
-    private boolean intersects(Word word)
-    {
-        SWCRectangle rect = wordPositions.get(word);
-
-        for (Word w : wordPositions.keySet())
-            if (!w.equals(word))
-                if (rect.intersects(wordPositions.get(w)))
+        for (int i = 0; i < words.length; i++)
+            if (i != wordIndex)
+                if (rect.intersects(wordPositions[i]))
                     return true;
 
         return false;

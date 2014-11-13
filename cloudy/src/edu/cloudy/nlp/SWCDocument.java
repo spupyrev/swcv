@@ -263,9 +263,29 @@ public class SWCDocument
     }
 
     /**
-     * scaling weights from 1 to upper
+     * logarithmic re-scaling weights from 1 to upper
      */
     private void rescaleWeights(double upper)
+    {
+        if (words.size() <= 1)
+            return;
+
+        double mn = words.get(words.size() - 1).weight;
+        double mx = words.get(0).weight;
+
+        for (Word w : words)
+        {
+            double num = Math.log(w.weight) - Math.log(mn);
+            double den = (mx > mn ? Math.log(mx) - Math.log(mn) : 1.0);
+
+            w.weight = 1.0 + (upper - 1.0) * num / den;
+        }
+    }
+
+    /**
+     * old version
+     */
+    /*private void rescaleWeights2(double upper)
     {
         if (words.size() <= 1)
             return;
@@ -284,7 +304,7 @@ public class SWCDocument
             else
                 w.weight = 1.0 + (d / diff) * (upper - 1.0);
         }
-    }
+    }*/
 
     public List<UIWord> prepareUIWords(LayoutResult layout, ColorScheme colorScheme)
     {

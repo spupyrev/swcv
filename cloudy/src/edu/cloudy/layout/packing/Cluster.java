@@ -1,12 +1,12 @@
 package edu.cloudy.layout.packing;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.nlp.Word;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Cluster
 {
@@ -55,7 +55,7 @@ public class Cluster
                 SWCRectangle rect1 = actualWordPosition(w1);
                 SWCRectangle rect2 = other.actualWordPosition(w2);
 
-                if (overlap(rect1, rect2))
+                if (rect1.intersects(rect2, 1.0))
                     return true;
             }
 
@@ -68,20 +68,4 @@ public class Cluster
         return new SWCRectangle(r1.getX() + center.x(), r1.getY() + center.y(), r1.getWidth(), r1.getHeight());
     }
 
-    public boolean overlap(SWCRectangle rect1, SWCRectangle rect2)
-    {
-        if (rect1.intersects(rect2))
-        {
-            double hix = Math.min(rect1.getMaxX(), rect2.getMaxX());
-            double lox = Math.max(rect1.getMinX(), rect2.getMinX());
-            double hiy = Math.min(rect1.getMaxY(), rect2.getMaxY());
-            double loy = Math.max(rect1.getMinY(), rect2.getMinY());
-            double dx = hix - lox; // hi > lo
-            double dy = hiy - loy;
-            if (Math.min(dx, dy) > 1)
-                return true;
-        }
-
-        return false;
-    }
 }

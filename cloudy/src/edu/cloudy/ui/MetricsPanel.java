@@ -1,9 +1,8 @@
 package edu.cloudy.ui;
 
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.metrics.*;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,15 +13,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
-import java.util.List;
-import java.util.Map;
 
 public class MetricsPanel extends JPanel
 {
     private static final long serialVersionUID = 1L;
 
-    private List<Word> words;
-    private Map<WordPair, Double> similarity;
+    private WordGraph wordGraph;
     private LayoutResult layout;
 
     private JTextField wordCountField;
@@ -41,11 +37,10 @@ public class MetricsPanel extends JPanel
     private JTextField precisionField;
     private JTextField precisionRecallField;
 
-    public MetricsPanel(List<Word> words, Map<WordPair, Double> similarity, LayoutResult layout)
+    public MetricsPanel(WordGraph wordGraph, LayoutResult layout)
     {
         this.layout = layout;
-        this.words = words;
-        this.similarity = similarity;
+        this.wordGraph = wordGraph;
 
         //staticstics
         JPanel statPanel = new JPanel();
@@ -203,25 +198,25 @@ public class MetricsPanel extends JPanel
         DecimalFormat df = new DecimalFormat("#.##");
         DecimalFormat df4 = new DecimalFormat("#.####");
 
-        wordCountField.setText("" + words.size());
-        double totalWeight = new TotalWeightMetric().getValue(words, similarity, layout);
+        wordCountField.setText("" + wordGraph.getWords().size());
+        double totalWeight = new TotalWeightMetric().getValue(wordGraph, layout);
         totalWeightField.setText(df.format(totalWeight));
-        maxPlanarSubgraphField.setText("<=" + df.format(new MaxPlanarSubgraphMetric().getValue(words, similarity, layout)));
-        overlapsField.setText(new OverlapsMetric().getValue(words, similarity, layout) > 0.5 ? "yes" : "none");
+        maxPlanarSubgraphField.setText("<=" + df.format(new MaxPlanarSubgraphMetric().getValue(wordGraph, layout)));
+        overlapsField.setText(new OverlapsMetric().getValue(wordGraph, layout) > 0.5 ? "yes" : "none");
 
         AdjacenciesMetric am = new AdjacenciesMetric();
-        double adj = am.getValue(words, similarity, layout);
+        double adj = am.getValue(wordGraph, layout);
 
         adjacenciesField.setText(df4.format(adj / totalWeight));
-        proximityField.setText(df4.format(new ProximityMetric().getValue(words, similarity, layout) / totalWeight));
-        precisionField.setText(df.format(new PrecisionRecallMetric1().getValue(words, similarity, layout)));
-        precisionRecallField.setText(df.format(new PrecisionRecallMetric2().getValue(words, similarity, layout)));
-        stressField.setText(df.format(new StressMetric().getValue(words, similarity, layout)));
-        distortionField.setText(df4.format(new DistortionMetric().getValue(words, similarity, layout)));
-        spaceField.setText(df4.format(new SpaceMetric(false).getValue(words, similarity, layout)));
-        spaceCHField.setText(df4.format(new SpaceMetric(true).getValue(words, similarity, layout)));
-        uniformiltyField.setText(df4.format(new UniformAreaMetric().getValue(words, similarity, layout)));
-        aspectField.setText(df4.format(new AspectRatioMetric().getValue(words, similarity, layout)));
+        proximityField.setText(df4.format(new ProximityMetric().getValue(wordGraph, layout) / totalWeight));
+        precisionField.setText(df.format(new PrecisionRecallMetric1().getValue(wordGraph, layout)));
+        precisionRecallField.setText(df.format(new PrecisionRecallMetric2().getValue(wordGraph, layout)));
+        stressField.setText(df.format(new StressMetric().getValue(wordGraph, layout)));
+        distortionField.setText(df4.format(new DistortionMetric().getValue(wordGraph, layout)));
+        spaceField.setText(df4.format(new SpaceMetric(false).getValue(wordGraph, layout)));
+        spaceCHField.setText(df4.format(new SpaceMetric(true).getValue(wordGraph, layout)));
+        uniformiltyField.setText(df4.format(new UniformAreaMetric().getValue(wordGraph, layout)));
+        aspectField.setText(df4.format(new AspectRatioMetric().getValue(wordGraph, layout)));
     }
 
 }

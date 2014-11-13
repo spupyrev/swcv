@@ -3,8 +3,9 @@ package edu.cloudy.layout;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.nlp.Word;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +20,6 @@ import java.util.Random;
  */
 public class WordleAlgo extends BaseLayoutAlgo
 {
-    private Map<Word, SWCRectangle> bb = new HashMap<Word, SWCRectangle>();
-
-    //private static boolean ALLOW_VERTICAL_WORDS = false;
-
     private Random rnd = new Random(123);
 
     private double MAX_WIDTH;
@@ -51,63 +48,65 @@ public class WordleAlgo extends BaseLayoutAlgo
         }
     }
 
+    private void computeCloudDimensions()
+    {
+        double area = Arrays.stream(wordPositions).mapToDouble(w -> w.getArea()).sum();
+
+        MAX_HEIGHT = Math.sqrt(2.25 * area / aspectRatio);
+        MAX_WIDTH = MAX_HEIGHT * aspectRatio;
+    }
+
     private boolean doLayout()
     {
-        wordPositions.clear();
+        Map<Word, SWCRectangle> placedWords = new HashMap();
+        Map<Word, SWCRectangle> bb = new HashMap();
+        for (int i = 0; i < words.length; i++)
+            bb.put(words[i], wordPositions[i]);
 
         //place the word where it wants to be
-        //and remove intersects with any of the previously placed words
+        //and remove intersections with any of the previously placed words
 
-        List<Word> sortedWords = new ArrayList<Word>(words);
-        Collections.sort(sortedWords);
-        Collections.reverse(sortedWords);
+        List<Word> sortedWords = Arrays.asList(words);
+        Collections.sort(sortedWords, Comparator.reverseOrder());
 
         for (Word w : sortedWords)
-            if (!doLayout(w))
+            if (!doLayout(w, bb.get(w), placedWords))
                 return false;
+
+        for (int i = 0; i < words.length; i++)
+            wordPositions[i] = placedWords.get(words[i]);
 
         return true;
     }
 
-    private void computeCloudDimensions()
-    {
-        double area = 0;
-        for (SWCRectangle r : bb.values())
-            area += r.getHeight() * r.getWidth();
-
-        //double aspectRatio = (1.0 + Math.sqrt(5.0)) / 2;
-        MAX_HEIGHT = Math.sqrt(2.5 * area / aspectRatio);
-        MAX_WIDTH = MAX_HEIGHT * aspectRatio;
-    }
-
-    private void generateBoundingBoxes()
-    {
-        for (Word w : words)
-            bb.put(w, getBoundingBox(w));
-    }
-
     /**
      * Main entry to the layout engine.
-     * User passes in a Word and Layout places it somewhere nice.
+     * User passes in a Word and Layout places it somewhere nice
      */
-    public boolean doLayout(Word word)
+    public boolean doLayout(Word word, SWCRectangle bb, Map<Word, SWCRectangle> placedWords)
     {
         for (int att = 0; att < 1000; att++)
         {
-            if (!makeInitialPosition(word))
+            SWCRectangle rect = makeInitialPosition(bb);
+            if (rect == null)
                 return false;
 
-            if (!intersects(word))
+            if (!intersects(rect, placedWords))
+            {
+                placedWords.put(word, rect);
                 return true;
+            }
 
             int r = 1;
             while (r < 4)
             {
-                updatePosition(word, r++);
-                if (!intersects(word))
+                updatePosition(rect, r++);
+                if (!intersects(rect, placedWords))
+                {
+                    placedWords.put(word, rect);
                     return true;
+                }
             }
-            wordPositions.remove(word);
         }
 
         return false;
@@ -117,33 +116,25 @@ public class WordleAlgo extends BaseLayoutAlgo
      * Choose a random point on screen based on the Gaussian distribution.
      * Sets the Word's x and y position when a valid one is found.
      */
-    private boolean makeInitialPosition(Word word)
+    private SWCRectangle makeInitialPosition(SWCRectangle rect)
     {
-        //double angle = generateAngle();
-
-        // get width & height of word
-        SWCRectangle rect = bb.get(word);
-
         int attempt = 0;
         double x, y;
         do
         {
             if (attempt++ >= 100)
-                return false;
+                return null;
 
             x = rnd.nextDouble() * MAX_WIDTH / 8 + MAX_WIDTH / 2;
             y = rnd.nextDouble() * MAX_HEIGHT / 8 + MAX_HEIGHT / 2;
         }
         while (x > MAX_WIDTH - rect.getWidth() || x < rect.getWidth() || y < rect.getHeight() || y > MAX_HEIGHT - rect.getHeight());
 
-        SWCRectangle r = new SWCRectangle(x, y, rect.getWidth(), rect.getHeight());
-        wordPositions.put(word, r);
-        return true;
+        return new SWCRectangle(x, y, rect.getWidth(), rect.getHeight());
     }
 
-    private void updatePosition(Word word, double radius)
+    private void updatePosition(SWCRectangle rect, double radius)
     {
-        SWCRectangle rect = wordPositions.get(word);
         radius *= rect.getWidth() / 16;
 
         // randomly spiral out
@@ -152,29 +143,14 @@ public class WordleAlgo extends BaseLayoutAlgo
         double y = (radius * Math.sin(theta));
 
         rect.setRect(rect.getX() + x, rect.getY() + y, rect.getWidth(), rect.getHeight());
-        // TODO: check bounds
     }
 
-    private boolean intersects(Word word)
+    private boolean intersects(SWCRectangle rect, Map<Word, SWCRectangle> placedWords)
     {
-        SWCRectangle rect = wordPositions.get(word);
-
-        for (Word w : wordPositions.keySet())
-            if (!w.equals(word))
-                if (rect.intersects(wordPositions.get(w)))
-                    return true;
+        for (Word w : placedWords.keySet())
+            if (rect.intersects(placedWords.get(w)))
+                return true;
 
         return false;
     }
-
-    /**
-     * Generates a word angle
-     */
-    /*private double generateAngle()
-    {
-        if (ALLOW_VERTICAL_WORDS && rnd.nextDouble() < 0.5)
-            return -Math.PI / 2;
-
-        return 0;
-    }*/
 }

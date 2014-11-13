@@ -2,8 +2,8 @@ package edu.cloudy.layout;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.graph.Edge;
+import edu.cloudy.graph.Graph;
 import edu.cloudy.graph.Vertex;
-import edu.cloudy.graph.WordGraph;
 import edu.cloudy.metrics.AdjacenciesMetric;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
@@ -35,13 +35,15 @@ public class SingleStarAlgo extends BaseLayoutAlgo
     private Set<Vertex> boxesNotRealized;
 
     private Vertex center;
-    private WordGraph graph;
+    private Graph graph;
+
+    private Map<Word, Integer> wordIndex;
 
     public SingleStarAlgo()
     {
     }
 
-    public void setGraph(WordGraph g)
+    public void setGraph(Graph g)
     {
         this.graph = g;
     }
@@ -50,32 +52,25 @@ public class SingleStarAlgo extends BaseLayoutAlgo
     {
         double ret = 0.0;
 
-        for (Word w1 : wordPositions.keySet())
-            for (Word w2 : wordPositions.keySet())
+        for (int i = 0; i < words.length; i++)
+            for (int j = i + 1; j < words.length; j++)
             {
-                if (w1.equals(w2))
+                if (!AdjacenciesMetric.close(wordPositions[i], wordPositions[j]))
                     continue;
 
-                SWCRectangle rect1 = wordPositions.get(w1);
-                SWCRectangle rect2 = wordPositions.get(w2);
-                if (!AdjacenciesMetric.close(rect1, rect2))
-                    continue;
-
-                Edge edge = graph.getEdge((Vertex)w1, (Vertex)w2);
+                Edge edge = graph.getEdge((Vertex)words[i], (Vertex)words[j]);
                 ret += graph.getEdgeWeight(edge);
             }
 
-        return ret / 2.0;
+        return ret;
     }
 
     public List<Vertex> getRealizedVertices()
     {
         List<Vertex> result = new ArrayList<Vertex>();
 
-        for (Word w : wordPositions.keySet())
+        for (Vertex v : graph.vertexSet())
         {
-            Vertex v = (Vertex)w;
-
             if (v.equals(center))
             {
                 result.add(center);
@@ -94,6 +89,12 @@ public class SingleStarAlgo extends BaseLayoutAlgo
     @Override
     protected void run()
     {
+        wordIndex = new HashMap();
+        for (int i = 0; i < words.length; i++)
+            wordIndex.put(words[i], i);
+
+        generateBoundingBoxes();
+
         computeKnapsacks();
 
         // get the four corner boxes
@@ -112,10 +113,9 @@ public class SingleStarAlgo extends BaseLayoutAlgo
             }
         }
 
-        wordPositions = new HashMap<Word, SWCRectangle>();
         // center box, position 0,0
-        SWCRectangle centerRect = new SWCRectangle(getBoundingBox(center));
-        wordPositions.put(center, centerRect);
+        SWCRectangle centerRect = wordPositions[wordIndex.get(center)];
+        wordPositions[wordIndex.get(center)] = centerRect;
 
         //sides
         layoutTop(centerRect, found, cornerVertices);
@@ -131,12 +131,10 @@ public class SingleStarAlgo extends BaseLayoutAlgo
         double taken = 0;
         for (Vertex v : sortBoxes(boxesLeft))
         {
-            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
+            SWCRectangle wordRect = wordPositions[wordIndex.get(v)];
             // translate to left and up
             wordRect.move(-1 * wordRect.getWidth(), taken);
             taken += wordRect.getHeight();
-
-            wordPositions.put(v, wordRect);
         }
         assert (taken <= centerRect.getHeight());
     }
@@ -146,12 +144,10 @@ public class SingleStarAlgo extends BaseLayoutAlgo
         double taken = 0;
         for (Vertex v : sortBoxes(boxesRight))
         {
-            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
+            SWCRectangle wordRect = wordPositions[wordIndex.get(v)];
             // translate to right and up
             wordRect.move(centerRect.getWidth(), taken);
             taken += wordRect.getHeight();
-
-            wordPositions.put(v, wordRect);
         }
         assert (taken <= centerRect.getHeight());
     }
@@ -161,12 +157,10 @@ public class SingleStarAlgo extends BaseLayoutAlgo
         double taken = 0;
         for (Vertex v : sortBoxes(boxesBottom))
         {
-            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
+            SWCRectangle wordRect = wordPositions[wordIndex.get(v)];
             // translate to bottom and right
             wordRect.move(taken, -1 * wordRect.getHeight());
             taken += wordRect.getWidth();
-
-            wordPositions.put(v, wordRect);
         }
         assert (taken <= centerRect.getWidth());
 
@@ -174,20 +168,16 @@ public class SingleStarAlgo extends BaseLayoutAlgo
         if (found > 3)
         {
             Vertex v = cornerVertices[3];
-            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
+            SWCRectangle wordRect = wordPositions[wordIndex.get(v)];
             wordRect.move(taken, -1 * wordRect.getHeight());
-
-            wordPositions.put(v, wordRect);
         }
 
         // bottom-left
         if (found > 0)
         {
             Vertex v = cornerVertices[0];
-            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
+            SWCRectangle wordRect = wordPositions[wordIndex.get(v)];
             wordRect.move(-1 * wordRect.getWidth(), -1 * wordRect.getHeight());
-
-            wordPositions.put(v, wordRect);
         }
     }
 
@@ -196,14 +186,12 @@ public class SingleStarAlgo extends BaseLayoutAlgo
         double taken = 0;
         for (Vertex v : sortBoxes(boxesTop))
         {
-            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
+            SWCRectangle wordRect = wordPositions[wordIndex.get(v)];
             // translate to top and right
             wordRect.move(taken, centerRect.getHeight());
             taken += wordRect.getWidth();
 
             assert (wordRect.getWidth() > 0);
-
-            wordPositions.put(v, wordRect);
         }
         assert (taken <= centerRect.getWidth());
 
@@ -211,20 +199,16 @@ public class SingleStarAlgo extends BaseLayoutAlgo
         if (found > 2)
         {
             Vertex v = cornerVertices[2];
-            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
+            SWCRectangle wordRect = wordPositions[wordIndex.get(v)];
             wordRect.move(taken, centerRect.getHeight());
-
-            wordPositions.put(v, wordRect);
         }
 
         // top-left
         if (found > 1)
         {
             Vertex v = cornerVertices[1];
-            SWCRectangle wordRect = new SWCRectangle(getBoundingBox(v));
+            SWCRectangle wordRect = wordPositions[wordIndex.get(v)];
             wordRect.move(-1 * wordRect.getWidth(), centerRect.getHeight());
-
-            wordPositions.put(v, wordRect);
         }
     }
 
@@ -281,8 +265,7 @@ public class SingleStarAlgo extends BaseLayoutAlgo
             if (curIndex > 0)
             {
                 WordPair wp = new WordPair(list.get(curOrder[curIndex - 1]), list.get(curOrder[curIndex]));
-                if (similarity.containsKey(wp))
-                    deltaWeight += similarity.get(wp);
+                deltaWeight += wordGraph.getSimilarity().get(wp);
             }
 
             shuffleBoxes(curIndex + 1, curOrder, curWeight + deltaWeight, list);
@@ -335,7 +318,7 @@ public class SingleStarAlgo extends BaseLayoutAlgo
         }
 
         this.center = center;
-        SWCRectangle centerRect = new SWCRectangle(getBoundingBox(center));
+        SWCRectangle centerRect = wordPositions[wordIndex.get(center)];
 
         final int horizontalSize = (int)Math.round(centerRect.getWidth() * (SIZE_SCALING));
         final int verticalSize = (int)Math.round(centerRect.getHeight() * (SIZE_SCALING));
@@ -364,8 +347,10 @@ public class SingleStarAlgo extends BaseLayoutAlgo
             if (v == center)
                 continue;
 
-            heights[k] = (int)Math.round(getBoundingBox(v).getHeight() * (SIZE_SCALING)) + 1;
-            widths[k] = (int)Math.round(getBoundingBox(v).getWidth() * (SIZE_SCALING)) + 1;
+            SWCRectangle bb = wordPositions[wordIndex.get(v)];
+
+            heights[k] = (int)Math.round(bb.getHeight() * (SIZE_SCALING)) + 1;
+            widths[k] = (int)Math.round(bb.getWidth() * (SIZE_SCALING)) + 1;
 
             //Logger.log("Putting width: " + widths[k]);
             //Logger.log("Pixel width: " + this.bbGenerator.getBoundingBox(v, v.weight).getWidth());
@@ -568,23 +553,19 @@ public class SingleStarAlgo extends BaseLayoutAlgo
     }
 
     @Override
-    public LayoutResult layout(List<Word> words, Map<WordPair, Double> similarity)
+    protected LayoutResult createResult()
     {
-        this.words = words;
-        this.similarity = similarity;
-        
-        run();
-
-        return new LayoutResult(wordPositions)
+        return new LayoutResult(words, wordPositions)
         {
             @Override
             public SWCRectangle getWordPosition(Word w)
             {
                 if (boxesNotRealized.contains(w))
                     return null;
-                
-                return wordPositions.get(w);
+
+                return super.getWordPosition(w);
             }
         };
     }
+
 }

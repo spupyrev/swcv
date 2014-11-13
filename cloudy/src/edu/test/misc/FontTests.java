@@ -1,4 +1,4 @@
-package edu.test;
+package edu.test.misc;
 
 import edu.cloudy.utils.FontUtils;
 

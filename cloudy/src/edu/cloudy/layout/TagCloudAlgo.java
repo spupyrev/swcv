@@ -1,12 +1,10 @@
 package edu.cloudy.layout;
 
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.nlp.Word;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author spupyrev
@@ -14,8 +12,6 @@ import java.util.Map;
  */
 public abstract class TagCloudAlgo extends BaseLayoutAlgo
 {
-    private Map<Word, SWCRectangle> wordRectangles = new HashMap<Word, SWCRectangle>();
-
     private double MAX_WIDTH;
     private double MAX_HEIGHT;
 
@@ -42,27 +38,19 @@ public abstract class TagCloudAlgo extends BaseLayoutAlgo
 
     private void computeCloudDimensions()
     {
-        double area = wordRectangles.values().stream().mapToDouble(r -> r.getArea()).sum();
+        double area = Arrays.stream(wordPositions).mapToDouble(w -> w.getArea()).sum();
 
         MAX_HEIGHT = Math.sqrt(1.25 * area / aspectRatio);
         MAX_WIDTH = MAX_HEIGHT * aspectRatio;
     }
 
-    private void generateBoundingBoxes()
-    {
-        words.forEach(w -> wordRectangles.put(w, getBoundingBox(w)));
-    }
-
     public boolean doLayout()
     {
-        wordPositions.clear();
-
-        List<Word> curWords = new ArrayList();
+        List<Integer> curWords = new ArrayList();
         double curX = 0, curY = 0;
-        for (int i = 0; i < words.size(); i++)
+        for (int i = 0; i < words.length; i++)
         {
-            Word w = words.get(i);
-            SWCRectangle rect = wordRectangles.get(w);
+            SWCRectangle rect = wordPositions[i];
             if (curX + rect.getWidth() > MAX_WIDTH)
             {
                 if (curWords.isEmpty())
@@ -76,7 +64,7 @@ public abstract class TagCloudAlgo extends BaseLayoutAlgo
             }
             else
             {
-                curWords.add(w);
+                curWords.add(i);
                 curX += rect.getWidth() * 1.05;
             }
         }
@@ -87,30 +75,34 @@ public abstract class TagCloudAlgo extends BaseLayoutAlgo
         return curY <= MAX_HEIGHT;
     }
 
-    private double assignPositions(List<Word> curWords, double curY)
+    private double assignPositions(List<Integer> curWords, double curY)
     {
-        double maxH = maxHeight(words);
+        double maxH = maxHeight();
         double h = Math.max(maxHeight(curWords), maxH / 2.5);
         double delta = (curWords.size() > 1 ? (MAX_WIDTH - sumWidth(curWords)) / (curWords.size() - 1) : 0);
         double curX = 0;
-        for (Word w : curWords)
+        for (int i : curWords)
         {
-            SWCRectangle rect = wordRectangles.get(w);
+            SWCRectangle rect = wordPositions[i];
             rect.moveTo(curX, curY + h - rect.getHeight());
-            wordPositions.put(w, rect);
             curX += rect.getWidth() + delta;
         }
         return h + 1;
     }
 
-    private double maxHeight(List<Word> curWords)
+    private double maxHeight(List<Integer> curWords)
     {
-        return curWords.stream().mapToDouble(w -> wordRectangles.get(w).getHeight()).max().orElse(0);
+        return curWords.stream().mapToDouble(i -> wordPositions[i].getHeight()).max().orElse(0);
     }
 
-    private double sumWidth(List<Word> curWords)
+    private double maxHeight()
     {
-        return curWords.stream().mapToDouble(w -> wordRectangles.get(w).getWidth()).sum();
+        return Arrays.stream(wordPositions).mapToDouble(w -> w.getHeight()).max().orElse(0);
+    }
+
+    private double sumWidth(List<Integer> curWords)
+    {
+        return curWords.stream().mapToDouble(i -> wordPositions[i].getWidth()).sum();
     }
 
 }

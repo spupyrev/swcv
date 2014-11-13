@@ -1,10 +1,11 @@
 package edu.cloudy.geom;
 
+import edu.cloudy.nlp.Word;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author spupyrev
@@ -77,29 +78,29 @@ public class GeometryUtils
      * @param x The point to get the distance of
      * @return Distance of x from l1->l2
      */
-    public static void computeDelaunayTriangulation(List<? extends Object> words, Map<? extends Object, SWCRectangle> wordPositions, SWCPoint[] points, List<List<Integer>> edges)
+    public static void computeDelaunayTriangulation(Word[] words, SWCRectangle[] wordPositions, SWCPoint[] points, List<List<Integer>> edges)
     {
-        for (int i = 0; i < words.size(); i++)
+        for (int i = 0; i < words.length; i++)
         {
             edges.add(i, new ArrayList<Integer>());
         }
 
         // System.out.println("Triangulation");
-        for (int i = 0; i < words.size(); i++)
+        for (int i = 0; i < words.length; i++)
         {
-            SWCRectangle temp = wordPositions.get(words.get(i));
+            SWCRectangle temp = wordPositions[i];
             points[i] = new SWCPoint(temp.getCenterX(), temp.getCenterY());
         }
 
         // determine if i-j-k is a circle with no interior points
-        for (int i = 0; i < words.size(); i++)
+        for (int i = 0; i < words.length; i++)
         {
-            for (int j = i + 1; j < words.size(); j++)
+            for (int j = i + 1; j < words.length; j++)
             {
-                for (int k = j + 1; k < words.size(); k++)
+                for (int k = j + 1; k < words.length; k++)
                 {
                     boolean isTriangle = true;
-                    for (int a = 0; a < words.size(); a++)
+                    for (int a = 0; a < words.length; a++)
                     {
                         if (a == i || a == j || a == k)
                             continue;

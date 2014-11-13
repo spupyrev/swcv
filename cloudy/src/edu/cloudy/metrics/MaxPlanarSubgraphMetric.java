@@ -1,15 +1,12 @@
 package edu.cloudy.metrics;
 
 import edu.cloudy.graph.Edge;
+import edu.cloudy.graph.Graph;
 import edu.cloudy.graph.MaxSpanningTreeBuilder;
-import edu.cloudy.graph.WordGraph;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.layout.WordGraph;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,11 +16,11 @@ import java.util.Set;
 public class MaxPlanarSubgraphMetric implements QualityMetric
 {
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    public double getValue(WordGraph wordGraph, LayoutResult layout)
     {
-        WordGraph wg = new WordGraph(words, similarity);
+        Graph wg = new Graph(wordGraph);
         Set<Edge> mstEdges = new HashSet<Edge>();
-        WordGraph tree = new MaxSpanningTreeBuilder(wg).getTree(mstEdges);
+        Graph tree = new MaxSpanningTreeBuilder(wg).getTree(mstEdges);
 
         return Math.min(wg.totalWeight(), 3 * tree.totalWeight());
     }

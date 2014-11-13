@@ -1,10 +1,6 @@
 package edu.cloudy.clustering;
 
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-
-import java.util.List;
-import java.util.Map;
+import edu.cloudy.layout.WordGraph;
 
 /**
  * @author spupyrev
@@ -12,9 +8,5 @@ import java.util.Map;
  */
 public interface IClusterAlgo
 {
-    void run(List<Word> words, Map<WordPair, Double> similarity);
-
-    int getCluster(Word word);
-
-    int getClusterNumber();
+    ClusterResult run(WordGraph wordGraph);
 }

@@ -2,6 +2,7 @@ package edu.cloudy.metrics;
 
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
@@ -13,12 +14,16 @@ import java.util.Map;
 public class PrecisionRecallMetric1 implements QualityMetric
 {
     @Override
-    public double getValue(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    public double getValue(WordGraph wordGraph, LayoutResult layout)
     {
+        List<Word> words = wordGraph.getWords();
+        Map<WordPair, Double> similarity = wordGraph.getSimilarity();
+        
         double res = 0;
         for (Word word : words)
         {
-            res += precisionRecall(word, algo, similarity, getCloseWords(word, words, algo));
+            List<Word> closeWords = getCloseWords(word, words, layout);
+            res += precisionRecall(word, layout, similarity, closeWords);
         }
         return res / maximalPrecisionRecall(similarity);
     }

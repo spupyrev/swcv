@@ -2,10 +2,9 @@ package edu.cloudy.layout.overlaps;
 
 import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.nlp.Word;
+import edu.cloudy.utils.Logger;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 
 /**
  * @author spupyrev
@@ -13,8 +12,8 @@ import java.util.Map;
  */
 public class ForceDirectedUniformity<T extends SWCRectangle> implements OverlapRemoval<T>
 {
-    private static double SCALE_FACTOR = 1.2;
-    private static double KR = 0.1;
+    private static double SCALE_FACTOR = 0.1;
+    private static double KR = 0.3;
     private int MAX_ITER = 500;
 
     public ForceDirectedUniformity()
@@ -27,20 +26,23 @@ public class ForceDirectedUniformity<T extends SWCRectangle> implements OverlapR
     }
 
     @Override
-    public void run(List<Word> words, Map<Word, T> wordPositions)
+    public void run(T[] wordPositions)
     {
         int iter = 0;
 
-        int n = words.size();
+        int n = wordPositions.length;
         SWCRectangle[] rect = new SWCRectangle[n];
+        double maxHeight = Arrays.stream(wordPositions).mapToDouble(pos -> pos.getHeight()).max().orElse(0.0);
+        double delta = maxHeight * SCALE_FACTOR;
+
         for (int i = 0; i < n; i++)
         {
-            Word word = words.get(i);
-            rect[i] = new SWCRectangle(wordPositions.get(word));
-            rect[i].scale(SCALE_FACTOR);
+            rect[i] = new SWCRectangle(wordPositions[i]);
+            rect[i].setWidth(rect[i].getWidth() + delta);
+            rect[i].setHeight(rect[i].getHeight() + delta);
         }
 
-        while (overlaps(words, rect) && iter++ < MAX_ITER)
+        while (overlaps(rect) && iter++ < MAX_ITER)
         {
             // compute the displacement for all words in this time step
             for (int i = 0; i < n; i++)
@@ -79,13 +81,13 @@ public class ForceDirectedUniformity<T extends SWCRectangle> implements OverlapR
                 dxy.scale(1.0 / cnt);
                 rect[i].setRect(rect[i].getX() + dxy.x(), rect[i].getY() + dxy.y(), rect[i].getWidth(), rect[i].getHeight());
             }
-
         }
+
+        Logger.println("overlaps after uniformity: " + overlaps(rect));
 
         for (int i = 0; i < n; i++)
         {
-            Word word = words.get(i);
-            wordPositions.get(word).moveTo(rect[i].getX(), rect[i].getY());
+            wordPositions[i].moveTo(rect[i].getX(), rect[i].getY());
         }
     }
 
@@ -114,31 +116,9 @@ public class ForceDirectedUniformity<T extends SWCRectangle> implements OverlapR
         return dir;
     }
 
-    private boolean overlaps(List<Word> words, SWCRectangle[] pos)
+    private boolean overlaps(SWCRectangle[] pos)
     {
-        for (int i = 0; i < words.size(); i++)
-        {
-            for (int j = i + 1; j < words.size(); j++)
-            {
-                SWCRectangle iRect = pos[i];
-                SWCRectangle jRect = pos[j];
-
-                if (iRect.intersects(jRect))
-                {
-                    double hix = Math.min(iRect.getMaxX(), jRect.getMaxX());
-                    double lox = Math.max(iRect.getMinX(), jRect.getMinX());
-                    double hiy = Math.min(iRect.getMaxY(), jRect.getMaxY());
-                    double loy = Math.max(iRect.getMinY(), jRect.getMinY());
-                    double dx = hix - lox; // hi > lo
-                    double dy = hiy - loy;
-
-                    if (Math.min(dx, dy) > 1)
-                        return true;
-                }
-            }
-        }
-
-        return false;
+        return ForceDirectedOverlapRemoval.overlaps(pos);
     }
 
 }

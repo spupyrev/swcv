@@ -1,13 +1,14 @@
 package edu.cloudy.colors;
 
+import edu.cloudy.clustering.ClusterResult;
+import edu.cloudy.clustering.GenericClusterAlgo;
 import edu.cloudy.clustering.IClusterAlgo;
-import edu.cloudy.clustering.KMeansPlusPlus;
+import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.utils.TimeMeasurer;
 
 import java.awt.Color;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author spupyrev
@@ -19,7 +20,7 @@ public class ClusterColorScheme extends ColorScheme
     private int K;
 
     private int[] clusterIndex;
-    private IClusterAlgo clusterAlgo = null;
+    private ClusterResult clustering = null;
 
     public ClusterColorScheme(String name, String cmdIndex, int K, Color[] colorSequence)
     {
@@ -32,28 +33,29 @@ public class ClusterColorScheme extends ColorScheme
     @Override
     public Color getColor(Word word)
     {
-        if (clusterAlgo == null)
+        if (clustering == null)
             throw new RuntimeException(ClusterColorScheme.class.getName() + " is not initialized");
         
-        int c = clusterAlgo.getCluster(word);
+        int c = clustering.getCluster(word);
         int res = clusterIndex[c] % colorSequence.length;
         return colorSequence[res];
     }
 
     @Override
-    public void initialize(List<Word> words, Map<WordPair, Double> similarity)
+    public void initialize(WordGraph wordGraph)
     {
-        clusterAlgo = new KMeansPlusPlus(guessNumberOfClusters(words.size()));
-        clusterAlgo.run(words, similarity);
-        sortClusters(words);
+        IClusterAlgo clusterAlgo = new GenericClusterAlgo(K);
+        clustering = TimeMeasurer.execute("clustering", () -> clusterAlgo.run(wordGraph));
+        
+        sortClusters(wordGraph.getWords());
     }
     
     private void sortClusters(List<Word> words)
     {
-        int K = clusterAlgo.getClusterNumber();
+        int K = clustering.getClusterCount();
         int[] cnt = new int[K];
         for (Word w : words)
-            cnt[clusterAlgo.getCluster(w)]++;
+            cnt[clustering.getCluster(w)]++;
 
         clusterIndex = new int[K];
         for (int i = 0; i < K; i++)
@@ -74,12 +76,4 @@ public class ClusterColorScheme extends ColorScheme
 
         clusterIndex = clusterIndexRev;
     }
-
-    private int guessNumberOfClusters(int n)
-    {
-        if (K != -1)
-            return K;
-        return Math.max((int)Math.sqrt((double)n / 2), 1);
-    }
-
 }

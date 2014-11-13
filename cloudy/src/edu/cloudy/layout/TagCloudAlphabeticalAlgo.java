@@ -1,6 +1,6 @@
 package edu.cloudy.layout;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 /**
  * @author spupyrev
@@ -10,7 +10,7 @@ public class TagCloudAlphabeticalAlgo extends TagCloudAlgo
 {
     protected void sortWords()
     {
-        Collections.sort(words, (w1, w2) -> w1.word.compareToIgnoreCase(w2.word));
+        Arrays.sort(words, (w1, w2) -> w1.word.compareToIgnoreCase(w2.word));
     }
 
 }

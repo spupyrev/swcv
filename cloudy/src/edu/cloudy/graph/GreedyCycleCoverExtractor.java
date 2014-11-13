@@ -16,10 +16,10 @@ import java.util.Set;
  */
 public class GreedyCycleCoverExtractor
 {
-    private WordGraph g;
+    private Graph g;
     private List<Edge> matchedEdges;
 
-    public GreedyCycleCoverExtractor(WordGraph g)
+    public GreedyCycleCoverExtractor(Graph g)
     {
         this.g = g;
     }

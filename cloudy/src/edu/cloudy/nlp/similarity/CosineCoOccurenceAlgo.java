@@ -4,120 +4,47 @@ import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Similarity between words based on their co-occurence in the same sentences 
  */
 public class CosineCoOccurenceAlgo extends BaseSimilarityAlgo
 {
-    private final static double SIMILARITY_THRESHOLD = 0.000001;
-    
     private Map<WordPair, Double> similarity;
 
     @Override
-    protected void run(SWCDocument wordifier)
+    protected void run(SWCDocument document)
     {
-        List<Word> words = wordifier.getWords();
-        Map<Word, Integer> wordToIndex = new HashMap<Word, Integer>();
+        List<Word> words = document.getWords();
 
-        int coOccurrence[][] = new int[words.size()][words.size()];
+        similarity = new HashMap<WordPair, Double>();
 
         for (int i = 0; i < words.size(); i++)
         {
-            wordToIndex.put(words.get(i), i);
+            Word x = words.get(i);
+            Set<Integer> xSentences = new HashSet<Integer>(x.getSentences());
 
-            for (int j = i; j < words.size(); j++)
+            for (int j = i + 1; j < words.size(); j++)
             {
-                coOccurrence[i][j] = 0;
-            }
-        }
-
-        for (Word x : words)
-        {
-            for (Word y : words)
-            {
-                List<Integer> sharedSentences = new ArrayList<Integer>(x.getSentences());
-
-                sharedSentences.retainAll(y.getSentences());
+                Word y = words.get(j);
+                Set<Integer> ySentences = new HashSet<Integer>(y.getSentences());
 
                 // count how many times those two occur in the same sentence
-                int xIndex = wordToIndex.get(x);
-                int yIndex = wordToIndex.get(y);
+                Set<Integer> sharedSentences = new HashSet(xSentences);
+                sharedSentences.retainAll(ySentences);
 
-                coOccurrence[xIndex][yIndex] += sharedSentences.size();
+                double xySimilarity = sharedSentences.size() / Math.sqrt((double)xSentences.size() * ySentences.size());
+                assert (0 <= xySimilarity && xySimilarity <= 1.0);
+
+                similarity.put(new WordPair(x, y), xySimilarity);
             }
-        }
 
-        similarity = new HashMap<WordPair, Double>();
-        // compute the similarity matrix
-
-        boolean nonZero[] = new boolean[words.size()];
-
-        for (int x = 0; x < words.size(); x++)
-        {
-            nonZero[x] = false;
-        }
-
-        for (int x = 0; x < words.size(); x++)
-        {
-            //System.out.println("X: " + x);
-            for (int y = (x + 1); y < words.size(); y++)
-            {
-                double xy = 0;
-                double x2 = 0;
-                double y2 = 0;
-
-                for (int z = 0; z < words.size(); z++)
-                {
-                    xy += coOccurrence[x][z] * coOccurrence[y][z];
-                    x2 += coOccurrence[x][z] * coOccurrence[x][z];
-                    y2 += coOccurrence[y][z] * coOccurrence[y][z];
-                }
-
-                WordPair xyPair = new WordPair(words.get(x), words.get(y));
-                double xySimilarity;
-                if (Math.abs(x2 * y2) < 1e-6)
-                {
-                    xySimilarity = 0.0;
-                }
-                else
-                {
-                    xySimilarity = xy / Math.sqrt(x2 * y2);
-                }
-
-                if (xySimilarity > CosineCoOccurenceAlgo.SIMILARITY_THRESHOLD)
-                {
-                    nonZero[x] = true;
-                    nonZero[y] = true;
-
-                    xySimilarity *= xySimilarity;
-                }
-                else
-                {
-                    xySimilarity = 0.0;
-                }
-
-                similarity.put(xyPair, xySimilarity);
-            }
-        }
-
-        for (int x = 0; x < words.size(); x++)
-        {
-            WordPair pair = new WordPair(words.get(x), words.get(x));
-
-            if (nonZero[x])
-            {
-                similarity.put(pair, 0.0);
-            }
-            else
-            {
-                //Logger.println("Got a zero vertex!");
-                similarity.put(pair, 1.0);
-            }
+            similarity.put(new WordPair(x, x), 1.0);
         }
     }
 

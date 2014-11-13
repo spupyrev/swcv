@@ -1,6 +1,6 @@
 package edu.cloudy.layout.mds;
 
-import java.util.Random;
+import edu.cloudy.utils.Logger;
 
 /**
  * @author spupyrev
@@ -11,94 +11,129 @@ import java.util.Random;
 public class DistanceScaling
 {
     private static final int MAX_ITERATIONS = 1000;
-    private static final double EPS = 1e-10;
+    private static final double EPS = 1e-5;
+    private static final double MIN_PROGRESS = 1e-2;
 
-    //TODO: no weights in the implementation
-    public double[][] mds(double[][] d, int dimensions)
+    public double[][] mds(double[][] d, int dim)
+    {
+        return mds(d, dim, true);
+    }
+
+    public double[][] mds(double[][] d, int dim, boolean useClassicalScaling)
     {
         assert (d.length == d[0].length);
 
         int n = d.length;
-        double[][] res = new double[2][n];
-        for (int k = 0; k < dimensions; k++)
+        double[][] res;
+        if (useClassicalScaling)
         {
-            double[] v = randomUnitLengthVector(n, k);
-            for (int i = 0; i < n; i++)
-                res[k][i] = v[i];
+            res = new ClassicalScaling().mds(d, dim);
         }
+        else
+        {
+            res = new double[dim][n];
+            initCoordinates(res);
+            scaleToAverageDistance(d, res);
+        }
+
+        //Logger.println("initial stress: " + stress(d, res));
 
         for (int iter = 0; iter < MAX_ITERATIONS; iter++)
         {
-            boolean changed = false;
-            for (int i = 0; i < n; i++)
+            if (!doIteration(d, res))
             {
-                double[] resNew = new double[2];
-                for (int j = 0; j < n; j++)
-                {
-                    double inv = 0;
-                    for (int k = 0; k < dimensions; k++)
-                    {
-                        double value = res[k][i] - res[k][j];
-                        inv += value * value;
-                    }
+                Logger.println("mds converged after " + iter + " iterations");
+                break;
+            }
+        }
 
-                    inv = Math.sqrt(inv);
-                    if (inv > EPS)
-                    {
-                        inv = 1.0 / inv;
-                        for (int k = 0; k < dimensions; k++)
-                        {
-                            double value = res[k][j] + d[i][j] * (res[k][i] - res[k][j]) * inv;
-                            resNew[k] += value;
-                        }
-                    }
+        //Logger.println("final stress: " + stress(d, res));
+        return res;
+    }
+
+    private boolean doIteration(double[][] d, double[][] res)
+    {
+        boolean progress = false;
+
+        int n = d.length;
+        int dim = res.length;
+        for (int i = 0; i < n; i++)
+        {
+            double[] resNew = new double[dim];
+            for (int j = 0; j < n; j++)
+            {
+                double inv = 0;
+                for (int k = 0; k < dim; k++)
+                {
+                    double value = res[k][i] - res[k][j];
+                    inv += value * value;
                 }
 
-                for (int k = 0; k < dimensions; k++)
-                    resNew[k] = resNew[k] / n;
-
-                for (int k = 0; k < dimensions; k++)
+                inv = Math.sqrt(inv);
+                if (inv > EPS)
                 {
-                    if (Math.abs(resNew[k] - res[k][i]) > 1e-3)
+                    inv = 1.0 / inv;
+                    for (int k = 0; k < dim; k++)
                     {
-                        res[k][i] = resNew[k];
-                        changed = true;
+                        double value = (res[k][j] + d[i][j] * (res[k][i] - res[k][j]) * inv);
+                        resNew[k] += value;
                     }
                 }
             }
 
-            if (!changed)
-                break;
+            for (int k = 0; k < dim; k++)
+            {
+                resNew[k] = resNew[k] / (n - 1.0);
+                if (Math.abs(resNew[k] - res[k][i]) > MIN_PROGRESS)
+                {
+                    res[k][i] = resNew[k];
+                    progress = true;
+                }
+            }
         }
 
-        return res;
+        return progress;
     }
 
-    private double[] randomUnitLengthVector(int n, int k)
+    private void initCoordinates(double[][] res)
     {
-        Random rnd = new Random(k);
-        double[] v = new double[n];
-        double sum = 0;
-        for (int i = 0; i < n; i++)
+        for (int k = 0; k < res.length; k++)
         {
-            v[i] = rnd.nextDouble();
-            sum += v[i];
+            double[] v = MathUtils.randomUnitLengthVector(res[k].length, k);
+            for (int i = 0; i < res[k].length; i++)
+                res[k][i] = v[i];
         }
-
-        for (int i = 0; i < n; i++)
-        {
-            v[i] /= sum;
-        }
-        return v;
     }
 
-    @SuppressWarnings("unused")
-    private double stress(double[][] d, double[][] res)
+    public static void scaleToAverageDistance(double[][] d, double[][] res)
+    {
+        double sumD = 0;
+        double sumRes = 0;
+        for (int i = 0; i < d.length; i++)
+            for (int j = i + 1; j < d.length; j++)
+            {
+                double distRes = 0;
+                for (int k = 0; k < res.length; k++)
+                    distRes += (res[k][i] - res[k][j]) * (res[k][i] - res[k][j]);
+                distRes = Math.sqrt(distRes);
+
+                sumRes += distRes;
+                sumD += d[i][j];
+            }
+
+        double s = sumD / sumRes;
+        for (int i = 0; i < d.length; i++)
+            for (int k = 0; k < res.length; k++)
+                res[k][i] *= s;
+
+    }
+
+    public static double stress(double[][] d, double[][] res)
     {
         int n = d.length;
         double sum = 0;
         for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
+            for (int j = i + 1; j < n; j++)
             {
                 double dist = 0;
                 for (int k = 0; k < res.length; k++)

@@ -8,6 +8,8 @@ public class LayoutUtils
 {
     public static double idealDistanceConverter(double similarity)
     {
-        return -Math.log(0.9 * similarity + 0.1);
+        double s = 0.05;
+        double d = -Math.log((1.0 - s) * similarity + s);
+        return Math.max(d, 0.0);
     }
 }
