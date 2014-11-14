@@ -4,9 +4,9 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.graph.Edge;
 import edu.cloudy.graph.Graph;
 import edu.cloudy.graph.Vertex;
+import edu.cloudy.layout.clusters.ClusterForceDirectedPlacer;
+import edu.cloudy.layout.clusters.WordPlacer;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
-import edu.cloudy.layout.packing.ClusterForceDirectedPlacer;
-import edu.cloudy.layout.packing.WordPlacer;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 

@@ -1,4 +1,4 @@
-package edu.cloudy.main;
+package edu.test.misc;
 
 import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.LayoutAlgo;

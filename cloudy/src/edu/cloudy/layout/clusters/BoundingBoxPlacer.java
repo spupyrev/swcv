@@ -1,9 +1,9 @@
-package edu.cloudy.layout.packing;
+package edu.cloudy.layout.clusters;
 
 import edu.cloudy.geom.BoundingBoxGenerator;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.layout.packing.RectanglePacker.Rectangle;
+import edu.cloudy.layout.clusters.RectanglePacker.Rectangle;
 import edu.cloudy.nlp.Word;
 
 import java.util.ArrayList;

@@ -1,9 +1,10 @@
-package edu.cloudy.layout;
+package edu.cloudy.layout.packing;
 
 import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
-import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
+import edu.cloudy.layout.BaseLayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.MDSAlgo;
 import edu.cloudy.utils.Logger;
 
 import java.util.Arrays;
@@ -13,14 +14,15 @@ import java.util.stream.IntStream;
  * June 21, 2014
  * @author spupyrev 
  */
-public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
+public class CopyOfMDSWithFDPackingAlgo extends BaseLayoutAlgo
 {
     private static final int MAX_ITERATIONS = 500;
+
     private static final double MAX_STEP = 500;
     private static final double MIN_STEP = 1;
     private static final double MIN_RELATIVE_CHANGE = 0.00005;
 
-    public MDSWithFDPackingAlgo()
+    public CopyOfMDSWithFDPackingAlgo()
     {
     }
 
@@ -34,8 +36,8 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
         runFDAdjustments();
 
         //postprocessing
-        new ForceDirectedOverlapRemoval<SWCRectangle>(5000).run(wordPositions);
-        new ForceDirectedUniformity<SWCRectangle>().run(wordPositions);
+        //new ForceDirectedOverlapRemoval<SWCRectangle>(5000).run(wordPositions);
+        //new ForceDirectedUniformity<SWCRectangle>().run(wordPositions);
     }
 
     private void runFDAdjustments()
@@ -47,45 +49,51 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
         for (int i = 0; i < x.length; i++)
             x[i] = wordPositions[i];
 
-        PackingCostCalculator.bbox = computeBoundingBox(x);
-        PackingCostCalculator.depXGraph = computeDependencyGraph(x, true);
-        PackingCostCalculator.depYGraph = computeDependencyGraph(x, false);
+        CopyOfPackingCostCalculator.bbox = computeBoundingBox(x);
+        CopyOfPackingCostCalculator.depXGraph = computeDependencyGraph(x, true);
+        CopyOfPackingCostCalculator.depYGraph = computeDependencyGraph(x, false);
         //PackingCostCalculator.depYGraph = new int[0][2];
 
-        int iteration = 0;
-        while (iteration++ < MAX_ITERATIONS)
+        int iter = 0;
+        while (iter++ < MAX_ITERATIONS)
         {
+            //if (iter == 100)
+            //    PackingCostCalculator.DEPENDENCY_IMPORTANCE = 5.0;
+            
             SWCRectangle[] oldX = new SWCRectangle[x.length];
             for (int i = 0; i < x.length; i++)
                 oldX[i] = new SWCRectangle(x[i]);
 
-            boolean coordinatesChanged = tryMoveNodes(x, step);
-            if (!coordinatesChanged)
+            boolean progress = tryMoveNodes(x, step);
+            if (!progress)
             {
-                Logger.println("no changes in coordinates");
+                Logger.println("no progress after iteration " + iter);
                 break;
             }
 
             double oldEnergy = energy;
-            energy = PackingCostCalculator.cost(x);
+            energy = CopyOfPackingCostCalculator.cost(x);
             step = updateMaxStep(step, oldEnergy, energy);
 
-            Logger.println("energy after " + iteration + " iteration: " + energy);
-            Logger.println("max step: " + step);
+            if (iter % 10 == 0)
+            {
+                Logger.println("energy after " + iter + " iteration: " + energy);
+                Logger.println("max step: " + step);
+            }
 
             if (step < MIN_STEP || converged(step, oldX, x))
             {
-                Logger.println("step: " + step);
+                Logger.println("FDPacking converged after iteration " + iter);
                 break;
             }
         }
 
-        Logger.println("FD done " + iteration + " iterations");
+        Logger.println("FDPacking done " + iter + " iterations");
         //System.out.println("final energy: " + PackingCostCalculator.cost(x));
         //System.out.println("last step: " + tryMoveNodes(x, step));
 
-        for (int i = 0; i < x.length; i++)
-            wordPositions[i] = x[i];
+        //for (int i = 0; i < x.length; i++)
+        //    wordPositions[i] = x[i];
     }
 
     private SWCRectangle computeBoundingBox(SWCRectangle[] x)
@@ -106,9 +114,7 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
         double width = Math.sqrt(aspectRatio * area);
         double height = area / width;
 
-        SWCRectangle bb = new SWCRectangle(sumx - width / 2, sumy - height / 2, width, height);
-
-        return bb;
+        return new SWCRectangle(sumx - width / 2, sumy - height / 2, width, height);
     }
 
     private int[][] computeDependencyGraph(final SWCRectangle[] x, final boolean isX)
@@ -140,16 +146,14 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
 
     private boolean tryMoveNodes(SWCRectangle[] x, double step)
     {
-        boolean coordinatesChanged = false;
+        boolean progress = false;
         for (int i = 0; i < words.length; i++)
         {
             if (tryMoveNode(x, i, step))
-            {
-                coordinatesChanged = true;
-            }
+                progress = true;
         }
 
-        return coordinatesChanged;
+        return progress;
     }
 
     private boolean tryMoveNode(SWCRectangle[] x, int wordIndex, double maxStep)
@@ -176,10 +180,10 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
     /// Calculate the direction to improve the ink function
     private SWCPoint buildDirection(SWCRectangle[] x, int wordIndex)
     {
-        SWCPoint dependencyForce = PackingCostCalculator.dependencyForce(x, wordIndex);
-        SWCPoint boundaryForce = PackingCostCalculator.boundaryForce(x, wordIndex);
-        SWCPoint repulsiveForce = PackingCostCalculator.repulsiveForce(x, wordIndex);
-        SWCPoint centerForce = PackingCostCalculator.centerForce(x, wordIndex);
+        SWCPoint dependencyForce = CopyOfPackingCostCalculator.dependencyForce(x, wordIndex);
+        SWCPoint boundaryForce = CopyOfPackingCostCalculator.boundaryForce(x, wordIndex);
+        SWCPoint repulsiveForce = CopyOfPackingCostCalculator.repulsiveForce(x, wordIndex);
+        SWCPoint centerForce = CopyOfPackingCostCalculator.centerForce(x, wordIndex);
 
         SWCPoint force = dependencyForce;
         force.add(boundaryForce);
@@ -222,12 +226,12 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
     private double costGain(SWCRectangle[] x, int wordIndex, SWCPoint newPosition)
     {
         double MInf = -12345678.0;
-        double depGain = PackingCostCalculator.dependencyCostGain(x, wordIndex, newPosition);
-        double boundGain = PackingCostCalculator.boundaryCostGain(x, wordIndex, newPosition);
+        double depGain = CopyOfPackingCostCalculator.dependencyCostGain(x, wordIndex, newPosition);
+        double boundGain = CopyOfPackingCostCalculator.boundaryCostGain(x, wordIndex, newPosition);
         if (boundGain < MInf)
             return MInf;
-        double repGain = PackingCostCalculator.repulsiveCostGain(x, wordIndex, newPosition);
-        double centerGain = PackingCostCalculator.centerCostGain(x, wordIndex, newPosition);
+        double repGain = CopyOfPackingCostCalculator.repulsiveCostGain(x, wordIndex, newPosition);
+        double centerGain = CopyOfPackingCostCalculator.centerCostGain(x, wordIndex, newPosition);
 
         return depGain + repGain + boundGain + centerGain;
     }
@@ -238,7 +242,7 @@ public class MDSWithFDPackingAlgo extends BaseLayoutAlgo
     {
         //cooling factor
         double T = 0.8;
-        if (newEnergy + 1.0 < oldEnergy)
+        if (newEnergy < oldEnergy && (oldEnergy - newEnergy) / oldEnergy > 0.0001)
         {
             stepsWithProgress++;
             if (stepsWithProgress >= 5)

@@ -1,5 +1,5 @@
 
-package edu.cloudy.layout.packing;
+package edu.cloudy.layout.clusters;
 
 /*
  * Copyright (c) 2007, Ryan McNally All rights reserved.

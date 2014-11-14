@@ -1,5 +1,7 @@
 package edu.cloudy.layout;
 
+import edu.cloudy.layout.packing.ForceDirectedPackingAlgo;
+
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +24,7 @@ public class LayoutAlgorithmRegistry
         algorithms.put("ip", InflateAndPushAlgo.class);
         algorithms.put("sf", StarForestAlgo.class);
         algorithms.put("cc", CycleCoverAlgo.class);
-        algorithms.put("mds", MDSWithFDPackingAlgo.class);
+        algorithms.put("mds", ForceDirectedPackingAlgo.class);
     }
 
     public static LayoutAlgo getById(String id)

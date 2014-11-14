@@ -2,10 +2,10 @@ package edu.cloudy.main;
 
 import edu.cloudy.colors.ColorScheme;
 import edu.cloudy.colors.ColorSchemeRegistry;
-import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.WordGraph;
+import edu.cloudy.layout.packing.ForceDirectedPackingAlgo;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
@@ -133,14 +133,14 @@ public class SWCVisualizer
 
     private LayoutResult runLayout(WordGraph wordGraph)
     {
-        LayoutAlgo algo = new ContextPreservingAlgo();
+        //LayoutAlgo algo = new ContextPreservingAlgo();
         //LayoutAlgo algo = new InflateAndPushAlgo();
         //LayoutAlgo algo = new MDSAlgo(false);
         //LayoutAlgo algo = new StarForestAlgo();
         //LayoutAlgo algo = new CycleCoverAlgo();
         //LayoutAlgo algo = new SeamCarvingAlgo();
         //LayoutAlgo algo = new WordleAlgo();
-        //LayoutAlgo algo = new MDSWithFDPackingAlgo();
+        LayoutAlgo algo = new ForceDirectedPackingAlgo();
 
         return TimeMeasurer.execute("layout", () -> algo.layout(wordGraph));
     }

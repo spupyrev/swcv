@@ -6,10 +6,10 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.layout.MDSWithFDPackingAlgo;
 import edu.cloudy.layout.SinglePathAlgo;
 import edu.cloudy.layout.StarForestAlgo;
 import edu.cloudy.layout.WordGraph;
+import edu.cloudy.layout.packing.ForceDirectedPackingAlgo;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 import edu.cloudy.ui.WordCloudFrame;
@@ -47,7 +47,7 @@ public class LayoutTest
     {
         WordGraph wordGraph = createCycle();
 
-        checkLayout(wordGraph, new MDSWithFDPackingAlgo().layout(wordGraph));
+        checkLayout(wordGraph, new ForceDirectedPackingAlgo().layout(wordGraph));
         checkLayout(wordGraph, new CycleCoverAlgo().layout(wordGraph));
         checkLayout(wordGraph, new StarForestAlgo().layout(wordGraph));
         checkLayout(wordGraph, new ContextPreservingAlgo().layout(wordGraph));

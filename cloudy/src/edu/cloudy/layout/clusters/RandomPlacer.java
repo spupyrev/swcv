@@ -1,4 +1,4 @@
-package edu.cloudy.layout.packing;
+package edu.cloudy.layout.clusters;
 
 import edu.cloudy.geom.BoundingBoxGenerator;
 import edu.cloudy.geom.SWCRectangle;

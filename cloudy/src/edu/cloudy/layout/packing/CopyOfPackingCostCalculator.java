@@ -1,4 +1,4 @@
-package edu.cloudy.layout;
+package edu.cloudy.layout.packing;
 
 import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
@@ -7,11 +7,11 @@ import edu.cloudy.geom.SWCRectangle;
  * @author spupyrev
  * Jun 22, 2014
  */
-public class PackingCostCalculator
+public class CopyOfPackingCostCalculator
 {
     public static final double REPULSIVE_IMPORTANCE = 10;
     public static final double BOUNDARY_IMPORTANCE = 100;
-    public static final double DEPENDENCY_IMPORTANCE = 1;
+    public static double DEPENDENCY_IMPORTANCE = 1;
     public static final double CENTER_IMPORTANCE = 0.01;
 
     public static SWCRectangle bbox;

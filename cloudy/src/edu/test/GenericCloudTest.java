@@ -1,6 +1,7 @@
 package edu.test;
 
 import edu.cloudy.layout.*;
+import edu.cloudy.layout.packing.ForceDirectedPackingAlgo;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
@@ -36,7 +37,7 @@ public class GenericCloudTest
     @Test
     public void testMDS() throws FileNotFoundException
     {
-        basicTest("data/test_med.txt", 50, new MDSWithFDPackingAlgo(), new CosineCoOccurenceAlgo(), new TFRankingAlgo());
+        basicTest("data/test_med.txt", 50, new ForceDirectedPackingAlgo(), new CosineCoOccurenceAlgo(), new TFRankingAlgo());
     }
 
     @Test
