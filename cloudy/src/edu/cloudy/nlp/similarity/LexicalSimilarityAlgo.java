@@ -19,6 +19,7 @@ import java.util.Map;
 public class LexicalSimilarityAlgo extends BaseSimilarityAlgo
 {
     private Map<WordPair, Double> similarity;
+
     private static ILexicalDatabase db = new NictWordNet();
     private static RelatednessCalculator rc = new Lin(db);
 

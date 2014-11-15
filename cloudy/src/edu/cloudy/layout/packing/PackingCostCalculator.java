@@ -11,7 +11,7 @@ public class PackingCostCalculator
 {
     public static final double REPULSIVE_IMPORTANCE = 10;
     public static final double BOUNDARY_IMPORTANCE = 100;
-    public static final double CENTER_IMPORTANCE = 0.00001;
+    public static final double CENTER_IMPORTANCE = 0.0001;
     public static final double SEMANTIC_IMPORTANCE = 0.001;
 
     private SWCRectangle bbox;

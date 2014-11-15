@@ -4,9 +4,8 @@ import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.layout.mds.ClassicalScaling;
 import edu.cloudy.layout.mds.DistanceScaling;
 
+import org.junit.Assert;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 /**
  * @author spupyrev

@@ -1,6 +1,8 @@
 package edu.cloudy.layout;
 
-import java.util.Arrays;
+import edu.cloudy.nlp.Word;
+
+import java.util.List;
 
 /**
  * @author spupyrev
@@ -10,7 +12,11 @@ public class TagCloudAlphabeticalAlgo extends TagCloudAlgo
 {
     protected void sortWords()
     {
-        Arrays.sort(words, (w1, w2) -> w1.word.compareToIgnoreCase(w2.word));
+        List<Word> lWords = wordGraph.getWords();
+        lWords.sort((w1, w2) -> w1.word.compareToIgnoreCase(w2.word));
+
+        words = wordGraph.convertWordsToArray();
+        similarity = wordGraph.convertSimilarityToArray();
     }
 
 }

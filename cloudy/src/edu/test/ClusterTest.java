@@ -8,11 +8,10 @@ import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
-
-import junit.framework.Assert;
 
 /**
  * @author spupyrev

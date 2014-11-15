@@ -1,20 +1,19 @@
 package edu.test;
 
-import edu.cloudy.colors.ColorScheme;
-import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.ContextPreservingAlgo;
 import edu.cloudy.layout.CycleCoverAlgo;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.layout.SinglePathAlgo;
+import edu.cloudy.layout.SeamCarvingAlgo;
 import edu.cloudy.layout.StarForestAlgo;
+import edu.cloudy.layout.TagCloudRankAlgo;
 import edu.cloudy.layout.WordGraph;
+import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.layout.packing.ForceDirectedPackingAlgo;
 import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.WordPair;
-import edu.cloudy.ui.WordCloudFrame;
-import edu.cloudy.utils.Logger;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -24,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import junit.framework.Assert;
-
 /**
  * @author spupyrev
  * Nov 11, 2014
@@ -33,14 +30,6 @@ import junit.framework.Assert;
 public class LayoutTest
 {
     private static final Random rnd = new Random(123);
-    
-    public static void main(String[] args)
-    {
-        Logger.doLogging = true;
-        new LayoutTest().testRandomGraph();
-    }
-    
-    
 
     @Test
     public void testCycle()
@@ -58,12 +47,12 @@ public class LayoutTest
     {
         WordGraph wordGraph = createRandomGraph();
 
-        //checkLayout(wordGraph, new MDSWithFDPackingAlgo().layout(wordGraph));
-        //checkLayout(wordGraph, new WordleAlgo().layout(wordGraph));
-        //checkLayout(wordGraph, new TagCloudRankAlgo().layout(wordGraph));
-        //checkLayout(wordGraph, new SeamCarvingAlgo().layout(wordGraph));
-        checkLayout(wordGraph, new SinglePathAlgo().layout(wordGraph));
-        //checkLayout(wordGraph, new StarForestAlgo().layout(wordGraph));
+        checkLayout(wordGraph, new ForceDirectedPackingAlgo().layout(wordGraph));
+        checkLayout(wordGraph, new WordleAlgo().layout(wordGraph));
+        checkLayout(wordGraph, new TagCloudRankAlgo().layout(wordGraph));
+        checkLayout(wordGraph, new SeamCarvingAlgo().layout(wordGraph));
+        //checkLayout(wordGraph, new SinglePathAlgo().layout(wordGraph));
+        checkLayout(wordGraph, new StarForestAlgo().layout(wordGraph));
     }
 
     private WordGraph createCycle()
@@ -151,11 +140,10 @@ public class LayoutTest
 
     public static void checkLayout(WordGraph wordGraph, LayoutResult layout)
     {
-        ColorScheme colorScheme = ColorSchemeRegistry.getDefault();
-        colorScheme.initialize(wordGraph);
-        new WordCloudFrame(wordGraph, layout, colorScheme);
-        
-        
+        //ColorScheme colorScheme = ColorSchemeRegistry.getDefault();
+        //colorScheme.initialize(wordGraph);
+        //new WordCloudFrame(wordGraph, layout, colorScheme);
+
         // words do not intersect
         List<Word> words = wordGraph.getWords();
         for (int i = 0; i < words.size(); i++)
@@ -163,9 +151,11 @@ public class LayoutTest
             {
                 SWCRectangle rect1 = layout.getWordPosition(words.get(i));
                 SWCRectangle rect2 = layout.getWordPosition(words.get(j));
-                System.out.println(rect1);
-                System.out.println(rect2);
-                System.out.println(rect1.intersects(rect2));
+                if (rect1.intersects(rect2))
+                {
+                    System.out.println(rect1);
+                    System.out.println(rect2);
+                }
                 Assert.assertFalse(rect1.intersects(rect2));
             }
     }

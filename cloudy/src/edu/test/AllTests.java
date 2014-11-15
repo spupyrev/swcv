@@ -15,7 +15,8 @@ import org.junit.runners.Suite.SuiteClasses;
         LayoutTest.class,
         MDSTest.class,
         LexRankTest.class,
-        GeometryTest.class})
+        GeometryTest.class,
+        CMDToolTest.class })
 public class AllTests
 {
 

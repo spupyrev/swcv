@@ -73,7 +73,7 @@ public class CommandLineArguments
         System.out.println("\t      cp : Context Preserving");
         System.out.println("\t      sc : Seam Carving");
         System.out.println("\t      ip : Inflate and Push");
-        System.out.println("\t     mds : Multidimensional Scaling with Packing");
+        System.out.println("\t     mds : Force-Directed Packing");
         System.out.println("\t      sf : Star Forest");
         System.out.println("\t      cc : Cycle Cover");
 

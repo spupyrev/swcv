@@ -30,7 +30,7 @@ public class FontUtils
 
     public static void initialize(FontProvider p)
     {
-        assert (provider == null);
+        //assert (provider == null);
         provider = p;
     }
 

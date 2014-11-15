@@ -18,11 +18,11 @@ public abstract class TagCloudAlgo extends BaseLayoutAlgo
     @Override
     protected void run()
     {
+        sortWords();
+        
         generateBoundingBoxes();
 
         computeCloudDimensions();
-
-        sortWords();
 
         double scale = 1.05;
         //try to layout words
