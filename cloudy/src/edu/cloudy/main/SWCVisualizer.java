@@ -86,7 +86,7 @@ public class SWCVisualizer
         System.out.println("#words: " + doc.getWords().size());
 
         //doc.weightFilter(15, new TFIDFRankingAlgo());
-        doc.weightFilter(100, new TFRankingAlgo());
+        doc.weightFilter(50, new TFRankingAlgo());
         //doc.weightFilter(15, new LexRankingAlgo());
 
         return doc;
@@ -140,7 +140,9 @@ public class SWCVisualizer
         //LayoutAlgo algo = new CycleCoverAlgo();
         //LayoutAlgo algo = new SeamCarvingAlgo();
         //LayoutAlgo algo = new WordleAlgo();
+        
         LayoutAlgo algo = new ForceDirectedPackingAlgo();
+        //LayoutAlgo algo = new CopyOfMDSWithFDPackingAlgo();
 
         return TimeMeasurer.execute("layout", () -> algo.layout(wordGraph));
     }

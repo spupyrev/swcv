@@ -65,7 +65,7 @@ public class FDPNode
     {
         SWCRectangle bbRect = new SWCRectangle(bbox);
         bbRect.shrink(rect.getWidth(), rect.getHeight());
-        SWCPoint closestPoint = PackingCostCalculator.findProjectionOnRectanglePoint(bbRect, rect.getCenter());
+        SWCPoint closestPoint = findProjectionOnRectanglePoint(bbRect, rect.getCenter());
 
         double fr = closestPoint.distanceSquared(rect.getCenter());
         return fr * PackingCostCalculator.BOUNDARY_IMPORTANCE;
@@ -75,14 +75,14 @@ public class FDPNode
     {
         SWCRectangle bbRect = new SWCRectangle(bbox);
         bbRect.shrink(rect.getWidth(), rect.getHeight());
-        SWCPoint closestPoint = PackingCostCalculator.findProjectionOnRectanglePoint(bbRect, rect.getCenter());
+        SWCPoint closestPoint = findProjectionOnRectanglePoint(bbRect, rect.getCenter());
 
         SWCPoint force = new SWCPoint(closestPoint.x() - rect.getCenterX(), closestPoint.y() - rect.getCenterY());
         force.scale(PackingCostCalculator.BOUNDARY_IMPORTANCE);
 
         return force;
     }
-    
+
     public double centerCost(SWCRectangle bbox)
     {
         SWCPoint closestPoint = bbox.getCenter();
@@ -103,7 +103,7 @@ public class FDPNode
 
     public double repulsiveCost(FDPNode[] x)
     {
-        double energy = 0;
+        double cost = 0;
         for (int i = 0; i < x.length; i++)
             if (i != index)
             {
@@ -113,11 +113,13 @@ public class FDPNode
                     continue;
 
                 double mn = Math.min(dx, dy);
-                SWCPoint fr = new SWCPoint(mn, mn);
-                energy += fr.lengthSquared() * PackingCostCalculator.REPULSIVE_IMPORTANCE;
+                //SWCPoint fr = new SWCPoint(mn, mn);
+                //cost += fr.lengthSquared();
+                cost += 2 * mn * mn;
             }
 
-        return energy;
+        cost *= PackingCostCalculator.REPULSIVE_IMPORTANCE;
+        return cost;
     }
 
     public SWCPoint repulsiveForce(FDPNode[] x)
@@ -132,8 +134,8 @@ public class FDPNode
                     continue;
 
                 double mn = Math.min(dx, dy);
-                double frx = (x[index].getCenterX() - x[i].getCenterX());// * mn;
-                double fry = (x[index].getCenterY() - x[i].getCenterY());// * mn;
+                double frx = (x[index].getCenterX() - x[i].getCenterX());
+                double fry = (x[index].getCenterY() - x[i].getCenterY());
 
                 SWCPoint fr = new SWCPoint(frx, fry);
                 fr.normalize();
@@ -144,85 +146,75 @@ public class FDPNode
         force.scale(PackingCostCalculator.REPULSIVE_IMPORTANCE);
         return force;
     }
-    
-    public double dependencyCost(FDPNode[] x, int prevX, int nextX, int prevY, int nextY)
-    {
-        double energy = 0;
-        if (prevX != -1)
-        {
-            double dx = x[prevX].getCenterX() - rect.getCenterX();
-            if (dx > 0)
-                energy += dx * dx * PackingCostCalculator.DEPENDENCY_IMPORTANCE;
-        }
-        if (nextX != -1)
-        {
-            double dx = rect.getCenterX() - x[nextX].getCenterX();
-            if (dx > 0)
-                energy += dx * dx * PackingCostCalculator.DEPENDENCY_IMPORTANCE;
-        }
-        
-        
-        if (prevY != -1)
-        {
-            double dy = x[prevY].getCenterY() - rect.getCenterY();
-            if (dy > 0)
-                energy += dy * dy * PackingCostCalculator.DEPENDENCY_IMPORTANCE;
-        }
-        if (nextY != -1)
-        {
-            double dy = rect.getCenterY() - x[nextY].getCenterY();
-            if (dy > 0)
-                energy += dy * dy * PackingCostCalculator.DEPENDENCY_IMPORTANCE;
-        }
 
-        return energy;
+    public double semanticCost(FDPNode[] x, double[][] similarity)
+    {
+        double cost = 0;
+        for (int i = 0; i < x.length; i++)
+            if (i != index)
+            {
+                double dx = Math.abs(x[i].getCenterX() - rect.getCenterX()) - x[i].getWidth() / 2 - rect.getWidth() / 2;
+                double dy = Math.abs(x[i].getCenterY() - rect.getCenterY()) - x[i].getHeight() / 2 - rect.getHeight() / 2;
+                if (dx <= 0 && dy <= 0)
+                    continue;
+                
+                double mx = Math.max(dx, dy);
+                double w = similarity[index][i];
+                //cost += 2 * mx * mx * w * w;
+                cost += 2 * mx * w * w;
+            }
+
+        cost *= PackingCostCalculator.SEMANTIC_IMPORTANCE;
+        return cost;
     }
 
-    public SWCPoint dependencyForce(FDPNode[] x, int[][] depXGraph, int[][] depYGraph)
+    public SWCPoint semanticForce(FDPNode[] x, double[][] similarity)
     {
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        
-        
         SWCPoint force = new SWCPoint();
-        for (int i = 0; i < depXGraph.length; i++)
-        {
-            int i1 = depXGraph[i][0];
-            int i2 = depXGraph[i][1];
-            if (index != i1 && index != i2)
-                continue;
-
-            double dx = x[i1].getCenterX() - x[i2].getCenterX();
-
-            if (dx > 0)
+        for (int i = 0; i < x.length; i++)
+            if (i != index)
             {
-                if (index == i1)
-                    force.add(new SWCPoint(dx, 0));
-                else
-                    force.add(new SWCPoint(-dx, 0));
+                double dx = Math.abs(x[i].getCenterX() - rect.getCenterX()) - x[i].getWidth() / 2 - rect.getWidth() / 2;
+                double dy = Math.abs(x[i].getCenterY() - rect.getCenterY()) - x[i].getHeight() / 2 - rect.getHeight() / 2;
+                if (dx <= 0 && dy <= 0)
+                    continue;
+
+                //double mx = Math.max(dx, dy);
+                double frx = (x[index].getCenterX() - x[i].getCenterX());
+                double fry = (x[index].getCenterY() - x[i].getCenterY());
+
+                SWCPoint fr = new SWCPoint(frx, fry);
+                fr.normalize();
+                
+                double w = similarity[index][i];
+                //fr.scale(mx);
+                fr.scale(w);
+                fr.scale(w);
+                force.add(fr);
             }
-        }
 
-        for (int i = 0; i < depYGraph.length; i++)
-        {
-            int i1 = depYGraph[i][0];
-            int i2 = depYGraph[i][1];
-            if (index != i1 && index != i2)
-                continue;
-
-            double dy = x[i1].getCenterY() - x[i2].getCenterY();
-
-            if (dy > 0)
-            {
-                if (index == i1)
-                    force.add(new SWCPoint(0, dy));
-                else
-                    force.add(new SWCPoint(0, -dy));
-            }
-        }
-
-        force.scale(PackingCostCalculator.DEPENDENCY_IMPORTANCE);
-
+        force.scale(PackingCostCalculator.SEMANTIC_IMPORTANCE);
         return force;
     }
 
+    private SWCPoint findProjectionOnRectanglePoint(SWCRectangle rect, SWCPoint center)
+    {
+        double x = 0, y = 0;
+
+        if (rect.getMaxX() < center.x())
+            x = rect.getMaxX();
+        else if (rect.getMinX() > center.x())
+            x = rect.getMinX();
+        else
+            x = center.x();
+
+        if (rect.getMaxY() < center.y())
+            y = rect.getMaxY();
+        else if (rect.getMinY() > center.y())
+            y = rect.getMinY();
+        else
+            y = center.y();
+
+        return new SWCPoint(x, y);
+    }
 }

@@ -5,9 +5,10 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.BaseLayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.MDSAlgo;
+import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
+import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.utils.Logger;
 
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -38,8 +39,8 @@ public class ForceDirectedPackingAlgo extends BaseLayoutAlgo
         runFDAdjustments();
 
         //postprocessing
-        //new ForceDirectedOverlapRemoval<SWCRectangle>(5000).run(wordPositions);
-        //new ForceDirectedUniformity<SWCRectangle>().run(wordPositions);
+        new ForceDirectedOverlapRemoval<SWCRectangle>(5000).run(wordPositions);
+        new ForceDirectedUniformity<SWCRectangle>().run(wordPositions);
     }
 
     private PackingCostCalculator costCalculator;
@@ -53,7 +54,7 @@ public class ForceDirectedPackingAlgo extends BaseLayoutAlgo
         for (int i = 0; i < x.length; i++)
             x[i] = new FDPNode(wordPositions[i], i);
 
-        costCalculator = new PackingCostCalculator(computeBoundingBox(x), computeDependencyGraph(x, true), computeDependencyGraph(x, false));
+        costCalculator = new PackingCostCalculator(computeBoundingBox(x), similarity);
 
         int iter = 0;
         while (iter++ < MAX_ITERATIONS)
@@ -69,15 +70,18 @@ public class ForceDirectedPackingAlgo extends BaseLayoutAlgo
                 break;
             }
 
-            double oldEnergy = energy;
-            energy = costCalculator.cost(x);
-            step = updateMaxStep(step, oldEnergy, energy);
+            if (iter % 3 == 0)
+            {
+                double oldEnergy = energy;
+                energy = costCalculator.cost(x);
+                step = updateMaxStep(step, oldEnergy, energy);
+            }
 
-            if (iter % 50 == 0)
+            /*if (iter % 50 == 0)
             {
                 Logger.println("energy after " + iter + " iteration: " + energy);
                 Logger.println("max step: " + step);
-            }
+            }*/
 
             if (step < MIN_STEP || converged(step, oldX, x))
             {
@@ -86,9 +90,12 @@ public class ForceDirectedPackingAlgo extends BaseLayoutAlgo
             }
         }
 
-        Logger.println("FDPacking done " + iter + " iterations");
-        //System.out.println("final energy: " + PackingCostCalculator.cost(x));
-        //System.out.println("last step: " + tryMoveNodes(x, step));
+        /*Logger.println("FDPacking done " + iter + " iterations");
+        Logger.println("final energy " + costCalculator.cost(x));
+        Logger.println("final Repulsive " + costCalculator.repulsiveCost(x));
+        Logger.println("final Center " + costCalculator.centerCost(x));
+        Logger.println("final Boundary " + costCalculator.boundaryCost(x));
+        Logger.println("final Semantic " + costCalculator.semanticCost(x));*/
     }
 
     private SWCRectangle computeBoundingBox(FDPNode[] x)
@@ -110,35 +117,6 @@ public class ForceDirectedPackingAlgo extends BaseLayoutAlgo
         double height = area / width;
 
         return new SWCRectangle(sumx - width / 2, sumy - height / 2, width, height);
-    }
-
-    private int[][] computeDependencyGraph(final FDPNode[] x, final boolean isX)
-    {
-        Integer[] order = new Integer[x.length];
-        for (int i = 0; i < x.length; i++)
-        {
-            order[i] = i;
-        }
-
-        Arrays.sort(order, (Integer o1, Integer o2) ->
-        {
-            if (isX)
-                return Double.compare(x[o1].getCenterX(), x[o2].getCenterX());
-            else
-                return Double.compare(x[o1].getCenterY(), x[o2].getCenterY());
-        });
-
-        int[][] res = new int[x.length][2];
-        for (int i = 0; i < x.length; i++)
-            res[i][0] = res[i][1] = -1;
-
-        for (int i = 0; i < x.length; i++)
-        {
-            res[order[i]][1] = order[i + 1];
-            res[order[i + 1]][0] = order[i];
-        }
-
-        return res;
     }
 
     private boolean tryMoveNodes(FDPNode[] x, double step)
@@ -179,15 +157,12 @@ public class ForceDirectedPackingAlgo extends BaseLayoutAlgo
      */
     private SWCPoint buildDirection(FDPNode[] x, int index)
     {
-        SWCPoint dependencyForce = costCalculator.dependencyForce(x, index);
-        SWCPoint boundaryForce = costCalculator.boundaryForce(x, index);
-        SWCPoint repulsiveForce = costCalculator.repulsiveForce(x, index);
-        SWCPoint centerForce = costCalculator.centerForce(x, index);
+        SWCPoint force = new SWCPoint();
+        force.add(costCalculator.boundaryForce(x, index));
+        force.add(costCalculator.repulsiveForce(x, index));
+        force.add(costCalculator.centerForce(x, index));
+        force.add(costCalculator.semanticForce(x, index));
 
-        SWCPoint force = dependencyForce;
-        force.add(boundaryForce);
-        force.add(repulsiveForce);
-        force.add(centerForce);
         if (force.length() < 0.1)
             return new SWCPoint();
         force.normalize();
@@ -230,14 +205,18 @@ public class ForceDirectedPackingAlgo extends BaseLayoutAlgo
     private double costGain(FDPNode[] x, int index, SWCPoint newPosition)
     {
         double MInf = -12345678.0;
-        double depGain = costCalculator.dependencyCostGain(x, index, newPosition);
         double boundGain = costCalculator.boundaryCostGain(x, index, newPosition);
         if (boundGain < MInf)
             return MInf;
-        double repGain = costCalculator.repulsiveCostGain(x, index, newPosition);
         double centerGain = costCalculator.centerCostGain(x, index, newPosition);
+        if (centerGain < MInf)
+            return MInf;
+        double repGain = costCalculator.repulsiveCostGain(x, index, newPosition);
+        if (repGain < MInf)
+            return MInf;
+        double semGain = costCalculator.semanticCostGain(x, index, newPosition);
 
-        return depGain + repGain + boundGain + centerGain;
+        return repGain + boundGain + centerGain + semGain;
     }
 
     int stepsWithProgress = 0;

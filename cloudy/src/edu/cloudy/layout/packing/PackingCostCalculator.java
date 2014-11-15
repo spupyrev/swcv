@@ -11,27 +11,22 @@ public class PackingCostCalculator
 {
     public static final double REPULSIVE_IMPORTANCE = 10;
     public static final double BOUNDARY_IMPORTANCE = 100;
-    public static final double DEPENDENCY_IMPORTANCE = 1;
-    public static final double CENTER_IMPORTANCE = 0.01;
+    public static final double CENTER_IMPORTANCE = 0.00001;
+    public static final double SEMANTIC_IMPORTANCE = 0.001;
 
     private SWCRectangle bbox;
     
-    private int[][] depXGraph;
-    private int[][] depYGraph;
+    private double[][] similarity;
 
-    public PackingCostCalculator(SWCRectangle bbox, int[][] depXGraph, int[][] depYGraph)
+    public PackingCostCalculator(SWCRectangle bbox, double[][] similarity)
     {
         this.bbox = bbox;
-        this.depXGraph = depXGraph;
-        this.depYGraph = depYGraph;
+        this.similarity = similarity;
     }
 
     public double cost(FDPNode[] x)
     {
         double cost = 0;
-
-        //dependency
-        cost += dependencyCost(x);
 
         //boundary
         cost += boundaryCost(x);
@@ -42,10 +37,40 @@ public class PackingCostCalculator
         //center
         cost += centerCost(x);
 
+        //semantic
+        cost += semanticCost(x);
+
         return cost;
     }
 
-    private double repulsiveCost(FDPNode[] x)
+    public double semanticCost(FDPNode[] x)
+    {
+        double cost = 0;
+        for (int i = 0; i < x.length; i++)
+            cost += x[i].semanticCost(x, similarity);
+
+        return cost;
+    }
+
+    public double semanticCostGain(FDPNode[] x, int index, SWCPoint newPosition)
+    {
+        SWCPoint oldPosition = x[index].getCenter();
+
+        double oldCost = x[index].semanticCost(x, similarity);
+        x[index].setCenter(newPosition.x(), newPosition.y());
+
+        double newCost = x[index].semanticCost(x, similarity);
+        x[index].setCenter(oldPosition.x(), oldPosition.y());
+
+        return oldCost - newCost;
+    }
+
+    public SWCPoint semanticForce(FDPNode[] x, int index)
+    {
+        return x[index].semanticForce(x, similarity);
+    }
+
+    public double repulsiveCost(FDPNode[] x)
     {
         double cost = 0;
         for (int i = 0; i < x.length; i++)
@@ -72,7 +97,7 @@ public class PackingCostCalculator
         return x[index].repulsiveForce(x);
     }
 
-    private double boundaryCost(FDPNode[] x)
+    public double boundaryCost(FDPNode[] x)
     {
         double cost = 0;
         for (int i = 0; i < x.length; i++)
@@ -99,7 +124,7 @@ public class PackingCostCalculator
         return x[index].boundaryForce(bbox);
     }
 
-    private double centerCost(FDPNode[] x)
+    public double centerCost(FDPNode[] x)
     {
         double cost = 0;
         for (int i = 0; i < x.length; i++)
@@ -126,51 +151,4 @@ public class PackingCostCalculator
         return x[index].centerForce(bbox);
     }
 
-    private double dependencyCost(FDPNode[] x)
-    {
-        double cost = 0;
-        for (int i = 0; i < x.length; i++)
-            cost += x[i].dependencyCost(x, depXGraph[i][0], depXGraph[i][1], depYGraph[i][0], depYGraph[i][1]);
-
-        return cost;
-    }
-
-    public double dependencyCostGain(FDPNode[] x, int index, SWCPoint newPosition)
-    {
-        SWCPoint oldPosition = x[index].getCenter();
-
-        double oldCost = x[index].dependencyCost(x, depXGraph[index][0], depXGraph[index][1], depYGraph[index][0], depYGraph[index][1]);
-        x[index].setCenter(newPosition.x(), newPosition.y());
-
-        double newCost = x[index].dependencyCost(x, depXGraph[index][0], depXGraph[index][1], depYGraph[index][0], depYGraph[index][1]);
-        x[index].setCenter(oldPosition.x(), oldPosition.y());
-
-        return oldCost - newCost;
-    }
-
-    public SWCPoint dependencyForce(FDPNode[] x, int index)
-    {
-        return x[index].dependencyForce(x, depXGraph, depYGraph);
-    }
-
-    public static SWCPoint findProjectionOnRectanglePoint(SWCRectangle rect, SWCPoint center)
-    {
-        double x = 0, y = 0;
-
-        if (rect.getMaxX() < center.x())
-            x = rect.getMaxX();
-        else if (rect.getMinX() > center.x())
-            x = rect.getMinX();
-        else
-            x = center.x();
-
-        if (rect.getMaxY() < center.y())
-            y = rect.getMaxY();
-        else if (rect.getMinY() > center.y())
-            y = rect.getMinY();
-        else
-            y = center.y();
-
-        return new SWCPoint(x, y);
-    }
 }

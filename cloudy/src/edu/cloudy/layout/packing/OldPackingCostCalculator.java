@@ -7,7 +7,7 @@ import edu.cloudy.geom.SWCRectangle;
  * @author spupyrev
  * Jun 22, 2014
  */
-public class CopyOfPackingCostCalculator
+public class OldPackingCostCalculator
 {
     public static final double REPULSIVE_IMPORTANCE = 10;
     public static final double BOUNDARY_IMPORTANCE = 100;

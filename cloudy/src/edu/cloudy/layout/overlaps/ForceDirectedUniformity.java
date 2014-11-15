@@ -2,7 +2,6 @@ package edu.cloudy.layout.overlaps;
 
 import edu.cloudy.geom.SWCPoint;
 import edu.cloudy.geom.SWCRectangle;
-import edu.cloudy.utils.Logger;
 
 import java.util.Arrays;
 
@@ -82,8 +81,6 @@ public class ForceDirectedUniformity<T extends SWCRectangle> implements OverlapR
                 rect[i].setRect(rect[i].getX() + dxy.x(), rect[i].getY() + dxy.y(), rect[i].getWidth(), rect[i].getHeight());
             }
         }
-
-        Logger.println("overlaps after uniformity: " + overlaps(rect));
 
         for (int i = 0; i < n; i++)
         {

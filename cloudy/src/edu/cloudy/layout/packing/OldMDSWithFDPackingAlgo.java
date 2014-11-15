@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
  * June 21, 2014
  * @author spupyrev 
  */
-public class CopyOfMDSWithFDPackingAlgo extends BaseLayoutAlgo
+public class OldMDSWithFDPackingAlgo extends BaseLayoutAlgo
 {
     private static final int MAX_ITERATIONS = 500;
 
@@ -22,7 +22,7 @@ public class CopyOfMDSWithFDPackingAlgo extends BaseLayoutAlgo
     private static final double MIN_STEP = 1;
     private static final double MIN_RELATIVE_CHANGE = 0.00005;
 
-    public CopyOfMDSWithFDPackingAlgo()
+    public OldMDSWithFDPackingAlgo()
     {
     }
 
@@ -49,9 +49,9 @@ public class CopyOfMDSWithFDPackingAlgo extends BaseLayoutAlgo
         for (int i = 0; i < x.length; i++)
             x[i] = wordPositions[i];
 
-        CopyOfPackingCostCalculator.bbox = computeBoundingBox(x);
-        CopyOfPackingCostCalculator.depXGraph = computeDependencyGraph(x, true);
-        CopyOfPackingCostCalculator.depYGraph = computeDependencyGraph(x, false);
+        OldPackingCostCalculator.bbox = computeBoundingBox(x);
+        OldPackingCostCalculator.depXGraph = computeDependencyGraph(x, true);
+        OldPackingCostCalculator.depYGraph = computeDependencyGraph(x, false);
         //PackingCostCalculator.depYGraph = new int[0][2];
 
         int iter = 0;
@@ -72,10 +72,15 @@ public class CopyOfMDSWithFDPackingAlgo extends BaseLayoutAlgo
             }
 
             double oldEnergy = energy;
-            energy = CopyOfPackingCostCalculator.cost(x);
+            energy = OldPackingCostCalculator.cost(x);
+            if (iter == 1)
+            {
+                Logger.println("Initial energy: " + energy);
+            }
+            
             step = updateMaxStep(step, oldEnergy, energy);
 
-            if (iter % 10 == 0)
+            if (iter % 50 == 0)
             {
                 Logger.println("energy after " + iter + " iteration: " + energy);
                 Logger.println("max step: " + step);
@@ -180,10 +185,10 @@ public class CopyOfMDSWithFDPackingAlgo extends BaseLayoutAlgo
     /// Calculate the direction to improve the ink function
     private SWCPoint buildDirection(SWCRectangle[] x, int wordIndex)
     {
-        SWCPoint dependencyForce = CopyOfPackingCostCalculator.dependencyForce(x, wordIndex);
-        SWCPoint boundaryForce = CopyOfPackingCostCalculator.boundaryForce(x, wordIndex);
-        SWCPoint repulsiveForce = CopyOfPackingCostCalculator.repulsiveForce(x, wordIndex);
-        SWCPoint centerForce = CopyOfPackingCostCalculator.centerForce(x, wordIndex);
+        SWCPoint dependencyForce = OldPackingCostCalculator.dependencyForce(x, wordIndex);
+        SWCPoint boundaryForce = OldPackingCostCalculator.boundaryForce(x, wordIndex);
+        SWCPoint repulsiveForce = OldPackingCostCalculator.repulsiveForce(x, wordIndex);
+        SWCPoint centerForce = OldPackingCostCalculator.centerForce(x, wordIndex);
 
         SWCPoint force = dependencyForce;
         force.add(boundaryForce);
@@ -226,12 +231,12 @@ public class CopyOfMDSWithFDPackingAlgo extends BaseLayoutAlgo
     private double costGain(SWCRectangle[] x, int wordIndex, SWCPoint newPosition)
     {
         double MInf = -12345678.0;
-        double depGain = CopyOfPackingCostCalculator.dependencyCostGain(x, wordIndex, newPosition);
-        double boundGain = CopyOfPackingCostCalculator.boundaryCostGain(x, wordIndex, newPosition);
+        double depGain = OldPackingCostCalculator.dependencyCostGain(x, wordIndex, newPosition);
+        double boundGain = OldPackingCostCalculator.boundaryCostGain(x, wordIndex, newPosition);
         if (boundGain < MInf)
             return MInf;
-        double repGain = CopyOfPackingCostCalculator.repulsiveCostGain(x, wordIndex, newPosition);
-        double centerGain = CopyOfPackingCostCalculator.centerCostGain(x, wordIndex, newPosition);
+        double repGain = OldPackingCostCalculator.repulsiveCostGain(x, wordIndex, newPosition);
+        double centerGain = OldPackingCostCalculator.centerCostGain(x, wordIndex, newPosition);
 
         return depGain + repGain + boundGain + centerGain;
     }
@@ -241,8 +246,8 @@ public class CopyOfMDSWithFDPackingAlgo extends BaseLayoutAlgo
     private double updateMaxStep(double step, double oldEnergy, double newEnergy)
     {
         //cooling factor
-        double T = 0.8;
-        if (newEnergy < oldEnergy && (oldEnergy - newEnergy) / oldEnergy > 0.0001)
+        double T = 0.9;
+        if (newEnergy < oldEnergy && (oldEnergy - newEnergy) / oldEnergy > 0.00001)
         {
             stepsWithProgress++;
             if (stepsWithProgress >= 5)
@@ -266,11 +271,13 @@ public class CopyOfMDSWithFDPackingAlgo extends BaseLayoutAlgo
         double num = 0, den = 0;
         for (int i = 0; i < oldx.length; i++)
         {
-            SWCPoint p = oldx[i].getCenter();
+            SWCPoint p = new SWCPoint(oldx[i].getCenter());
             p.subtract(newx[i].getCenter());
+            
             num += p.lengthSquared();
             den += oldx[i].getCenter().lengthSquared();
         }
+        
         double res = Math.sqrt(num / den);
         return (res < MIN_RELATIVE_CHANGE);
     }
