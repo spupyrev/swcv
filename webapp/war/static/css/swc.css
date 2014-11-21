@@ -60,7 +60,7 @@ h5 {
 .settingFont {
   	font-size: 14px;
   	margin-bottom: 10px;
-	font-family: "Arial Black", Gadget, sans-serif;
+	font-family: sans-serif;
 }
 
 #settingContainer > select {
