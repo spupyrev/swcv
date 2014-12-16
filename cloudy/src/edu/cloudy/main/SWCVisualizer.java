@@ -4,8 +4,8 @@ import edu.cloudy.colors.ColorScheme;
 import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
-import edu.cloudy.layout.TagCloudRankAlgo;
 import edu.cloudy.layout.WordGraph;
+import edu.cloudy.layout.packing.ForceDirectedPackingAlgo;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
@@ -72,7 +72,7 @@ public class SWCVisualizer
      */
     private SWCDocument readDocument() throws FileNotFoundException
     {
-        Scanner scanner = new Scanner(new File("data/stack.txt"), "UTF-8");
+        Scanner scanner = new Scanner(new File("data/kob.txt"), "UTF-8");
         StringBuilder sb = new StringBuilder();
         while (scanner.hasNextLine())
         {
@@ -86,7 +86,7 @@ public class SWCVisualizer
         System.out.println("#words: " + doc.getWords().size());
 
         //doc.weightFilter(15, new TFIDFRankingAlgo());
-        doc.weightFilter(50, new TFRankingAlgo());
+        doc.weightFilter(150, new TFRankingAlgo());
         //doc.weightFilter(15, new LexRankingAlgo());
 
         return doc;
@@ -142,8 +142,8 @@ public class SWCVisualizer
         //LayoutAlgo algo = new WordleAlgo();
         //LayoutAlgo algo = new TagCloudAlphabeticalAlgo();
         //LayoutAlgo algo = new TagCloudAlphabeticalAlgo();
-        LayoutAlgo algo = new TagCloudRankAlgo();
-        //LayoutAlgo algo = new ForceDirectedPackingAlgo();
+        //LayoutAlgo algo = new TagCloudRankAlgo();
+        LayoutAlgo algo = new ForceDirectedPackingAlgo();
 
         return TimeMeasurer.execute("layout", () -> algo.layout(wordGraph));
     }

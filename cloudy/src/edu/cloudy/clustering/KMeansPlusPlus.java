@@ -239,7 +239,7 @@ public class KMeansPlusPlus implements IClusterAlgo
                     ci.moveVertex(v, j);
                     double newModularity = ci.getModularity();
 
-                    if (newModularity > bestModularity)
+                    if (newModularity > bestModularity + 1e-7)
                     {
                         bestModularity = newModularity;
                         bestCluster = j;
@@ -251,7 +251,7 @@ public class KMeansPlusPlus implements IClusterAlgo
                     ci.moveVertex(v, bestCluster);
                 }
 
-                if (bestModularity > oldModularity)
+                if (bestModularity > oldModularity + 1e-7)
                     progress = true;
             }
         }
