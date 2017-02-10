@@ -8,3 +8,10 @@
 .metadata
 .recommenders
 TODOs.txt
+/bin/
+
+.classpath
+.project
+.settings/
+WebContent/
+cloudy/loremipsum.txt
