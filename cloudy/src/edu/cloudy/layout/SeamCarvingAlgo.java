@@ -21,14 +21,23 @@ import java.util.Set;
  */
 public class SeamCarvingAlgo extends BaseLayoutAlgo
 {
+	private SWCRectangle[] initialWordPositions;
+	
+	public SeamCarvingAlgo(SWCRectangle[] initialWordPositions)
+	{
+		this.initialWordPositions = initialWordPositions;
+	}
+	
     public SeamCarvingAlgo()
     {
+    	this(null);
     }
 
     @Override
     protected void run()
     {
-        SWCRectangle[] initialWordPositions = initialPlacement();
+    	if( initialWordPositions == null )
+    		initialWordPositions = initialPlacement();
 
         //compute the zones
         Zone[][] zones = createZones(initialWordPositions);
