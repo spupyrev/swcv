@@ -2,7 +2,7 @@ package edu.cloudy.clustering;
 
 import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ public class ClusterResult
     //sum of weights of all edges inside the cluster
     private double[] sumIn;
 
-    public ClusterResult(List<Word> words, Map<WordPair, Double> similarities, Map<Word, Integer> cluster, WordGraph wgInfo)
+    public ClusterResult(List<Word> words, Map<ItemPair<Word>, Double> similarities, Map<Word, Integer> cluster, WordGraph wgInfo)
     {
         this.words = words.toArray(new Word[words.size()]);
         this.wordGraph = wgInfo;
@@ -96,7 +96,7 @@ public class ClusterResult
         }
     }
 
-    private void initialize(List<Word> words, Map<WordPair, Double> similarityMap, Map<Word, Integer> clusterMap, WordGraph wgInfo)
+    private void initialize(List<Word> words, Map<ItemPair<Word>, Double> similarityMap, Map<Word, Integer> clusterMap, WordGraph wgInfo)
     {
         //init clusters
         wordIndex = new HashMap();
@@ -117,7 +117,7 @@ public class ClusterResult
         for (int i = 0; i < words.size(); i++)
             for (int j = 0; j < words.size(); j++)
             {
-                WordPair wp = new WordPair(words.get(i), words.get(j));
+                ItemPair<Word> wp = new ItemPair<Word>(words.get(i), words.get(j));
                 similarity[i][j] = similarityMap.getOrDefault(wp, 0.0);
             }
 

@@ -11,7 +11,7 @@ import edu.cloudy.layout.WordGraph;
 import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.layout.packing.ForceDirectedPackingAlgo;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -65,18 +65,18 @@ public class LayoutTest
 
         List<Word> words = Arrays.asList(a, b, c, d, e);
 
-        Map<WordPair, Double> similarity = new HashMap();
+        Map<ItemPair<Word>, Double> similarity = new HashMap();
         for (int i = 0; i < words.size(); i++)
             for (int j = 0; j < words.size(); j++)
             {
-                similarity.put(new WordPair(words.get(i), words.get(j)), (i == j ? 1.0 : 0.0));
+                similarity.put(new ItemPair<Word>(words.get(i), words.get(j)), (i == j ? 1.0 : 0.0));
             }
 
-        similarity.put(new WordPair(a, b), 0.5);
-        similarity.put(new WordPair(b, c), 0.9);
-        similarity.put(new WordPair(d, c), 0.8);
-        similarity.put(new WordPair(d, e), 1.0);
-        similarity.put(new WordPair(e, a), 0.99);
+        similarity.put(new ItemPair<Word>(a, b), 0.5);
+        similarity.put(new ItemPair<Word>(b, c), 0.9);
+        similarity.put(new ItemPair<Word>(d, c), 0.8);
+        similarity.put(new ItemPair<Word>(d, e), 1.0);
+        similarity.put(new ItemPair<Word>(e, a), 0.99);
 
         return new WordGraph(words, similarity);
     }
@@ -89,7 +89,7 @@ public class LayoutTest
     public static WordGraph createRandomGraph(int n)
     {
         List<Word> words = randomWords(n);
-        Map<WordPair, Double> similarity = randomSimilarities(words);
+        Map<ItemPair<Word>, Double> similarity = randomSimilarities(words);
 
         return new WordGraph(words, similarity);
     }
@@ -120,9 +120,9 @@ public class LayoutTest
         return sb.toString();
     }
 
-    private static Map<WordPair, Double> randomSimilarities(List<Word> words)
+    private static Map<ItemPair<Word>, Double> randomSimilarities(List<Word> words)
     {
-        Map<WordPair, Double> similarity = new HashMap();
+        Map<ItemPair<Word>, Double> similarity = new HashMap();
         for (int i = 0; i < words.size(); i++)
         {
             Word a = words.get(i);
@@ -131,9 +131,9 @@ public class LayoutTest
                 Word b = words.get(j);
 
                 double weight = rnd.nextDouble();
-                similarity.put(new WordPair(a, b), weight);
+                similarity.put(new ItemPair<Word>(a, b), weight);
             }
-            similarity.put(new WordPair(a, a), 1.0);
+            similarity.put(new ItemPair<Word>(a, a), 1.0);
         }
         return similarity;
     }

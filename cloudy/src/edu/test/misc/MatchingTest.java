@@ -1,18 +1,18 @@
 package edu.test.misc;
 
-import edu.cloudy.layout.CycleCoverAlgo;
-import edu.cloudy.layout.SingleStarAlgo;
-import edu.cloudy.layout.WordGraph;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.Logger;
-import edu.cloudy.utils.UnorderedPair;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import edu.cloudy.layout.CycleCoverAlgo;
+import edu.cloudy.layout.SingleStarAlgo;
+import edu.cloudy.layout.WordGraph;
+import edu.cloudy.nlp.ItemPair;
+import edu.cloudy.nlp.Word;
+import edu.cloudy.utils.Logger;
+import edu.cloudy.utils.UnorderedPair;
 
 @SuppressWarnings("all")
 public class MatchingTest
@@ -24,7 +24,7 @@ public class MatchingTest
         Logger.doLogging = false;
 
         List<Word> words = new ArrayList<Word>();
-        Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
+        Map<ItemPair<Word>, Double> similarity = new HashMap<ItemPair<Word>, Double>();
         double expectedValue;
 
         expectedValue = test2(words, similarity);
@@ -70,7 +70,7 @@ public class MatchingTest
         System.out.println("StarSum   = " + starSum);
     }
 
-    private static void checkCyclesResult(List<Word> words, Map<WordPair, Double> similarity, double expectedValue)
+    private static void checkCyclesResult(List<Word> words, Map<ItemPair<Word>, Double> similarity, double expectedValue)
     {
         double totalRealizedValue = getCyclesResult(words, similarity);
         // double totalRealizedValue = getStarsResult(words, similarity);
@@ -82,12 +82,12 @@ public class MatchingTest
         System.out.println("totalRealizedValue = " + totalRealizedValue);
     }
 
-    private static double getCyclesResult(List<Word> words, Map<WordPair, Double> similarity)
+    private static double getCyclesResult(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         return getCyclesResult(words, similarity, false);
     }
 
-    private static double getCyclesResult(List<Word> words, Map<WordPair, Double> similarity, boolean useGreedy)
+    private static double getCyclesResult(List<Word> words, Map<ItemPair<Word>, Double> similarity, boolean useGreedy)
     {
         CycleCoverAlgo algorithm = new CycleCoverAlgo();
         algorithm.setUseGreedy(useGreedy);
@@ -97,7 +97,7 @@ public class MatchingTest
         return algorithm.getRealizedWeight();
     }
 
-    private static void checkStarsResult(List<Word> words, Map<WordPair, Double> similarity, double expectedValue)
+    private static void checkStarsResult(List<Word> words, Map<ItemPair<Word>, Double> similarity, double expectedValue)
     {
         double totalRealizedValue = getStarsResult(words, similarity);
 
@@ -107,7 +107,7 @@ public class MatchingTest
             throw new RuntimeException("totalRealizedValue=" + totalRealizedValue + "  expectedValue=" + expectedValue);
     }
 
-    private static double getStarsResult(List<Word> words, Map<WordPair, Double> similarity)
+    private static double getStarsResult(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         SingleStarAlgo starsAlgo = new SingleStarAlgo();
 
@@ -131,7 +131,7 @@ public class MatchingTest
         return 10;
     }
 
-    static double test2(List<Word> words, Map<WordPair, Double> similarity)
+    static double test2(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         Word a = new Word("Aaaa", 100.0);
         Word b = new Word("Bbbb", 200.0);
@@ -147,16 +147,16 @@ public class MatchingTest
         words.add(e);
 
         similarity.clear();
-        similarity.put(new WordPair(a, b), 10.0);
-        similarity.put(new WordPair(b, c), 160.0);
-        similarity.put(new WordPair(d, c), 140.0);
-        similarity.put(new WordPair(d, e), 100.0);
-        similarity.put(new WordPair(e, a), 1.0);
+        similarity.put(new ItemPair<Word>(a, b), 10.0);
+        similarity.put(new ItemPair<Word>(b, c), 160.0);
+        similarity.put(new ItemPair<Word>(d, c), 140.0);
+        similarity.put(new ItemPair<Word>(d, e), 100.0);
+        similarity.put(new ItemPair<Word>(e, a), 1.0);
 
         return 411;
     }
 
-    static double testHamiltonian(List<Word> words, Map<WordPair, Double> similarity, int n)
+    static double testHamiltonian(List<Word> words, Map<ItemPair<Word>, Double> similarity, int n)
     {
         words.clear();
         for (int i = 0; i < n; i++)
@@ -180,13 +180,13 @@ public class MatchingTest
                     res += weight;
                 }
 
-                similarity.put(new WordPair(a, b), weight);
+                similarity.put(new ItemPair<Word>(a, b), weight);
             }
 
         return res;
     }
 
-    static double testTwoCycles(List<Word> words, Map<WordPair, Double> similarity, int n)
+    static double testTwoCycles(List<Word> words, Map<ItemPair<Word>, Double> similarity, int n)
     {
         words.clear();
         for (int i = 0; i < n; i++)
@@ -211,13 +211,13 @@ public class MatchingTest
                     res += weight;
                 }
 
-                similarity.put(new WordPair(a, b), weight);
+                similarity.put(new ItemPair<Word>(a, b), weight);
             }
 
         return res;
     }
 
-    static void testRandom(List<Word> words, Map<WordPair, Double> similarity, int n)
+    static void testRandom(List<Word> words, Map<ItemPair<Word>, Double> similarity, int n)
     {
         words.clear();
         for (int i = 0; i < n; i++)
@@ -244,7 +244,7 @@ public class MatchingTest
         return sb.toString();
     }
 
-    static Map<WordPair, Double> randomSimilarities(List<Word> words, Map<WordPair, Double> similarity)
+    static Map<ItemPair<Word>, Double> randomSimilarities(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         similarity.clear();
         for (int i = 0; i < words.size(); i++)
@@ -254,7 +254,7 @@ public class MatchingTest
                 Word b = words.get(j);
 
                 double weight = rnd.nextDouble();// * 100;
-                similarity.put(new WordPair(a, b), weight);
+                similarity.put(new ItemPair<Word>(a, b), weight);
             }
 
         return similarity;

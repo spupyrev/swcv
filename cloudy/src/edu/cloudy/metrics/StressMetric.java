@@ -5,7 +5,7 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class StressMetric implements QualityMetric
     public double getValue(WordGraph wordGraph, LayoutResult layout)
     {
         List<Word> words = wordGraph.getWords();
-        Map<WordPair, Double> similarity = wordGraph.getSimilarity();
+        Map<ItemPair<Word>, Double> similarity = wordGraph.getSimilarity();
         
         if (words.isEmpty())
             return 0;
@@ -81,7 +81,7 @@ public class StressMetric implements QualityMetric
         return sum;
     }
 
-    private double[][] getDissimilarityMatrix(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    private double[][] getDissimilarityMatrix(List<Word> words, Map<ItemPair<Word>, Double> similarity, LayoutResult algo)
     {
         int n = words.size();
 
@@ -89,7 +89,7 @@ public class StressMetric implements QualityMetric
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
             {
-                WordPair wp = new WordPair(words.get(i), words.get(j));
+                ItemPair<Word> wp = new ItemPair<Word>(words.get(i), words.get(j));
                 if (similarity.containsKey(wp))
                     matrix[i][j] = 1.0 - similarity.get(wp);
                 else
@@ -99,7 +99,7 @@ public class StressMetric implements QualityMetric
         return matrix;
     }
 
-    private double[][] getGeomDistance(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    private double[][] getGeomDistance(List<Word> words, Map<ItemPair<Word>, Double> similarity, LayoutResult algo)
     {
         int n = words.size();
 

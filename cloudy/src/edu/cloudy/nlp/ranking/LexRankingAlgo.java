@@ -2,7 +2,7 @@ package edu.cloudy.nlp.ranking;
 
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ public class LexRankingAlgo implements RankingAlgo {
 
 	@Override
 	public void buildWeights(SWCDocument wordifier) {
-		Map<WordPair, Double> coocNumber = initCoocNumber(wordifier);
+		Map<ItemPair<Word>, Double> coocNumber = initCoocNumber(wordifier);
 
 		List<Word> words = wordifier.getWords();
 		Map<SimilarWord, Word> wordMap = new HashMap<SimilarWord, Word>();
@@ -46,11 +46,11 @@ public class LexRankingAlgo implements RankingAlgo {
 		}
 	}
 
-	private Map<WordPair, Double> initCoocNumber(SWCDocument wordifier) {
+	private Map<ItemPair<Word>, Double> initCoocNumber(SWCDocument wordifier) {
 		int n = wordifier.getWords().size();
 		double[][] sim = new double[n][n];
 
-		Map<WordPair, Double> coocNumber = new HashMap<WordPair, Double>();
+		Map<ItemPair<Word>, Double> coocNumber = new HashMap<ItemPair<Word>, Double>();
 		for (int i = 0; i < n; i++)
 			for (int j = i; j < n; j++) {
 				Word w1 = wordifier.getWords().get(i);
@@ -64,7 +64,7 @@ public class LexRankingAlgo implements RankingAlgo {
 				double res1 = intersection.size();
 				double res2 = 1;//union.size();
 				double res = res1 / res2;
-				coocNumber.put(new WordPair(w1, w2), res);
+				coocNumber.put(new ItemPair<Word>(w1, w2), res);
 
 				sim[i][j] = sim[j][i] = res;
 			}

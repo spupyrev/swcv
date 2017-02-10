@@ -8,7 +8,7 @@ import edu.cloudy.layout.clusters.ClusterForceDirectedPlacer;
 import edu.cloudy.layout.clusters.WordPlacer;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,7 +100,7 @@ public class StarForestAlgo extends BaseLayoutAlgo
             if (!usedVertices.contains(v))
                 words.add(v);
 
-        Map<WordPair, Double> weights = new HashMap<WordPair, Double>();
+        Map<ItemPair<Word>, Double> weights = new HashMap<ItemPair<Word>, Double>();
         for (Vertex v : g.vertexSet())
         {
             if (center.equals(v))
@@ -110,7 +110,7 @@ public class StarForestAlgo extends BaseLayoutAlgo
             if (!g.containsEdge(center, v))
                 continue;
 
-            WordPair wp = new WordPair(center, v);
+            ItemPair<Word> wp = new ItemPair<Word>(center, v);
             Edge edge = g.getEdge(center, v);
             weights.put(wp, g.getEdgeWeight(edge));
         }

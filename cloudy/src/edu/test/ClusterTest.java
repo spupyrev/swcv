@@ -1,17 +1,17 @@
 package edu.test;
 
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import edu.cloudy.clustering.ClusterResult;
 import edu.cloudy.clustering.GenericClusterAlgo;
 import edu.cloudy.clustering.IClusterAlgo;
 import edu.cloudy.clustering.KMeansPlusPlus;
 import edu.cloudy.layout.WordGraph;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.util.List;
 
 /**
  * @author spupyrev
@@ -97,7 +97,7 @@ public class ClusterTest
         for (int i = 0; i < words.size(); i++)
             for (int j = 0; j < words.size(); j++)
             {
-                WordPair wp = new WordPair(words.get(i), words.get(j));
+                ItemPair<Word> wp = new ItemPair<Word>(words.get(i), words.get(j));
 
                 if (i / wordsPerClique == j / wordsPerClique)
                     wordGraph.getSimilarity().put(wp, 1.0);
@@ -113,7 +113,7 @@ public class ClusterTest
         Assert.assertEquals(result.getClusterCount(), expectedClusterCount);
         Assert.assertTrue(0.0 <= result.getModularity() && result.getModularity() <= 1.0);
 
-        for (WordPair wp : wordGraph.getSimilarity().keySet())
+        for (ItemPair<Word> wp : wordGraph.getSimilarity().keySet())
         {
             Word w1 = wp.getFirst();
             Word w2 = wp.getSecond();

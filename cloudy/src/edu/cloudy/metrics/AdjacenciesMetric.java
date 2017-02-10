@@ -4,7 +4,7 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +22,10 @@ public class AdjacenciesMetric implements QualityMetric, AdjacentMetric
     @Override
     public double getValue(WordGraph wordGraph, LayoutResult layout)
     {
-        Map<WordPair, Double> similarity = wordGraph.getSimilarity();
+        Map<ItemPair<Word>, Double> similarity = wordGraph.getSimilarity();
 
 		double res = 0;
-		for (WordPair wp : similarity.keySet())
+		for (ItemPair<Word> wp : similarity.keySet())
 		{
 			if (wp.getFirst().equals(wp.getSecond()))
 				continue;
@@ -67,14 +67,14 @@ public class AdjacenciesMetric implements QualityMetric, AdjacentMetric
 		return true;
 	}
 
-	public List<WordPair> getCloseWords(List<Word> words, LayoutResult algo)
+	public List<ItemPair<Word>> getCloseWords(List<Word> words, LayoutResult algo)
 	{
-		List<WordPair> res = new ArrayList<WordPair>();
+		List<ItemPair<Word>> res = new ArrayList<ItemPair<Word>>();
 		
 		for (int i = 0; i < words.size(); i++)
 			for (int j = i + 1; j < words.size(); j++)
 			{
-				WordPair wp = new WordPair(words.get(i), words.get(j));
+				ItemPair<Word> wp = new ItemPair<Word>(words.get(i), words.get(j));
 
 				if (close(algo, wp.getFirst(), wp.getSecond()))
 					res.add(wp);

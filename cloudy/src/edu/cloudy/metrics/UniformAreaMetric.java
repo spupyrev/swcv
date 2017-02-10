@@ -4,7 +4,7 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,7 @@ public class UniformAreaMetric implements QualityMetric
         return 1.0 - entropy / maxEntropy;
     }
 
-    public double getValueCur(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    public double getValueCur(List<Word> words, Map<ItemPair<Word>, Double> similarity, LayoutResult algo)
     {
         SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
 
@@ -93,7 +93,7 @@ public class UniformAreaMetric implements QualityMetric
         return 1.0 - Math.sqrt(chi2 / cnt);
     }
 
-    public double getValue2(List<Word> words, Map<WordPair, Double> similarity, LayoutResult algo)
+    public double getValue2(List<Word> words, Map<ItemPair<Word>, Double> similarity, LayoutResult algo)
     {
         SWCRectangle bb = SpaceMetric.computeBoundingBox(words, algo);
 

@@ -17,7 +17,7 @@ import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
@@ -53,7 +53,7 @@ public class SWCVisualizer
 
         // 2. build similarities, words etc
         List<Word> words = new ArrayList<Word>();
-        Map<WordPair, Double> similarity = extractSimilarities(document, words);
+        Map<ItemPair<Word>, Double> similarity = extractSimilarities(document, words);
         WordGraph wordGraph = new WordGraph(words, similarity);
 
         // 3. run a layout algorithm
@@ -71,10 +71,6 @@ public class SWCVisualizer
      */
     private SWCDocument readDocument() throws FileNotFoundException
     {
-        
-        
-        
-        
         Scanner scanner = new Scanner(new File("loremipsum.txt"), "UTF-8");
         StringBuilder sb = new StringBuilder();
         while (scanner.hasNextLine())
@@ -95,16 +91,16 @@ public class SWCVisualizer
         return doc;
     }
 
-    private Map<WordPair, Double> extractSimilarities(SWCDocument document, List<Word> words)
+    private Map<ItemPair<Word>, Double> extractSimilarities(SWCDocument document, List<Word> words)
     {
         SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();
-        Map<WordPair, Double> similarity = coOccurenceAlgo.computeSimilarity(document);
+        Map<ItemPair<Word>, Double> similarity = coOccurenceAlgo.computeSimilarity(document);
 
         for (Word w : document.getWords())
             words.add(w);
 
-        List<WordPair> topPairs = new ArrayList<WordPair>();
-        for (WordPair wp : similarity.keySet())
+        List<ItemPair<Word>> topPairs = new ArrayList<ItemPair<Word>>();
+        for (ItemPair<Word> wp : similarity.keySet())
         {
             topPairs.add(wp);
         }
@@ -125,7 +121,7 @@ public class SWCVisualizer
         System.out.println("top pairs:");
         for (int i = 0; i < 1000 && i < topPairs.size(); i++)
         {
-            WordPair wp = topPairs.get(i);
+            ItemPair<Word> wp = topPairs.get(i);
             double simV = similarity.get(wp);
            double dist = LayoutUtils.idealDistanceConverter(simV);
             System.out.println(wp.getFirst().word + " " + wp.getSecond().word + "  sim: " + simV + "  dist: " + dist);

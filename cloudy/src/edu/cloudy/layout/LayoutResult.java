@@ -11,18 +11,18 @@ import java.util.stream.IntStream;
  * @author spupyrev
  * Oct 11, 2014
  */
-public class LayoutResult
+public class LayoutResult<T>
 {
-    private Map<Word, SWCRectangle> wordPositions;
+    private Map<T, SWCRectangle> itemPositions;
 
-    public LayoutResult(Word[] words, SWCRectangle[] positions)
+    public LayoutResult(T[] items, SWCRectangle[] positions)
     {
-        wordPositions = new HashMap<Word, SWCRectangle>();
-        IntStream.range(0, words.length).forEach(i -> wordPositions.put(words[i], positions[i]));
+        itemPositions = new HashMap<T, SWCRectangle>();
+        IntStream.range(0, items.length).forEach(i -> itemPositions.put(items[i], positions[i]));
     }
 
-    public SWCRectangle getWordPosition(Word w)
+    public SWCRectangle getWordPosition(T w)
     {
-        return wordPositions.get(w);
+        return itemPositions.get(w);
     }
 }

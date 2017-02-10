@@ -3,7 +3,7 @@ package edu.test.misc;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
@@ -47,26 +47,26 @@ public class DotWriter
         doc.weightFilter(150, new TFRankingAlgo());
 
         List<Word> words = new ArrayList<Word>();
-        Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
+        Map<ItemPair<Word>, Double> similarity = new HashMap<ItemPair<Word>, Double>();
         extractSimilarities(doc, words, similarity);
 
         writeDotFile("words.gv", words, similarity);
     }
 
-    private void extractSimilarities(SWCDocument wordifier, List<Word> words, final Map<WordPair, Double> similarity)
+    private void extractSimilarities(SWCDocument wordifier, List<Word> words, final Map<ItemPair<Word>, Double> similarity)
     {
         SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();
-        Map<WordPair, Double> sim = coOccurenceAlgo.computeSimilarity(wordifier);
+        Map<ItemPair<Word>, Double> sim = coOccurenceAlgo.computeSimilarity(wordifier);
 
         for (Word w : wordifier.getWords())
             words.add(w);
 
-        for (WordPair wp : sim.keySet())
+        for (ItemPair<Word> wp : sim.keySet())
             similarity.put(wp, sim.get(wp));
 
     }
 
-    private void writeDotFile(String filename, List<Word> words, Map<WordPair, Double> similarity)
+    private void writeDotFile(String filename, List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
 
         try
@@ -79,7 +79,7 @@ public class DotWriter
             for (int i = 0; i < words.size(); i++)
                 for (int j = i + 1; j < words.size(); j++)
                 {
-                    double sim = similarity.get(new WordPair(words.get(i), words.get(j)));
+                    double sim = similarity.get(new ItemPair<Word>(words.get(i), words.get(j)));
                     String sw = String.format("%.5f", sim);
 
                     out.print("  \"" + words.get(i).word + "\" -- \"" + words.get(j).word + "\" [len=" + sw + "];\n");

@@ -1,9 +1,10 @@
 package edu.cloudy.nlp.similarity;
 
-import edu.cloudy.nlp.SWCDocument;
-import edu.cloudy.nlp.WordPair;
-
 import java.util.Map;
+
+import edu.cloudy.nlp.ItemPair;
+import edu.cloudy.nlp.SWCDocument;
+import edu.cloudy.nlp.Word;
 
 /**
  * @author spupyrev
@@ -13,7 +14,7 @@ public abstract class BaseSimilarityAlgo implements SimilarityAlgo
 {
 
     @Override
-    public Map<WordPair, Double> computeSimilarity(SWCDocument wordifier)
+    public Map<ItemPair<Word>, Double> computeSimilarity(SWCDocument wordifier)
     {
         run(wordifier);
         return getSimilarity();
@@ -21,5 +22,5 @@ public abstract class BaseSimilarityAlgo implements SimilarityAlgo
 
     protected abstract void run(SWCDocument wordifier);
 
-    protected abstract Map<WordPair, Double> getSimilarity();
+    protected abstract Map<ItemPair<Word>, Double> getSimilarity();
 }

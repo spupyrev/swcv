@@ -5,7 +5,7 @@ import edu.cloudy.layout.packing.ForceDirectedPackingAlgo;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.nlp.ranking.LexRankingAlgo;
 import edu.cloudy.nlp.ranking.RankingAlgo;
 import edu.cloudy.nlp.ranking.TFIDFRankingAlgo;
@@ -107,7 +107,7 @@ public class GenericCloudTest
     private WordGraph buildWordGraph(SWCDocument document, SimilarityAlgo similarityAlgo)
     {
         List<Word> words = document.getWords();
-        Map<WordPair, Double> similarity = similarityAlgo.computeSimilarity(document);
+        Map<ItemPair<Word>, Double> similarity = similarityAlgo.computeSimilarity(document);
 
         return new WordGraph(words, similarity);
     }

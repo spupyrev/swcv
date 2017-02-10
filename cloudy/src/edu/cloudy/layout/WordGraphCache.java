@@ -1,14 +1,14 @@
 package edu.cloudy.layout;
 
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+
+import edu.cloudy.nlp.ItemPair;
+import edu.cloudy.nlp.Word;
 
 /**
  * @author spupyrev
@@ -19,14 +19,14 @@ import java.util.PriorityQueue;
 public class WordGraphCache
 {
     private List<Word> words;
-    private Map<WordPair, Double> similarity;
-    private Map<WordPair, Double> distance;
+    private Map<ItemPair<Word>, Double> similarity;
+    private Map<ItemPair<Word>, Double> distance;
 
-    private Map<WordPair, Double> shortestPaths = new HashMap<WordPair, Double>();
+    private Map<ItemPair<Word>, Double> shortestPaths = new HashMap<ItemPair<Word>, Double>();
     private Map<Word, Double> weightedDegree = new HashMap<Word, Double>();
     private Map<Word, Integer[]> nonZeroAdjacency = new HashMap<Word, Integer[]>();
 
-    public WordGraphCache(List<Word> words, Map<WordPair, Double> similarity, Map<WordPair, Double> distance)
+    public WordGraphCache(List<Word> words, Map<ItemPair<Word>, Double> similarity, Map<ItemPair<Word>, Double> distance)
     {
         this.words = words;
         this.similarity = similarity;
@@ -35,7 +35,7 @@ public class WordGraphCache
 
     public double shortestPath(Word w1, Word w2)
     {
-        WordPair wp = new WordPair(w1, w2);
+    	ItemPair<Word> wp = new ItemPair<Word>(w1, w2);
         if (!shortestPaths.containsKey(wp))
             initShortestPaths(w1);
 
@@ -81,7 +81,7 @@ public class WordGraphCache
             for (int i = 0; i < words.size(); i++)
             {
                 Word next = words.get(i);
-                WordPair wp = new WordPair(now, next);
+                ItemPair<Word> wp = new ItemPair<Word>(now, next);
                 if (distance.containsKey(wp))
                 {
                     double len = distance.get(wp);
@@ -97,7 +97,7 @@ public class WordGraphCache
 
         for (int i = 0; i < words.size(); i++)
         {
-            WordPair wp = new WordPair(s, words.get(i));
+        	ItemPair<Word> wp = new ItemPair<Word>(s, words.get(i));
             shortestPaths.put(wp, dist[i]);
         }
     }
@@ -111,7 +111,7 @@ public class WordGraphCache
             if (s.equals(t))
                 continue;
 
-            WordPair wp = new WordPair(s, t);
+            ItemPair<Word> wp = new ItemPair<Word>(s, t);
             wd += similarity.get(wp);
         }
 
@@ -120,14 +120,14 @@ public class WordGraphCache
 
     private void initNonZeroAdjacency(Word s)
     {
-        List<Integer> adj = new ArrayList();
+        List<Integer> adj = new ArrayList<>();
         for (int i = 0; i < words.size(); i++)
         {
             Word t = words.get(i);
             if (s.equals(t))
                 continue;
 
-            WordPair wp = new WordPair(s, t);
+            ItemPair<Word> wp = new ItemPair<Word>(s, t);
             if (similarity.get(wp) > 0)
                 adj.add(i);
         }

@@ -2,7 +2,7 @@ package edu.cloudy.nlp.similarity;
 
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class RandomSimilarityAlgo extends BaseSimilarityAlgo
 {
-    private Map<WordPair, Double> similarity;
+    private Map<ItemPair<Word>, Double> similarity;
     private static Random rnd = new Random(123);
 
     @Override
@@ -19,26 +19,26 @@ public class RandomSimilarityAlgo extends BaseSimilarityAlgo
     {
         List<Word> words = document.getWords();
 
-        similarity = new HashMap<WordPair, Double>();
+        similarity = new HashMap<ItemPair<Word>, Double>();
         // compute the similarity matrix
 
         for (int x = 0; x < words.size(); x++)
             for (int y = (x + 1); y < words.size(); y++)
             {
-                WordPair xyPair = new WordPair(words.get(x), words.get(y));
+                ItemPair<Word> xyPair = new ItemPair<Word>(words.get(x), words.get(y));
                 double weight = rnd.nextDouble();// / 10.0;
                 similarity.put(xyPair, weight);
             }
 
         for (int x = 0; x < words.size(); x++)
         {
-            WordPair pair = new WordPair(words.get(x), words.get(x));
+            ItemPair<Word> pair = new ItemPair<Word>(words.get(x), words.get(x));
             similarity.put(pair, 1.0);
         }
     }
 
     @Override
-    protected Map<WordPair, Double> getSimilarity()
+    protected Map<ItemPair<Word>, Double> getSimilarity()
     {
         return similarity;
     }

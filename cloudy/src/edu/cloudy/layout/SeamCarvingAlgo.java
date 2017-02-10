@@ -25,6 +25,7 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
 	
 	public SeamCarvingAlgo(SWCRectangle[] initialWordPositions)
 	{
+		super();
 		this.initialWordPositions = initialWordPositions;
 	}
 	

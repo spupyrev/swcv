@@ -2,7 +2,7 @@ package edu.cloudy.clustering;
 
 import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class KMeansPlusPlus implements IClusterAlgo
     private int K;
 
     private List<Word> words;
-    private Map<WordPair, Double> similarities;
+    private Map<ItemPair<Word>, Double> similarities;
 
     private WordGraph wordGraph;
 

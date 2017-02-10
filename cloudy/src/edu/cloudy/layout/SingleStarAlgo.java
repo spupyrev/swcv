@@ -6,7 +6,7 @@ import edu.cloudy.graph.Graph;
 import edu.cloudy.graph.Vertex;
 import edu.cloudy.metrics.AdjacenciesMetric;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.utils.Logger;
 
 import java.util.ArrayList;
@@ -264,7 +264,7 @@ public class SingleStarAlgo extends BaseLayoutAlgo
             double deltaWeight = 0;
             if (curIndex > 0)
             {
-                WordPair wp = new WordPair(list.get(curOrder[curIndex - 1]), list.get(curOrder[curIndex]));
+                ItemPair<Word> wp = new ItemPair<Word>(list.get(curOrder[curIndex - 1]), list.get(curOrder[curIndex]));
                 deltaWeight += wordGraph.getSimilarity().get(wp);
             }
 
@@ -555,7 +555,7 @@ public class SingleStarAlgo extends BaseLayoutAlgo
     @Override
     protected LayoutResult createResult()
     {
-        return new LayoutResult(words, wordPositions)
+        return new LayoutResult<Word>(words, wordPositions)
         {
             @Override
             public SWCRectangle getWordPosition(Word w)

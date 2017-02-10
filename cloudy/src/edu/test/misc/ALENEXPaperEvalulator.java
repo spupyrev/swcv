@@ -1,6 +1,20 @@
 package edu.test.misc;
 
-import edu.cloudy.layout.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import edu.cloudy.layout.ContextPreservingAlgo;
+import edu.cloudy.layout.CycleCoverAlgo;
+import edu.cloudy.layout.InflateAndPushAlgo;
+import edu.cloudy.layout.LayoutAlgo;
+import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.MDSAlgo;
+import edu.cloudy.layout.SeamCarvingAlgo;
+import edu.cloudy.layout.StarForestAlgo;
+import edu.cloudy.layout.WordGraph;
+import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.metrics.AdjacenciesMetric;
 import edu.cloudy.metrics.AspectRatioMetric;
 import edu.cloudy.metrics.DistortionMetric;
@@ -9,20 +23,16 @@ import edu.cloudy.metrics.SpaceMetric;
 import edu.cloudy.metrics.StressMetric;
 import edu.cloudy.metrics.TotalWeightMetric;
 import edu.cloudy.metrics.UniformAreaMetric;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.Word;
 import edu.cloudy.nlp.ranking.RankingAlgo;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.nlp.similarity.CosineCoOccurenceAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.WikipediaXMLReader;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("all")
 public class ALENEXPaperEvalulator
@@ -101,7 +111,7 @@ public class ALENEXPaperEvalulator
 
                 // OK, give me the similarity
                 SimilarityAlgo coOccurenceAlgo = similarityAlgo;
-                Map<WordPair, Double> similarity = coOccurenceAlgo.computeSimilarity(document);
+                Map<ItemPair<Word>, Double> similarity = coOccurenceAlgo.computeSimilarity(document);
                 WordGraph wordGraph = new WordGraph(document.getWords(), similarity);
 
                 int runCount = 3;
