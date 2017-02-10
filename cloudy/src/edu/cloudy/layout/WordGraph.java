@@ -89,7 +89,7 @@ public class WordGraph
         for (int i = 0; i < words.size(); i++)
             for (int j = 0; j < words.size(); j++)
             {
-                ItemPair wp = new ItemPair<Word>(words.get(i), words.get(j));
+                ItemPair<Word> wp = new ItemPair<Word>(words.get(i), words.get(j));
                 double sim = similarity.get(wp);
                 double dist = LayoutUtils.idealDistanceConverter(sim);
                 distance.put(wp, dist);
