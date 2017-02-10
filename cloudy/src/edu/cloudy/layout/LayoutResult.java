@@ -17,7 +17,7 @@ public class LayoutResult
 
     public LayoutResult(Word[] words, SWCRectangle[] positions)
     {
-        wordPositions = new HashMap();
+        wordPositions = new HashMap<Word, SWCRectangle>();
         IntStream.range(0, words.length).forEach(i -> wordPositions.put(words[i], positions[i]));
     }
 

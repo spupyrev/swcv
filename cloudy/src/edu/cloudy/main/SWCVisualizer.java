@@ -1,11 +1,19 @@
 package edu.cloudy.main;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
 import edu.cloudy.colors.ColorScheme;
 import edu.cloudy.colors.ColorSchemeRegistry;
 import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
+import edu.cloudy.layout.SeamCarvingAlgo;
 import edu.cloudy.layout.WordGraph;
-import edu.cloudy.layout.packing.ForceDirectedPackingAlgo;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
@@ -16,14 +24,6 @@ import edu.cloudy.nlp.similarity.SimilarityAlgo;
 import edu.cloudy.ui.WordCloudFrame;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.TimeMeasurer;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
 
 /**
  * @author spupyrev 
@@ -36,7 +36,6 @@ public class SWCVisualizer
     public static void main(String argc[])
     {
         Logger.doLogging = true;
-
         try
         {
             new SWCVisualizer().run();
@@ -72,7 +71,11 @@ public class SWCVisualizer
      */
     private SWCDocument readDocument() throws FileNotFoundException
     {
-        Scanner scanner = new Scanner(new File("data/kob.txt"), "UTF-8");
+        
+        
+        
+        
+        Scanner scanner = new Scanner(new File("loremipsum.txt"), "UTF-8");
         StringBuilder sb = new StringBuilder();
         while (scanner.hasNextLine())
         {
@@ -114,7 +117,7 @@ public class SWCVisualizer
         System.out.println("top words:");
         for (int i = 0; i < words.size(); i++)
         {
-            Word w = words.get(i);
+           Word w = words.get(i);
             System.out.println(w.word + " (" + w.stem + ")  " + w.weight);
         }
 
@@ -124,13 +127,17 @@ public class SWCVisualizer
         {
             WordPair wp = topPairs.get(i);
             double simV = similarity.get(wp);
-            double dist = LayoutUtils.idealDistanceConverter(simV);
+           double dist = LayoutUtils.idealDistanceConverter(simV);
             System.out.println(wp.getFirst().word + " " + wp.getSecond().word + "  sim: " + simV + "  dist: " + dist);
         }*/
 
         return similarity;
     }
 
+    /**
+     * @param wordGraph
+     * @return
+     */
     private LayoutResult runLayout(WordGraph wordGraph)
     {
         //LayoutAlgo algo = new ContextPreservingAlgo();
@@ -138,12 +145,12 @@ public class SWCVisualizer
         //LayoutAlgo algo = new MDSAlgo(false);
         //LayoutAlgo algo = new StarForestAlgo();
         //LayoutAlgo algo = new CycleCoverAlgo();
-        //LayoutAlgo algo = new SeamCarvingAlgo();
+    	LayoutAlgo algo = new SeamCarvingAlgo();
         //LayoutAlgo algo = new WordleAlgo();
         //LayoutAlgo algo = new TagCloudAlphabeticalAlgo();
         //LayoutAlgo algo = new TagCloudAlphabeticalAlgo();
-        //LayoutAlgo algo = new TagCloudRankAlgo();
-        LayoutAlgo algo = new ForceDirectedPackingAlgo();
+       //LayoutAlgo algo = new TagCloudRankAlgo();
+        //LayoutAlgo algo = new ForceDirectedPackingAlgo();
 
         return TimeMeasurer.execute("layout", () -> algo.layout(wordGraph));
     }
