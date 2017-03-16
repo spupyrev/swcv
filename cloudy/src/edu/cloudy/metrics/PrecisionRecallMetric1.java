@@ -4,7 +4,7 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class PrecisionRecallMetric1 implements QualityMetric
     public double getValue(WordGraph wordGraph, LayoutResult layout)
     {
         List<Word> words = wordGraph.getWords();
-        Map<WordPair, Double> similarity = wordGraph.getSimilarity();
+        Map<ItemPair<Word>, Double> similarity = wordGraph.getSimilarity();
         
         double res = 0;
         for (Word word : words)
@@ -28,10 +28,10 @@ public class PrecisionRecallMetric1 implements QualityMetric
         return res / maximalPrecisionRecall(similarity);
     }
 
-    private double maximalPrecisionRecall(Map<WordPair, Double> similarity)
+    private double maximalPrecisionRecall(Map<ItemPair<Word>, Double> similarity)
     {
         double res = 0;
-        for (WordPair wp : similarity.keySet())
+        for (ItemPair<Word> wp : similarity.keySet())
         {
             if (wp.getFirst().equals(wp.getSecond()))
                 continue;
@@ -64,7 +64,7 @@ public class PrecisionRecallMetric1 implements QualityMetric
         return elip.intersects(rect2.getX(), rect2.getY(), rect2.getWidth(), rect2.getHeight());
     }
 
-    public double precisionRecall(Word w, LayoutResult algo, Map<WordPair, Double> similarity, List<Word> closeWords)
+    public double precisionRecall(Word w, LayoutResult algo, Map<ItemPair<Word>, Double> similarity, List<Word> closeWords)
     {
         if (w == null)
             return 0;
@@ -72,7 +72,7 @@ public class PrecisionRecallMetric1 implements QualityMetric
         double precision = 0;
         for (Word close : closeWords)
         {
-            precision += similarity.getOrDefault(new WordPair(w, close), 0.0);
+            precision += similarity.getOrDefault(new ItemPair<Word>(w, close), 0.0);
         }
         return precision;
     }

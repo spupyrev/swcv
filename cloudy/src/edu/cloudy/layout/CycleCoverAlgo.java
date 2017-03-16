@@ -10,7 +10,7 @@ import edu.cloudy.layout.clusters.ClusterForceDirectedPlacer;
 import edu.cloudy.layout.clusters.WordPlacer;
 import edu.cloudy.layout.overlaps.ForceDirectedUniformity;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.utils.Logger;
 
 import java.util.ArrayList;
@@ -164,16 +164,16 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
         return res;
     }
 
-    private Map<WordPair, Double> getCycleWeights(List<Vertex> cycle)
+    private Map<ItemPair<Word>, Double> getCycleWeights(List<Vertex> cycle)
     {
-        Map<WordPair, Double> res = new HashMap<WordPair, Double>();
+        Map<ItemPair<Word>, Double> res = new HashMap<ItemPair<Word>, Double>();
         for (int i = 0; i < cycle.size(); i++)
             for (int j = 0; j < cycle.size(); j++)
             {
                 Vertex u = cycle.get(i);
                 Vertex v = cycle.get(j);
 
-                WordPair wp = new WordPair(u, v);
+                ItemPair<Word> wp = new ItemPair<Word>(u, v);
                 res.put(wp, (i == j ? 1.0 : 0));
             }
 
@@ -184,7 +184,7 @@ public class CycleCoverAlgo extends BaseLayoutAlgo
 
             Edge edge = graph.getEdge(now, next);
             double weight = graph.getEdgeWeight(edge);
-            WordPair wp = new WordPair(now, next);
+            ItemPair<Word> wp = new ItemPair<Word>(now, next);
             res.put(wp, weight);
         }
 

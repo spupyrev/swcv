@@ -5,7 +5,7 @@ import edu.cloudy.layout.LayoutAlgo;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.ui.WordCloudFrame;
 import edu.cloudy.utils.Logger;
 import edu.cloudy.utils.TimeMeasurer;
@@ -34,7 +34,7 @@ public class DotReader
     {
         // 2. build similarities, words etc
         List<Word> words = new ArrayList<Word>();
-        Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
+        Map<ItemPair<Word>, Double> similarity = new HashMap<ItemPair<Word>, Double>();
         readDotFile("data/1101.dot", words, similarity);
 
         words = filterWords(words, similarity, 50);
@@ -48,7 +48,7 @@ public class DotReader
         visualize(wordGraph, layout);
     }
 
-    private List<Word> filterWords(List<Word> words, Map<WordPair, Double> similarity, int maxWords)
+    private List<Word> filterWords(List<Word> words, Map<ItemPair<Word>, Double> similarity, int maxWords)
     {
         Collections.sort(words, Comparator.reverseOrder());
 
@@ -58,10 +58,10 @@ public class DotReader
         return words.subList(0, maxWords);
     }
 
-    private Map<WordPair, Double> filterSimilarities(List<Word> words, Map<WordPair, Double> similarity)
+    private Map<ItemPair<Word>, Double> filterSimilarities(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
-        Map<WordPair, Double> similarityNew = new HashMap();
-        for (WordPair wp : similarity.keySet())
+        Map<ItemPair<Word>, Double> similarityNew = new HashMap();
+        for (ItemPair<Word> wp : similarity.keySet())
         {
             if (words.contains(wp.getFirst()) && words.contains(wp.getSecond()))
             {
@@ -71,7 +71,7 @@ public class DotReader
         return similarityNew;
     }
 
-    private void readDotFile(String filename, List<Word> words, Map<WordPair, Double> similarity)
+    private void readDotFile(String filename, List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         Map<String, Word> allWords = new HashMap();
 
@@ -112,7 +112,7 @@ public class DotReader
         }
     }
 
-    private void parseEdge(String line, Map<String, Word> allWords, Map<WordPair, Double> similarity)
+    private void parseEdge(String line, Map<String, Word> allWords, Map<ItemPair<Word>, Double> similarity)
     {
         String s1 = "";
         int i = 0;
@@ -149,7 +149,7 @@ public class DotReader
 
         Word w1 = allWords.get(s1);
         Word w2 = allWords.get(s2);
-        similarity.put(new WordPair(w1, w2), Double.parseDouble(sim));
+        similarity.put(new ItemPair<Word>(w1, w2), Double.parseDouble(sim));
     }
 
     private Word parseNode(String line)

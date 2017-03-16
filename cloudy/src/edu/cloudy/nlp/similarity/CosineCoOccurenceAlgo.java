@@ -2,7 +2,7 @@ package edu.cloudy.nlp.similarity;
 
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,14 +15,14 @@ import java.util.Set;
  */
 public class CosineCoOccurenceAlgo extends BaseSimilarityAlgo
 {
-    private Map<WordPair, Double> similarity;
+    private Map<ItemPair<Word>, Double> similarity;
 
     @Override
     protected void run(SWCDocument document)
     {
         List<Word> words = document.getWords();
 
-        similarity = new HashMap<WordPair, Double>();
+        similarity = new HashMap<ItemPair<Word>, Double>();
 
         for (int i = 0; i < words.size(); i++)
         {
@@ -41,15 +41,15 @@ public class CosineCoOccurenceAlgo extends BaseSimilarityAlgo
                 double xySimilarity = sharedSentences.size() / Math.sqrt((double)xSentences.size() * ySentences.size());
                 assert (0 <= xySimilarity && xySimilarity <= 1.0);
 
-                similarity.put(new WordPair(x, y), xySimilarity);
+                similarity.put(new ItemPair<Word>(x, y), xySimilarity);
             }
 
-            similarity.put(new WordPair(x, x), 1.0);
+            similarity.put(new ItemPair<Word>(x, x), 1.0);
         }
     }
 
     @Override
-    protected Map<WordPair, Double> getSimilarity()
+    protected Map<ItemPair<Word>, Double> getSimilarity()
     {
         return similarity;
     }

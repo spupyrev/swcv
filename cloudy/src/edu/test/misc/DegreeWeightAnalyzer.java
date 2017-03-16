@@ -5,7 +5,7 @@ import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 import edu.cloudy.nlp.similarity.RandomSimilarityAlgo;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
@@ -39,7 +39,7 @@ public class DegreeWeightAnalyzer
             doc.weightFilter(150, new TFRankingAlgo());
             //SimilarityAlgo coOccurenceAlgo = new CosineCoOccurenceAlgo();
             SimilarityAlgo coOccurenceAlgo = new RandomSimilarityAlgo();
-            Map<WordPair, Double> similarity = coOccurenceAlgo.computeSimilarity(doc);
+            Map<ItemPair<Word>, Double> similarity = coOccurenceAlgo.computeSimilarity(doc);
             filter(doc.getWords(), similarity);
 
             //weights.addAll(similarity.values());
@@ -68,24 +68,24 @@ public class DegreeWeightAnalyzer
         System.out.println("perc half: " + (double)numHalf / weights.size());
     }
 
-    private static void filter(List<Word> words, Map<WordPair, Double> similarity)
+    private static void filter(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         for (Word w : words)
         {
-            WordPair wp = new WordPair(w, w);
+            ItemPair<Word> wp = new ItemPair<Word>(w, w);
             if (similarity.containsKey(wp))
                 similarity.remove(wp);
         }
     }
 
-    private static List<Double> realizedWeights(List<Word> words, Map<WordPair, Double> similarity)
+    private static List<Double> realizedWeights(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         LayoutResult algo = new ContextPreservingAlgo().layout(new WordGraph(words, similarity));
 
-        //List<WordPair> wpl = new AdjacenciesMetric().realizedPairs(words, similarity, algo);
-        List<WordPair> wpl = null;//new AdjacenciesMetric().realizedPairs(words, similarity, algo);
+        //List<ItemPair<Word>> wpl = new AdjacenciesMetric().realizedPairs(words, similarity, algo);
+        List<ItemPair<Word>> wpl = null;//new AdjacenciesMetric().realizedPairs(words, similarity, algo);
         List<Double> res = new ArrayList<Double>();
-        for (WordPair wp : wpl)
+        for (ItemPair<Word> wp : wpl)
             res.add(similarity.get(wp));
 
         return res;

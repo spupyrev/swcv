@@ -4,7 +4,7 @@ import edu.cloudy.geom.SWCRectangle;
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.layout.WordGraph;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class PrecisionRecallMetric2 implements QualityMetric
     public double getValue(WordGraph wordGraph, LayoutResult layout)
     {
         List<Word> words = wordGraph.getWords();
-        Map<WordPair, Double> similarity = wordGraph.getSimilarity();
+        Map<ItemPair<Word>, Double> similarity = wordGraph.getSimilarity();
         
         threshold = calculateThreshold(similarity);
         double res = 0;
@@ -33,7 +33,7 @@ public class PrecisionRecallMetric2 implements QualityMetric
         return res / maximalPrecisionRecall(similarity);
     }
 
-    private double calculateThreshold(Map<WordPair, Double> similarity)
+    private double calculateThreshold(Map<ItemPair<Word>, Double> similarity)
     {
         List<Double> vals = new ArrayList<Double>(similarity.values());
         Collections.sort(vals);
@@ -44,10 +44,10 @@ public class PrecisionRecallMetric2 implements QualityMetric
         return vals.get(i);
     }
 
-    private double maximalPrecisionRecall(Map<WordPair, Double> similarity)
+    private double maximalPrecisionRecall(Map<ItemPair<Word>, Double> similarity)
     {
         double res = 0;
-        for (WordPair wp : similarity.keySet())
+        for (ItemPair<Word> wp : similarity.keySet())
         {
             if (wp.getFirst().equals(wp.getSecond()))
                 continue;
@@ -81,7 +81,7 @@ public class PrecisionRecallMetric2 implements QualityMetric
         return elip.intersects(rect2.getX(), rect2.getY(), rect2.getWidth(), rect2.getHeight());
     }
 
-    public double precisionRecall(Word w, LayoutResult algo, Map<WordPair, Double> similarity, List<Word> closeWords)
+    public double precisionRecall(Word w, LayoutResult algo, Map<ItemPair<Word>, Double> similarity, List<Word> closeWords)
     {
         if (w == null)
             return 0;
@@ -97,14 +97,14 @@ public class PrecisionRecallMetric2 implements QualityMetric
         return precision / (precision + recall);
     }
 
-    private boolean shouldBeClose(Word one, Word two, Map<WordPair, Double> similarity)
+    private boolean shouldBeClose(Word one, Word two, Map<ItemPair<Word>, Double> similarity)
     {
-        if (similarity.getOrDefault(new WordPair(one, two), 0.0) > threshold)
+        if (similarity.getOrDefault(new ItemPair<Word>(one, two), 0.0) > threshold)
             return true;
         return false;
     }
 
-    private boolean shouldBeClose(WordPair wp, Map<WordPair, Double> similarity)
+    private boolean shouldBeClose(ItemPair<Word> wp, Map<ItemPair<Word>, Double> similarity)
     {
         if (similarity.get(wp) > threshold)
             return true;

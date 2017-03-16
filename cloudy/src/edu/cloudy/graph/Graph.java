@@ -1,12 +1,5 @@
 package edu.cloudy.graph;
 
-import edu.cloudy.layout.WordGraph;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.UnorderedPair;
-
-import org.jgrapht.graph.SimpleWeightedGraph;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,6 +8,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.jgrapht.graph.SimpleWeightedGraph;
+
+import edu.cloudy.layout.WordGraph;
+import edu.cloudy.nlp.ItemPair;
+import edu.cloudy.nlp.Word;
+import edu.cloudy.utils.UnorderedPair;
 
 public class Graph extends SimpleWeightedGraph<Vertex, Edge>
 {
@@ -30,7 +30,7 @@ public class Graph extends SimpleWeightedGraph<Vertex, Edge>
         this(wordGraph.getWords(), wordGraph.getSimilarity());
     }
 
-    public Graph(List<Word> words, Map<WordPair, Double> weights)
+    public Graph(List<Word> words, Map<ItemPair<Word>, Double> weights)
     {
         super(Edge.class);
 
@@ -45,7 +45,7 @@ public class Graph extends SimpleWeightedGraph<Vertex, Edge>
         }
 
         Map<UnorderedPair<Vertex, Vertex>, Double> vertexWeights = new HashMap<UnorderedPair<Vertex, Vertex>, Double>();
-        for (WordPair cur : weights.keySet())
+        for (ItemPair<Word> cur : weights.keySet())
         {
             Vertex v1 = wordToVertex.get(cur.getFirst());
             Vertex v2 = wordToVertex.get(cur.getSecond());
@@ -62,13 +62,13 @@ public class Graph extends SimpleWeightedGraph<Vertex, Edge>
         return new ArrayList<Word>(vertexSet());
     }
 
-    public Map<WordPair, Double> getSimilarities()
+    public Map<ItemPair<Word>, Double> getSimilarities()
     {
-        Map<WordPair, Double> ret = new HashMap<WordPair, Double>();
+        Map<ItemPair<Word>, Double> ret = new HashMap<ItemPair<Word>, Double>();
 
         for (Edge e : edgeSet())
         {
-            WordPair cur = new WordPair(getEdgeSource(e), getEdgeTarget(e));
+            ItemPair<Word> cur = new ItemPair<Word>(getEdgeSource(e), getEdgeTarget(e));
             ret.put(cur, getEdgeWeight(e));
         }
 
@@ -76,7 +76,7 @@ public class Graph extends SimpleWeightedGraph<Vertex, Edge>
         {
             for (Word w2 : vertexSet())
             {
-                WordPair cur = new WordPair(w1, w2);
+                ItemPair<Word> cur = new ItemPair<Word>(w1, w2);
                 if (!ret.containsKey(cur))
                 {
                     ret.put(cur, 0.0);

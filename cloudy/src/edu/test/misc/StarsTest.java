@@ -1,17 +1,17 @@
 package edu.test.misc;
 
-import edu.cloudy.graph.Graph;
-import edu.cloudy.layout.SingleStarAlgo;
-import edu.cloudy.layout.WordGraph;
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-import edu.cloudy.utils.Logger;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import edu.cloudy.graph.Graph;
+import edu.cloudy.layout.SingleStarAlgo;
+import edu.cloudy.layout.WordGraph;
+import edu.cloudy.nlp.ItemPair;
+import edu.cloudy.nlp.Word;
+import edu.cloudy.utils.Logger;
 
 @SuppressWarnings("all")
 public class StarsTest
@@ -23,14 +23,14 @@ public class StarsTest
         Logger.doLogging = false;
 
         List<Word> words = new ArrayList<Word>();
-        Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
+        Map<ItemPair<Word>, Double> similarity = new HashMap<ItemPair<Word>, Double>();
         double expectedValue;
 
         expectedValue = test1(words, similarity);
         checkStarsResult(words, similarity, expectedValue);
     }
 
-    private static void checkStarsResult(List<Word> words, Map<WordPair, Double> similarity, double expectedValue)
+    private static void checkStarsResult(List<Word> words, Map<ItemPair<Word>, Double> similarity, double expectedValue)
     {
         double totalRealizedValue = getStarsResult(words, similarity);
 
@@ -40,7 +40,7 @@ public class StarsTest
             throw new RuntimeException("totalRealizedValue=" + totalRealizedValue + "  expectedValue=" + expectedValue);
     }
 
-    private static double getStarsResult(List<Word> words, Map<WordPair, Double> similarity)
+    private static double getStarsResult(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         SingleStarAlgo starsAlgo = new SingleStarAlgo();
         Graph graph = new Graph(words, similarity);
@@ -51,7 +51,7 @@ public class StarsTest
         return starsAlgo.getRealizedWeight();
     }
 
-    static double test1(List<Word> words, Map<WordPair, Double> similarity)
+    static double test1(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         Word a1 = new Word("a1", 125.0);
         Word a2 = new Word("a2", 115.0);
@@ -77,20 +77,20 @@ public class StarsTest
         //words.add(a9);
 
         similarity.clear();
-        similarity.put(new WordPair(b, a1), 10.0);
-        similarity.put(new WordPair(a2, b), 10.0);
-        similarity.put(new WordPair(a3, b), 10.0);
-        similarity.put(new WordPair(a4, b), 10.0);
-        similarity.put(new WordPair(a5, b), 1.0);
-        similarity.put(new WordPair(a6, b), 1.0);
-        //similarity.put(new WordPair(a7, b), 1.0);
-        //similarity.put(new WordPair(b, a8), 1.0);
-        //similarity.put(new WordPair(b, a9), 1.0);
+        similarity.put(new ItemPair<Word>(b, a1), 10.0);
+        similarity.put(new ItemPair<Word>(a2, b), 10.0);
+        similarity.put(new ItemPair<Word>(a3, b), 10.0);
+        similarity.put(new ItemPair<Word>(a4, b), 10.0);
+        similarity.put(new ItemPair<Word>(a5, b), 1.0);
+        similarity.put(new ItemPair<Word>(a6, b), 1.0);
+        //similarity.put(new ItemPair<Word>(a7, b), 1.0);
+        //similarity.put(new ItemPair<Word>(b, a8), 1.0);
+        //similarity.put(new ItemPair<Word>(b, a9), 1.0);
 
         return 4;
     }
 
-    static double test2(List<Word> words, Map<WordPair, Double> similarity)
+    static double test2(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         Word a = new Word("Aaaa", 100.0);
         Word b = new Word("Bbbb", 200.0);
@@ -106,16 +106,16 @@ public class StarsTest
         words.add(e);
 
         similarity.clear();
-        similarity.put(new WordPair(a, b), 10.0);
-        similarity.put(new WordPair(b, c), 160.0);
-        similarity.put(new WordPair(d, c), 140.0);
-        similarity.put(new WordPair(d, e), 100.0);
-        similarity.put(new WordPair(e, a), 1.0);
+        similarity.put(new ItemPair<Word>(a, b), 10.0);
+        similarity.put(new ItemPair<Word>(b, c), 160.0);
+        similarity.put(new ItemPair<Word>(d, c), 140.0);
+        similarity.put(new ItemPair<Word>(d, e), 100.0);
+        similarity.put(new ItemPair<Word>(e, a), 1.0);
 
         return 411;
     }
 
-    static void testRandom(List<Word> words, Map<WordPair, Double> similarity, int n)
+    static void testRandom(List<Word> words, Map<ItemPair<Word>, Double> similarity, int n)
     {
         words.clear();
         for (int i = 0; i < n; i++)
@@ -142,7 +142,7 @@ public class StarsTest
         return sb.toString();
     }
 
-    static Map<WordPair, Double> randomSimilarities(List<Word> words, Map<WordPair, Double> similarity)
+    static Map<ItemPair<Word>, Double> randomSimilarities(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         similarity.clear();
         for (int i = 0; i < words.size(); i++)
@@ -152,7 +152,7 @@ public class StarsTest
                 Word b = words.get(j);
 
                 double weight = rnd.nextDouble();// * 100;
-                similarity.put(new WordPair(a, b), weight);
+                similarity.put(new ItemPair<Word>(a, b), weight);
             }
 
         return similarity;

@@ -21,18 +21,29 @@ import java.util.Set;
  */
 public class SeamCarvingAlgo extends BaseLayoutAlgo
 {
+	private SWCRectangle[] initialWordPositions;
+	
+	public SeamCarvingAlgo(SWCRectangle[] initialWordPositions)
+	{
+		super();
+		this.initialWordPositions = initialWordPositions;
+	}
+	
     public SeamCarvingAlgo()
     {
+    	this(null);
     }
 
     @Override
     protected void run()
     {
-        SWCRectangle[] initialWordPositions = initialPlacement();
+    	if( initialWordPositions == null )
+    		initialWordPositions = initialPlacement();
 
         //compute the zones
         Zone[][] zones = createZones(initialWordPositions);
-
+        
+        wordPositions = initialWordPositions;
         //run seam carving
         wordPositions = removeSeams(zones, initialWordPositions);
 
@@ -197,10 +208,13 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
      */
     private SWCRectangle[] removeSeams(Zone[][] zones, SWCRectangle[] wordPositions)
     {
+    	SWCRectangle[] returnedPositions = Arrays.copyOf(wordPositions, wordPositions.length);
+    	
+    	
         //calculate the largest word
-        double maxWordSize = computeMaxWordSizes(wordPositions);
+        double maxWordSize = computeMaxWordSizes(returnedPositions);
         //scaling factor is used to normalize energy 
-        double scalingFactor = computeScalingFactor(wordPositions);
+        double scalingFactor = computeScalingFactor(returnedPositions);
 
         int MAX_ITERATIONS = 500;
         int iter = 0;
@@ -209,14 +223,14 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
         while (iter++ < MAX_ITERATIONS)
         {
             if (iter % 30 == 0)
-                alignWords(wordPositions);
+                alignWords(returnedPositions);
 
-            double[][] E = energy(zones, wordPositions, maxWordSize, scalingFactor);
+            double[][] E = energy(zones, returnedPositions, maxWordSize, scalingFactor);
             List<Zone> horizontalSeam = new ArrayList<Zone>();
             List<Zone> verticalSeam = new ArrayList<Zone>();
 
-            double horizontalSeamCost = findOptimalSeam(true, zones, wordPositions, E, horizontalSeam, minSeamSize);
-            double verticalSeamCost = findOptimalSeam(false, zones, wordPositions, E, verticalSeam, minSeamSize);
+            double horizontalSeamCost = findOptimalSeam(true, zones, returnedPositions, E, horizontalSeam, minSeamSize);
+            double verticalSeamCost = findOptimalSeam(false, zones, returnedPositions, E, verticalSeam, minSeamSize);
 
             //no more removals
             if (horizontalSeamCost >= Double.POSITIVE_INFINITY && verticalSeamCost >= Double.POSITIVE_INFINITY)
@@ -243,23 +257,23 @@ public class SeamCarvingAlgo extends BaseLayoutAlgo
             if (horizontalSeamCost < verticalSeamCost)
             {
                 //Logger.println("horizontalSeamCost = " + horizontalSeamCost);
-                removeHorizontalSeamByFullReconstruction(zones, wordPositions, horizontalSeam);
+                removeHorizontalSeamByFullReconstruction(zones, returnedPositions, horizontalSeam);
             }
             else
             {
                 //Logger.println("verticalSeamCost = " + verticalSeamCost);
-                removeVerticalSeamByFullReconstruction(zones, wordPositions, verticalSeam);
+                removeVerticalSeamByFullReconstruction(zones, returnedPositions, verticalSeam);
             }
 
             //removeHorizontalSeam(zones, wordPositions, zonePath);
 
             //this method is not slower, but much simplier
-            zones = createZones(wordPositions);
+            zones = createZones(returnedPositions);
             //checkZoneConsistency(zones, wordPositions);
         }
 
         //Logger.println("done " + iter + " iterations");
-        return wordPositions;
+        return returnedPositions;
     }
 
     private void removeHorizontalSeamByFullReconstruction(Zone[][] zones, SWCRectangle[] wordPositions, List<Zone> zonePath)

@@ -2,7 +2,7 @@ package edu.cloudy.metrics;
 
 import edu.cloudy.layout.LayoutResult;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.List;
 
@@ -12,5 +12,5 @@ import java.util.List;
  */
 public interface AdjacentMetric
 {
-    List<WordPair> getCloseWords(List<Word> words, LayoutResult layout);
+    List<ItemPair<Word>> getCloseWords(List<Word> words, LayoutResult layout);
 }

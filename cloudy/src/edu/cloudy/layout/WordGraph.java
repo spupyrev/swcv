@@ -1,12 +1,12 @@
 package edu.cloudy.layout;
 
-import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import edu.cloudy.nlp.ItemPair;
+import edu.cloudy.nlp.Word;
 
 /**
  * @author spupyrev
@@ -19,12 +19,12 @@ import java.util.Map;
 public class WordGraph
 {
     private List<Word> words;
-    private Map<WordPair, Double> similarity;
-    private Map<WordPair, Double> distance;
+    private Map<ItemPair<Word>, Double> similarity;
+    private Map<ItemPair<Word>, Double> distance;
 
     private WordGraphCache cache;
 
-    public WordGraph(List<Word> words, Map<WordPair, Double> similarity)
+    public WordGraph(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         this.words = words;
         this.similarity = similarity;
@@ -40,14 +40,14 @@ public class WordGraph
         return words;
     }
 
-    public Map<WordPair, Double> getSimilarity()
+    public Map<ItemPair<Word>, Double> getSimilarity()
     {
         return similarity;
     }
 
     public double distance(Word w1, Word w2)
     {
-        return distance.get(new WordPair(w1, w2));
+        return distance.get(new ItemPair<Word>(w1, w2));
     }
 
     public double weightedDegree(Word w)
@@ -76,7 +76,7 @@ public class WordGraph
         for (int i = 0; i < words.size(); i++)
             for (int j = 0; j < words.size(); j++)
             {
-                WordPair wp = new WordPair(words.get(i), words.get(j));
+                ItemPair<Word> wp = new ItemPair<Word>(words.get(i), words.get(j));
                 result[i][j] = similarity.get(wp);
             }
 
@@ -85,11 +85,11 @@ public class WordGraph
 
     private void initializeDistances()
     {
-        distance = new HashMap<WordPair, Double>();
+        distance = new HashMap<ItemPair<Word>, Double>();
         for (int i = 0; i < words.size(); i++)
             for (int j = 0; j < words.size(); j++)
             {
-                WordPair wp = new WordPair(words.get(i), words.get(j));
+                ItemPair<Word> wp = new ItemPair<Word>(words.get(i), words.get(j));
                 double sim = similarity.get(wp);
                 double dist = LayoutUtils.idealDistanceConverter(sim);
                 distance.put(wp, dist);
@@ -112,7 +112,7 @@ public class WordGraph
         for (int i = 0; i < words.size(); i++)
         {
             Word wi = words.get(i);
-            WordPair wp = new WordPair(wi, wi);
+            ItemPair<Word> wp = new ItemPair<Word>(wi, wi);
 
             assert (similarity.containsKey(wp) && similarity.get(wp) == 1.0);
             assert (1.0 <= wi.weight && wi.weight <= 5.0);
@@ -120,7 +120,7 @@ public class WordGraph
             for (int j = 0; j < words.size(); j++)
             {
                 Word wj = words.get(j);
-                WordPair wp2 = new WordPair(wi, wj);
+                ItemPair<Word> wp2 = new ItemPair<Word>(wi, wj);
                 assert (similarity.containsKey(wp2));
                 double sim = similarity.get(wp2);
 

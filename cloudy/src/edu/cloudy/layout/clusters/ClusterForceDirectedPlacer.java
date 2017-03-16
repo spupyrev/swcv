@@ -9,7 +9,7 @@ import edu.cloudy.layout.WordGraph;
 import edu.cloudy.layout.mds.DistanceScaling;
 import edu.cloudy.layout.overlaps.ForceDirectedOverlapRemoval;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ public class ClusterForceDirectedPlacer implements WordPlacer
 
     private WordGraph wordGraph;
     private List<Word> words;
-    private Map<WordPair, Double> similarities;
+    private Map<ItemPair<Word>, Double> similarities;
     private Map<Word, SWCRectangle> wordPositions = new HashMap<Word, SWCRectangle>();
     private List<? extends LayoutResult> singlePlacers;
 
@@ -128,7 +128,7 @@ public class ClusterForceDirectedPlacer implements WordPlacer
                 for (Word wi : clusters.get(i).wordPositions.keySet())
                     for (Word wj : clusters.get(j).wordPositions.keySet())
                     {
-                        WordPair wp = new WordPair(wi, wj);
+                        ItemPair<Word> wp = new ItemPair<Word>(wi, wj);
                         if (similarities.containsKey(wp))
                             avgSim += similarities.get(wp);
                         cnt++;

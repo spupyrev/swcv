@@ -9,7 +9,7 @@ import edu.cloudy.layout.WordGraph;
 import edu.cloudy.main.cmd.CommandLineArguments;
 import edu.cloudy.nlp.SWCDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.nlp.ranking.RankingAlgo;
 import edu.cloudy.nlp.ranking.RankingAlgorithmRegistry;
 import edu.cloudy.nlp.similarity.SimilarityAlgo;
@@ -68,7 +68,7 @@ public class Main
         List<Word> words = ranking(document, cmd);
 
         // calculate pairwise similarities
-        Map<WordPair, Double> similarity = computeSimilarity(document, cmd);
+        Map<ItemPair<Word>, Double> similarity = computeSimilarity(document, cmd);
 
         //create graph
         WordGraph wordGraph = new WordGraph(words, similarity);
@@ -111,7 +111,7 @@ public class Main
         return words;
     }
 
-    private Map<WordPair, Double> computeSimilarity(SWCDocument document, CommandLineArguments cmd)
+    private Map<ItemPair<Word>, Double> computeSimilarity(SWCDocument document, CommandLineArguments cmd)
     {
         SimilarityAlgo algo = SimilarityAlgorithmRegistry.getById(cmd.getSimilarityAlgorithm());
         return algo.computeSimilarity(document);

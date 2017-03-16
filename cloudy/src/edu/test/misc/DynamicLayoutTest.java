@@ -7,7 +7,7 @@ import edu.cloudy.layout.WordleAlgo;
 import edu.cloudy.nlp.ParseOptions;
 import edu.cloudy.nlp.SWCDynamicDocument;
 import edu.cloudy.nlp.Word;
-import edu.cloudy.nlp.WordPair;
+import edu.cloudy.nlp.ItemPair;
 import edu.cloudy.nlp.ranking.TFRankingAlgo;
 
 import java.io.File;
@@ -28,7 +28,7 @@ public class DynamicLayoutTest
         doc.parse(new ParseOptions());
         doc.weightFilter(10, new TFRankingAlgo());
 
-        Map<WordPair, Double> similarity = new HashMap<WordPair, Double>();
+        Map<ItemPair<Word>, Double> similarity = new HashMap<ItemPair<Word>, Double>();
         MatchingTest.randomSimilarities(doc.getWords(), similarity);
         LayoutResult algo = runLayout(doc.getWords(), similarity);
 
@@ -70,7 +70,7 @@ public class DynamicLayoutTest
         }
     }
 
-    private static LayoutResult runLayout(List<Word> words, Map<WordPair, Double> similarity)
+    private static LayoutResult runLayout(List<Word> words, Map<ItemPair<Word>, Double> similarity)
     {
         return new WordleAlgo().layout(new WordGraph(words, similarity));
     }
